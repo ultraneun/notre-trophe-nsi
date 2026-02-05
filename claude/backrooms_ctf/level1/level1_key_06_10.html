@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL 1 - THE DARK</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        
+        body {
+            background: #000000;
+            color: #ff0000;
+            font-family: 'Share Tech Mono', monospace;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #0a0000;
+            border: 3px solid #ff0000;
+            padding: 40px;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            text-shadow: 0 0 20px #ff0000;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .warning {
+            background: #1a0000;
+            border: 2px solid #ff0000;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .log-entry {
+            background: #050000;
+            border-left: 4px solid #ff0000;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 16px;
+        }
+        
+        .timestamp {
+            color: #800000;
+            font-size: 14px;
+        }
+        
+        .static {
+            animation: static 0.5s infinite;
+        }
+        
+        @keyframes static {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+        
+        .hidden-text {
+            color: #0a0000;
+            background: #0a0000;
+            user-select: none;
+        }
+        
+        .hidden-text:hover {
+            color: #ff0000;
+            background: #1a0000;
+        }
+        
+        code {
+            background: #000;
+            padding: 2px 6px;
+            border: 1px solid #ff0000;
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="static">⚠ LEVEL 1 - THE DARK ⚠</h1>
+        
+        <div class="warning">
+            <p style="font-size: 24px; margin: 0;">VOUS AVEZ TROUVÉ L'HEURE</p>
+            <p style="font-size: 18px; margin: 10px 0 0 0;">La porte s'est ouverte. Mais où mène-t-elle ?</p>
+        </div>
+        
+        <div class="log-entry">
+            <p class="timestamp">[TIMESTAMP: 2024-01-15 15:14:22 UTC]</p>
+            <p class="timestamp">[LOCATION: LEVEL 1 - ZONE UNKNOWN]</p>
+            <p class="timestamp">[LIGHT LEVEL: 12%]</p>
+        </div>
+        
+        <hr style="border-color: #ff0000;">
+        
+        <p>Je suis passé de l'autre côté de la porte.</p>
+        
+        <p>Les lumières sont presque toutes éteintes ici. Mon téléphone fait office de lampe torche
+        mais la batterie descend vite. Trop vite. 47% déjà.</p>
+        
+        <p>Les murs sont différents. Plus sombres. Du béton brut. Ça sent... le renfermé. La poussière.
+        Et autre chose. Quelque chose de métallique.</p>
+        
+        <p>J'entends de l'eau qui goutte quelque part. Mais je ne trouve pas la source.</p>
+        
+        <div class="log-entry">
+            <p><strong>DÉCOUVERTE - 15:27 UTC</strong></p>
+            <p>J'ai trouvé un vieil ordinateur dans un coin. Écran cassé. Tour couverte de poussière.
+            Mais il y avait un post-it collé dessus :</p>
+            <p style="text-align: center; font-size: 20px; background: #ffff00; color: #000; padding: 10px; margin: 15px 0;">
+                "L'île en forme de cheval de mer garde le secret"<br>
+                "Cherche où les tortues règnent en maîtres"<br>
+                "La forme révèle le nom"
+            </p>
+        </div>
+        
+        <p>Qu'est-ce que ça veut dire ? Une île ? En forme de cheval de mer ?</p>
+        
+        <p>Je n'ai pas accès à internet ici mais j'ai téléchargé quelques cartes en offline avant
+        que le signal soit complètement perdu.</p>
+        
+        <p>Il doit y avoir une île quelque part dans le monde qui ressemble à un hippocampe.
+        Les tortues... les Galápagos peut-être ?</p>
+        
+        <div class="log-entry">
+            <p><strong>DÉCOUVERTE - 15:43 UTC</strong></p>
+            <p>J'ai trouvé un autre ordinateur. Celui-là fonctionne ! Mais il demande un mot de passe.</p>
+            <p>L'indice sur l'écran de connexion :</p>
+            <p style="text-align: center; font-size: 18px; margin: 15px 0;">
+                <code>PASSWORD: [NOM_DE_L_ILE_EN_MINUSCULES]</code>
+            </p>
+            <p>Si je trouve le nom de cette île en forme de cheval de mer, je pourrai accéder aux fichiers.</p>
+        </div>
+        
+        <p>Il y a quelque chose d'écrit sur le mur à la craie :</p>
+        
+        <pre style="background: #000; padding: 20px; border: 2px solid #ff0000; margin: 20px 0;">
+Les tortues géantes te montrent le chemin
+L'île porte un nom qui honore une reine
+Sa forme dans l'océan dessine un secret
+Comme un cheval marin qui danserait
+
+Galápagos, archipel de Darwin
+Là où la vie prend mille chemins
+Une île parmi tant d'autres
+Dont la silhouette répond à notre quête
+
+Trouve-la sur une carte du monde
+Regarde sa forme, elle est profonde
+Le mot de passe n'est que son nom
+En minuscules, sans accent, sans rançon
+        </pre>
+        
+        <p class="hidden-text">
+            INDICE CACHÉ (passe ta souris ici) : 
+            L'île Isabela aux Galápagos ressemble à un hippocampe vu du ciel.
+            Mais ne te fie pas à moi. VÉRIFIE par toi-même sur Google Maps.
+            Cherche "galapagos islands" et trouve l'île en forme de seahorse.
+            Son nom = ton mot de passe.
+        </p>
+        
+        <hr style="border-color: #ff0000; margin: 40px 0;">
+        
+        <div class="warning">
+            <p style="font-size: 20px;">UNE FOIS LE MOT DE PASSE TROUVÉ</p>
+            <p>Cherche le fichier : <code>level2_access_[MOT_DE_PASSE].html</code></p>
+            <p style="font-size: 14px; margin-top: 15px;">
+                (Remplace [MOT_DE_PASSE] par le nom de l'île en minuscules)
+            </p>
+        </div>
+        
+        <div class="log-entry">
+            <p class="timestamp">[TIMESTAMP: 2024-01-15 16:02:18 UTC]</p>
+            <p>Je continue à explorer. La batterie est à 31%.</p>
+            <p>Je dois faire vite.</p>
+            <p>Les bruits se rapprochent.</p>
+        </div>
+        
+        <p style="text-align: center; font-size: 24px; color: #ff0000; margin-top: 50px;">
+            █████ FIND THE ISLAND █████<br>
+            █████ FIND THE SHAPE █████<br>
+            █████ FIND THE NAME █████
+        </p>
+    </div>
+    
+    <!--
+    Note pour ceux qui lisent le code source :
+    
+    Le mot de passe est le nom d'une île des Galápagos.
+    Cette île a une forme très particulière quand on la regarde d'en haut.
+    Elle ressemble à un hippocampe (seahorse en anglais).
+    
+    Va sur Google Maps.
+    Cherche "Galapagos Islands".
+    Trouve l'île en forme de cheval de mer.
+    
+    C'est l'île Isabela.
+    Donc le mot de passe = isabela
+    
+    Le fichier suivant : level2_access_isabela.html
+    
+    Mais toi qui lis ça, tu as triché.
+    Le vrai joueur doit CHERCHER et TROUVER par lui-même.
+    
+    - M4RK
+    -->
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL 5 - THE EXIT</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            font-family: 'Press Start 2P', cursive;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .exit-chamber {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 5px solid #ffffff;
+            padding: 40px;
+            box-shadow: 0 0 80px rgba(255, 255, 255, 0.5),
+                        inset 0 0 80px rgba(102, 126, 234, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2em;
+            text-shadow: 0 0 30px #ffffff;
+            margin-bottom: 30px;
+            animation: glow 2s infinite alternate;
+            line-height: 1.5;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px #fff, 0 0 20px #fff; }
+            to { text-shadow: 0 0 20px #fff, 0 0 40px #667eea, 0 0 60px #667eea; }
+        }
+        
+        .final-message {
+            background: rgba(102, 126, 234, 0.3);
+            border: 3px solid #ffffff;
+            padding: 30px;
+            margin: 30px 0;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+        
+        .door-visual {
+            text-align: center;
+            font-size: 10px;
+            margin: 30px 0;
+            color: #ffff00;
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.02); }
+        }
+        
+        .challenge {
+            background: #1a1a2e;
+            border: 2px solid #ff0080;
+            padding: 25px;
+            margin: 25px 0;
+            font-size: 10px;
+        }
+        
+        .recap {
+            background: #0f3460;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #00ff00;
+            font-size: 9px;
+        }
+        
+        .final-code {
+            background: #000;
+            border: 3px solid #00ff00;
+            padding: 20px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            text-align: center;
+            font-size: 12px;
+        }
+        
+        .victory {
+            text-align: center;
+            font-size: 14px;
+            margin: 40px 0;
+            animation: rainbow 5s infinite;
+        }
+        
+        @keyframes rainbow {
+            0% { color: #ff0000; }
+            17% { color: #ff7f00; }
+            33% { color: #ffff00; }
+            50% { color: #00ff00; }
+            67% { color: #0000ff; }
+            83% { color: #8b00ff; }
+            100% { color: #ff0000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="exit-chamber">
+        <h1>
+            ★★★★★★★★★★★★★★★★★★★<br>
+            LEVEL 5 - THE EXIT<br>
+            ★★★★★★★★★★★★★★★★★★★
+        </h1>
+        
+        <div class="door-visual">
+            ╔═════════════════════════════════╗<br>
+            ║                                 ║<br>
+            ║         ┌─────────────┐         ║<br>
+            ║         │             │         ║<br>
+            ║         │   THE DOOR  │         ║<br>
+            ║         │             │         ║<br>
+            ║         │   TO EXIT   │         ║<br>
+            ║         │             │         ║<br>
+            ║         │  [LOCKED]   │         ║<br>
+            ║         │             │         ║<br>
+            ║         └─────────────┘         ║<br>
+            ║                                 ║<br>
+            ╚═════════════════════════════════╝
+        </div>
+        
+        <div class="final-message">
+            <p>[TIMESTAMP: 2024-01-16 00:47:52 UTC]</p>
+            <p>[LOCATION: LEVEL 5 - THE FINAL CHAMBER]</p>
+            <p>[STATUS: EXIT DOOR LOCATED]</p>
+            <p>[BATTERY: 3%]</p>
+            
+            <p style="margin-top: 20px;">Je l'ai trouvée.</p>
+            
+            <p>La porte de sortie. Elle est là, devant moi.
+            Massive. Métallique. Avec un panneau de contrôle digital.</p>
+            
+            <p>Mais elle est verrouillée. Elle demande un code.</p>
+            
+            <p>Un code composé de TOUT ce que j'ai trouvé dans les Backrooms.</p>
+        </div>
+        
+        <div class="recap">
+            <p style="font-size: 12px; text-align: center; margin-bottom: 15px;">
+                ═══ RÉCAPITULATIF DE TON VOYAGE ═══
+            </p>
+            
+            <p><strong>LEVEL 0 - THE LOBBY</strong></p>
+            <p>• Trouvé les coordonnées GPS : 48.8584° N, 2.2945° E</p>
+            <p>• Trouvé l'heure au Big Ben 2024 : 06:10</p>
+            <p>• Décodé le message base64 dans le code source</p>
+            
+            <p style="margin-top: 15px;"><strong>LEVEL 1 - THE DARK</strong></p>
+            <p>• Trouvé l'île Isabela (Galápagos)</p>
+            <p>• Identifié la forme : hippocampe</p>
+            <p>• Mot de passe : isabela</p>
+            
+            <p style="margin-top: 15px;"><strong>LEVEL 2 - THE PIPES</strong></p>
+            <p>• Recherche OSINT sur Reddit/Twitter</p>
+            <p>• Coordonnées du Mont Fuji : 34°52'N 138°30'E</p>
+            <p>• Info 2024 : frais d'entrée ou nombre de touristes</p>
+            <p>• Stéganographie sur image</p>
+            
+            <p style="margin-top: 15px;"><strong>LEVEL 3 - THE ELECTRICAL STATION</strong></p>
+            <p>• Analyse hexadécimale de system_restore.exe</p>
+            <p>• Trouvé le pastebin M4RK_L3VR3_3</p>
+            <p>• Décodé ROT13 : "The fourth level are at THE SEVEN POWER"</p>
+            <p>• Tokyo Tower GPS : 35.6569° N, 139.7423° E</p>
+            
+            <p style="margin-top: 15px;"><strong>LEVEL 4 - THE POOLROOMS</strong></p>
+            <p>• Déchiffré Vigenère (clé: POOLWATER)</p>
+            <p>• QR codes : trouvé le bon (D)</p>
+            <p>• GPS : -0.2297° S, -78.5249° W (Mitad del Mundo)</p>
+            <p>• Stéganographie : extrait les données de l'image</p>
+        </div>
+        
+        <div class="challenge">
+            <p style="text-align: center; font-size: 14px; color: #ff0080; margin-bottom: 20px;">
+                ⚠ DÉFI FINAL ⚠
+            </p>
+            
+            <p>Le panneau de contrôle affiche plusieurs questions.</p>
+            <p>Chaque réponse correcte déverrouille un segment du code final.</p>
+            
+            <p style="margin: 20px 0; padding: 15px; background: #000; border: 1px solid #ff0080;">
+                QUESTION 1: Quelle heure était-il au Big Ben en 2024 ?<br>
+                Format: HH:MM<br>
+                <span style="color: #00ff00;">Réponse attendue: 06:10</span>
+            </p>
+            
+            <p style="margin: 20px 0; padding: 15px; background: #000; border: 1px solid #ff0080;">
+                QUESTION 2: Quel animal ressemble l'île Isabela ?<br>
+                Format: un mot en français<br>
+                <span style="color: #00ff00;">Réponse attendue: hippocampe</span>
+            </p>
+            
+            <p style="margin: 20px 0; padding: 15px; background: #000; border: 1px solid #ff0080;">
+                QUESTION 3: Combien de niveaux as-tu traversés ?<br>
+                Format: chiffre<br>
+                <span style="color: #00ff00;">Réponse attendue: 5</span>
+            </p>
+            
+            <p style="margin: 20px 0; padding: 15px; background: #000; border: 1px solid #ff0080;">
+                QUESTION 4: Quel était le code clé au Level 4 ?<br>
+                Format: mot en majuscules<br>
+                <span style="color: #00ff00;">Réponse attendue: POOLWATER</span>
+            </p>
+            
+            <p style="margin: 20px 0; padding: 15px; background: #000; border: 1px solid #ff0080;">
+                QUESTION 5: Quel monument aux coordonnées -0.2297° S, -78.5249° W ?<br>
+                Format: trois mots en anglais<br>
+                <span style="color: #00ff00;">Réponse attendue: Mitad del Mundo</span>
+            </p>
+        </div>
+        
+        <div class="final-code">
+            <p style="font-size: 16px; margin-bottom: 20px;">═══ CODE FINAL DE SORTIE ═══</p>
+            
+            <p>En combinant toutes les réponses, le code final est :</p>
+            
+            <p style="font-size: 18px; margin: 20px 0; color: #ffff00;">
+                ESCAPE-0610-SEAHORSE-LEVEL5-POOL-MITAD
+            </p>
+            
+            <p style="font-size: 10px; margin-top: 20px;">
+                (Ou une variante que VOUS définissez selon vos énigmes)
+            </p>
+        </div>
+        
+        <div class="final-message">
+            <p>J'entre le code.</p>
+            
+            <p>Le panneau clignote.</p>
+            
+            <p style="color: #00ff00; font-size: 14px; margin: 20px 0;">
+                ✓ CODE ACCEPTÉ ✓
+            </p>
+            
+            <p>La porte s'ouvre dans un grincement métallique.</p>
+            
+            <p>Une lumière blanche aveuglante au-delà.</p>
+            
+            <p>Je ne sais pas ce qu'il y a de l'autre côté.
+            La réalité ? Un autre piège ? Un autre niveau ?</p>
+            
+            <p>Mais je n'ai plus le choix.</p>
+            
+            <p>Ma batterie est à 1%.</p>
+            
+            <p>Je franchis la porte.</p>
+        </div>
+        
+        <div class="victory">
+            ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★<br>
+            <br>
+            FÉLICITATIONS !<br>
+            <br>
+            TU AS ÉCHAPPÉ AUX BACKROOMS<br>
+            <br>
+            TEMPS TOTAL: [À CALCULER]<br>
+            NIVEAUX COMPLÉTÉS: 5/5<br>
+            ÉNIGMES RÉSOLUES: TOUTES<br>
+            <br>
+            M4RK EST LIBRE<br>
+            <br>
+            GRÂCE À TOI<br>
+            <br>
+            ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★ ★
+        </div>
+        
+        <div class="final-message">
+            <p style="text-align: center; font-size: 12px;">
+                [TRANSMISSION FINALE]
+            </p>
+            
+            <p>Si quelqu'un d'autre tombe dans les Backrooms...</p>
+            <p>Suivez mes traces.</p>
+            <p>Les indices sont là.</p>
+            <p>La sortie existe.</p>
+            
+            <p style="margin-top: 20px; text-align: center;">
+                Bonne chance.<br>
+                Vous en aurez besoin.
+            </p>
+            
+            <p style="margin-top: 30px; text-align: center; color: #666;">
+                - M4RK, 16 janvier 2024, 00:52 UTC
+            </p>
+        </div>
+        
+        <div style="margin-top: 50px; padding: 20px; background: #000; border: 2px solid #ffffff; text-align: center;">
+            <p style="font-size: 10px; line-height: 1.8;">
+                Ce CTF a été créé pour le Trophée NSI<br>
+                <br>
+                Compétences démontrées :<br>
+                • Cryptographie (César, Vigenère, ROT13, Base64)<br>
+                • OSINT (Google Maps, recherche web, réseaux sociaux)<br>
+                • Stéganographie (steghide, métadonnées EXIF)<br>
+                • Reverse Engineering (analyse hexadécimale)<br>
+                • Web (HTML/CSS, code source)<br>
+                • Géolocalisation (coordonnées GPS)<br>
+                <br>
+                Merci d'avoir joué !<br>
+                <br>
+                [Vos noms] - Terminal NSI - 2024-2025
+            </p>
+        </div>
+    </div>
+    
+    <!--
+    NOTES FINALES POUR VOUS :
+    
+    C'est le dernier niveau. Vous pouvez le rendre aussi dur ou facile que vous voulez.
+    
+    OPTIONS SUPPLÉMENTAIRES :
+    
+    1. Ajouter une vraie validation par formulaire JavaScript
+    2. Créer un bot Discord qui vérifie les réponses
+    3. Générer un certificat PDF de victoire
+    4. Ajouter un timer pour mesurer le temps total
+    5. Créer un "Hall of Fame" avec les meilleurs temps
+    
+    VARIANTES DU CODE FINAL :
+    
+    - Simple : "ESCAPE2024"
+    - Moyen : "M4RK-LEVEL5-EXIT"
+    - Complexe : Combinaison de toutes les réponses comme montré ci-dessus
+    
+    À vous de choisir selon la difficulté voulue !
+    -->
+</body>
+</html>

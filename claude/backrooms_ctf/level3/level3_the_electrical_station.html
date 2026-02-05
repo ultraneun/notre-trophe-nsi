@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL 3 - THE ELECTRICAL STATION</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #0f0f0f;
+            color: #ffff00;
+            font-family: 'Courier Prime', monospace;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+        
+        .screen {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: #000;
+            border: 4px solid #ffff00;
+            padding: 40px;
+            box-shadow: 0 0 60px rgba(255, 255, 0, 0.4),
+                        inset 0 0 30px rgba(255, 255, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            text-shadow: 0 0 20px #ffff00, 0 0 40px #ffff00;
+            margin-bottom: 30px;
+            animation: flicker 3s infinite;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            41% { opacity: 1; }
+            42% { opacity: 0.8; }
+            43% { opacity: 1; }
+            45% { opacity: 0.9; }
+            46% { opacity: 1; }
+        }
+        
+        .danger-zone {
+            background: #1a1a00;
+            border: 3px solid #ff0000;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
+        }
+        
+        .log {
+            background: #0a0a00;
+            border-left: 5px solid #ffff00;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+        
+        .timestamp {
+            color: #999900;
+            font-size: 13px;
+        }
+        
+        .code-block {
+            background: #000;
+            border: 2px solid #ffff00;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier Prime', monospace;
+            overflow-x: auto;
+        }
+        
+        .hex-dump {
+            font-size: 12px;
+            line-height: 1.4;
+            color: #00ff00;
+        }
+        
+        .spark {
+            animation: spark 0.5s infinite;
+        }
+        
+        @keyframes spark {
+            0%, 100% { color: #ffff00; }
+            50% { color: #ff0000; }
+        }
+        
+        .file-download {
+            background: #1a1a00;
+            border: 2px dashed #ffff00;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+            cursor: pointer;
+        }
+        
+        .file-download:hover {
+            background: #2a2a00;
+        }
+    </style>
+</head>
+<body>
+    <div class="screen">
+        <h1>⚡ LEVEL 3 - THE ELECTRICAL STATION ⚡</h1>
+        
+        <div class="danger-zone">
+            <p style="text-align: center; font-size: 24px; color: #ff0000;">
+                ⚠️ HAUTE TENSION - DANGER DE MORT ⚠️
+            </p>
+            <p style="text-align: center; margin-top: 10px;">
+                PUISSANCE: 440V - COURANT INSTABLE
+            </p>
+        </div>
+        
+        <div class="log">
+            <p class="timestamp">[TIMESTAMP: 2024-01-15 19:45:33 UTC]</p>
+            <p class="timestamp">[LOCATION: LEVEL 3 - CENTRAL POWER STATION]</p>
+            <p class="timestamp">[POWER STATUS: CRITICAL - 23%]</p>
+            <p class="timestamp">[ELECTROMAGNETIC INTERFERENCE: SEVERE]</p>
+        </div>
+        
+        <hr style="border-color: #ffff00; margin: 30px 0;">
+        
+        <p>J'ai trouvé la station électrique.</p>
+        
+        <p>Des générateurs immenses. Des tableaux de contrôle couverts de boutons et de voyants qui clignotent.
+        Le bruit est infernal. Un bourdonnement constant, grave, qui fait vibrer les os.</p>
+        
+        <p>Des éclairs traversent parfois la pièce. De l'électricité statique partout.
+        Mes cheveux se dressent sur ma tête.</p>
+        
+        <p class="spark">█ █ █ DANGER █ █ █</p>
+        
+        <div class="log">
+            <p><strong>DÉCOUVERTE - 19:52 UTC</strong></p>
+            <p>Un ordinateur de maintenance. Il fonctionne encore. Écran CRT ancien.
+            Interface DOS. Pas de souris, juste clavier.</p>
+            
+            <p>Il y a un fichier sur le bureau : <code>system_restore.exe</code></p>
+            
+            <p>J'ai essayé de l'exécuter. Erreur. Le fichier est corrompu.</p>
+            
+            <p>Mais peut-être que les données sont encore là, quelque part dans le binaire...</p>
+        </div>
+        
+        <div class="file-download">
+            <p style="font-size: 20px; margin-bottom: 15px;">📁 FICHIER DISPONIBLE</p>
+            <p><strong>system_restore.exe</strong></p>
+            <p style="font-size: 14px; color: #999900; margin-top: 10px;">
+                Ce fichier devrait être dans le dossier level3/<br>
+                NE PAS L'EXÉCUTER - Il est corrompu (volontairement)
+            </p>
+        </div>
+        
+        <div class="danger-zone">
+            <p><strong style="font-size: 20px;">⚠ MISSION ⚠</strong></p>
+            <p style="margin: 15px 0;">
+                Le fichier system_restore.exe contient des données cachées.<br>
+                Tu dois l'analyser avec un <strong>éditeur hexadécimal</strong>.
+            </p>
+            <p style="font-size: 14px;">
+                Outils recommandés :<br>
+                - HxD (Windows)<br>
+                - hexdump (Linux/Mac)<br>
+                - hexed.it (en ligne)<br>
+                - Ou simplement : <code>xxd system_restore.exe | less</code>
+            </p>
+        </div>
+        
+        <div class="log">
+            <p><strong>INDICE CACHÉ</strong></p>
+            <p>Dans le binaire, cherche des chaînes de caractères lisibles (strings).</p>
+            <p>Quelque part dans le fichier, il y a :</p>
+            <ul style="margin: 10px 0 10px 20px;">
+                <li>Une URL</li>
+                <li>Un message codé en ROT13</li>
+                <li>Des coordonnées GPS</li>
+                <li>Un mot de passe</li>
+            </ul>
+            <p>Tout ça est mélangé au milieu du code machine.</p>
+        </div>
+        
+        <p>J'ai noté ce que j'ai pu voir avant que l'écran ne scintille :</p>
+        
+        <div class="code-block">
+            <div class="hex-dump">
+00000000: 4d5a 9000 0300 0000 0400 0000 ffff 0000  MZ..............<br>
+00000010: b800 0000 0000 0000 4000 0000 0000 0000  ........@.......<br>
+00000020: 0000 0000 0000 0000 0000 0000 0000 0000  ................<br>
+...<br>
+000003a0: 5448 4520 4e45 5854 204c 4556 454c 2049  THE NEXT LEVEL I<br>
+000003b0: 5320 4849 4444 454e 2049 4e20 5041 5354  S HIDDEN IN PAST<br>
+000003c0: 4542 494e 202d 2053 4541 5243 4820 464f  EBIN - SEARCH FO<br>
+000003d0: 5220 224d 3452 4b5f 4c33 5652 335f 3322  R "M4RK_L3VR3_3"<br>
+...<br>
+00000450: 524f 5431 333a 2047 7568 2073 6268 7067  ROT13: Guh sbheg<br>
+00000460: 7520 7972 6972 7920 6e65 7220 6e67 2047  u yriry ner ng G<br>
+00000470: 5552 4720 4652 4545 2043 4252 4552 202d  UGR FREER CBRER -<br>
+...<br>
+000005e0: 4750 535f 434f 4f52 4453 3a20 3335 2e36  GPS_COORDS: 35.6<br>
+000005f0: 3536 3920 4e2c 2031 3339 2e37 3432 3320  569 N, 139.7423 <br>
+00000600: 4520 2d20 546f 6b79 6f20 546f 7765 7220  E - Tokyo Tower <br>
+00000610: 3230 3234 0000 0000 0000 0000 0000 0000  2024............<br>
+...<br>
+00000750: 5041 5353 574f 5244 5f48 494e 543a 2022  PASSWORD_HINT: "<br>
+00000760: 5468 6520 616e 7377 6572 2069 7320 696e  The answer is in<br>
+00000770: 2074 6865 2073 6b79 2220 2d20 4c6f 6f6b   the sky" - Look<br>
+00000780: 2075 7020 6174 2054 6f6b 796f 2054 6f77   up at Tokyo Tow<br>
+00000790: 6572 2069 6e20 3230 3234 0000 0000 0000  er in 2024......<br>
+            </div>
+        </div>
+        
+        <div class="log">
+            <p><strong>DÉCODAGE NÉCESSAIRE</strong></p>
+            <p>1️⃣ <strong>Pastebin:</strong> Cherche "M4RK_L3VR3_3" sur pastebin.com</p>
+            <p>2️⃣ <strong>ROT13:</strong> "Guh sbhegu yriry ner ng GURE FREER CBRER"</p>
+            <p style="margin-left: 30px; color: #00ff00;">
+                → Décode avec ROT13 → "The fourth level are at THE SEVEN POWER"
+            </p>
+            <p>3️⃣ <strong>GPS:</strong> 35.6569° N, 139.7423° E = Tokyo Tower</p>
+            <p style="margin-left: 30px;">
+                → Va sur Google Maps à ces coordonnées<br>
+                → Regarde les photos de 2024<br>
+                → "The answer is in the sky" = cherche une illumination, un nombre, un signe dans le ciel
+            </p>
+        </div>
+        
+        <hr style="border-color: #ffff00; margin: 40px 0;">
+        
+        <div class="danger-zone">
+            <p style="text-align: center; font-size: 22px; margin-bottom: 15px;">
+                🔐 ACCÈS AU LEVEL 4
+            </p>
+            <p>Une fois que tu as :</p>
+            <ul style="margin: 15px 0 15px 30px;">
+                <li>✓ Trouvé le post Pastebin "M4RK_L3VR3_3"</li>
+                <li>✓ Décodé le ROT13</li>
+                <li>✓ Exploré Tokyo Tower (2024) sur Google Maps</li>
+                <li>✓ Trouvé "l'answer in the sky"</li>
+            </ul>
+            <p style="margin-top: 20px;">
+                Le fichier suivant sera révélé :<br>
+                <code>level4_[ANSWER]_poolrooms.html</code>
+            </p>
+            <p style="font-size: 13px; color: #999900; margin-top: 15px;">
+                (Ou simplifié : <code>level4_poolrooms.html</code>)
+            </p>
+        </div>
+        
+        <div class="log">
+            <p class="timestamp">[TIMESTAMP: 2024-01-15 20:33:12 UTC]</p>
+            <p style="color: #ff0000;">⚡ ALERTE: Surcharge électrique détectée</p>
+            <p style="color: #ff0000;">⚡ Les systèmes tombent en panne les uns après les autres</p>
+            <p style="color: #ff0000;">⚡ Je dois partir MAINTENANT</p>
+        </div>
+        
+        <p style="text-align: center; font-size: 30px; margin-top: 50px;" class="spark">
+            ⚡⚡⚡ ANALYZE THE BINARY ⚡⚡⚡<br>
+            ⚡⚡⚡ FIND THE STRINGS ⚡⚡⚡<br>
+            ⚡⚡⚡ ESCAPE THE STATION ⚡⚡⚡
+        </p>
+    </div>
+    
+    <!--
+    INSTRUCTIONS POUR CRÉER LE FICHIER system_restore.exe :
+    
+    1. Crée un simple fichier texte avec du contenu random
+    2. Ajoute dedans les strings importantes :
+       - "THE NEXT LEVEL IS HIDDEN IN PASTEBIN - SEARCH FOR M4RK_L3VR3_3"
+       - "ROT13: Guh sbhegu yriry ner ng GUR FRRER CBRER"
+       - "GPS_COORDS: 35.6569 N, 139.7423 E - Tokyo Tower 2024"
+       - "PASSWORD_HINT: The answer is in the sky"
+    
+    3. Renomme-le en .exe (ou garde en .txt si tu veux)
+    
+    4. Pour un vrai CTF, tu peux :
+       - Compiler un vrai programme C minimal
+       - Ajouter ces strings dans le binaire
+       - Les cacher au milieu du code machine
+    
+    Commande pour extraire les strings :
+    strings system_restore.exe
+    
+    Ou en hex :
+    xxd system_restore.exe | grep -i "level"
+    -->
+</body>
+</html>

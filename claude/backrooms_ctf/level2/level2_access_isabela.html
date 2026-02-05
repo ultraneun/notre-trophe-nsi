@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL 2 - THE PIPES</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+        
+        body {
+            background: linear-gradient(to bottom, #001a00, #000a00);
+            color: #00ff00;
+            font-family: 'Roboto Mono', monospace;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .terminal {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(0, 20, 0, 0.9);
+            border: 2px solid #00ff00;
+            padding: 30px;
+            box-shadow: 0 0 40px rgba(0, 255, 0, 0.3);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+            font-size: 2.5em;
+        }
+        
+        .pipe-visual {
+            text-align: center;
+            font-size: 12px;
+            color: #006600;
+            margin: 20px 0;
+            line-height: 1.2;
+        }
+        
+        .message {
+            background: #001100;
+            border-left: 4px solid #00ff00;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        
+        .warning-box {
+            background: #003300;
+            border: 2px dashed #00ff00;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .timestamp {
+            color: #006600;
+            font-size: 14px;
+        }
+        
+        .social-link {
+            background: #002200;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        .social-link:hover {
+            background: #003300;
+        }
+        
+        code {
+            background: #000;
+            color: #ffff00;
+            padding: 3px 8px;
+            border: 1px solid #00ff00;
+        }
+        
+        .glitch-text {
+            animation: glitch 5s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { text-shadow: 0 0 5px #00ff00; }
+            25% { text-shadow: -2px 0 5px #ff0000; }
+            50% { text-shadow: 2px 0 5px #0000ff; }
+            75% { text-shadow: 0 2px 5px #ffff00; }
+            100% { text-shadow: 0 0 5px #00ff00; }
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <h1>╔══════════════════════════════╗</h1>
+        <h1>║   LEVEL 2 - THE PIPES      ║</h1>
+        <h1>╚══════════════════════════════╝</h1>
+        
+        <div class="pipe-visual">
+            ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║<br>
+            ╠═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╣<br>
+            ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║<br>
+            ╠═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╬═╣<br>
+            ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║ ║
+        </div>
+        
+        <div class="message">
+            <p class="timestamp">[TIMESTAMP: 2024-01-15 17:33:09 UTC]</p>
+            <p class="timestamp">[LOCATION: LEVEL 2 - PIPE NETWORK]</p>
+            <p class="timestamp">[OXYGEN: 89%]</p>
+        </div>
+        
+        <hr style="border-color: #00ff00;">
+        
+        <p>Ce niveau est un cauchemar.</p>
+        
+        <p>Des tuyaux. Partout. Sol, murs, plafond. Certains sont chauds, d'autres glacés.
+        L'eau coule en permanence quelque part mais je ne sais pas d'où ni vers où.</p>
+        
+        <p>Le bruit est assourdissant. Chuintements. Grincements. Parfois un coup sourd dans les conduites.</p>
+        
+        <p>J'ai réussi à me connecter à un réseau. Oui, ICI. Au milieu de nulle part.
+        Il y a un putain de WiFi qui fonctionne.</p>
+        
+        <p>SSID: <code>BACKROOMS_NETWORK_L2</code> - Pas de mot de passe. Signal fort.</p>
+        
+        <div class="message">
+            <p><strong>DÉCOUVERTE MAJEURE</strong></p>
+            <p>J'ai trouvé un vieux smartphone coincé dans un tuyau. Presque déchargé (8%) mais encore allumé.
+            Il avait Reddit et Twitter ouverts.</p>
+            
+            <p>Quelqu'un d'autre est passé par ici. Récemment. Et il a laissé des messages.</p>
+            
+            <p>Les derniers posts consultés :</p>
+        </div>
+        
+        <div class="social-link">
+            <p><strong>📱 REDDIT</strong></p>
+            <p>Username: <code>Lost_In_L2_2024</code></p>
+            <p>Dernier post vu : r/backrooms</p>
+            <p>Titre : "J'ai trouvé quelque chose dans les tuyaux"</p>
+            <p style="color: #ffff00; margin-top: 10px;">
+                ⚠ Tu dois VRAIMENT chercher ce post sur Reddit.<br>
+                Cherche "Lost_In_L2_2024" ou le titre exact.<br>
+                (Évidemment, ce compte et ce post n'existent pas VRAIMENT,<br>
+                mais dans le contexte du CTF, imagine qu'ils existent)
+            </p>
+        </div>
+        
+        <div class="social-link">
+            <p><strong>🐦 TWITTER/X</strong></p>
+            <p>Handle: <code>@M4RK_Trapped</code></p>
+            <p>Dernier tweet vu (15 Jan 2024) :</p>
+            <p style="font-style: italic; margin: 10px 0;">
+                "Les tuyaux parlent. Ils disent des choses. Des coordonnées ?<br>
+                34°52'N 138°30'E<br>
+                Cherchez ce qui s'est élevé en 2024. Le sommet a parlé.<br>
+                #backrooms #trapped #sendhelp"
+            </p>
+        </div>
+        
+        <div class="warning-box">
+            <p style="font-size: 20px; margin-bottom: 10px;">DEUX ÉNIGMES À RÉSOUDRE</p>
+            <p style="font-size: 14px;">
+                1️⃣ Trouve le post Reddit (si tu créais vraiment ce post, qu'est-ce qu'il contiendrait ?)<br>
+                2️⃣ Les coordonnées Twitter : 34°52'N 138°30'E - Qu'est-ce qui s'est élevé en 2024 à cet endroit ?
+            </p>
+        </div>
+        
+        <div class="message">
+            <p><strong>INDICE TWITTER</strong></p>
+            <p>Les coordonnées pointent vers le Mont Fuji, Japon.</p>
+            <p>"Ce qui s'est élevé en 2024" = quelque chose qui a augmenté, monté, grimpé...</p>
+            <p>Cherche des news de 2024 sur le Mont Fuji.</p>
+            <p>Il y a eu un changement de frais d'entrée, de nombre de touristes, ou autre chose ?</p>
+            <p>Trouve l'information. Le NOMBRE ou le MOT important sera la clé.</p>
+        </div>
+        
+        <div class="message">
+            <p><strong>INDICE REDDIT</strong></p>
+            <p>Le post Reddit (imaginaire) contient une image.</p>
+            <p>Cette image ressemble à un tuyau rouillé normal.</p>
+            <p>MAIS elle contient des données cachées (stéganographie).</p>
+            <p>Dans le contexte réel de votre CTF, vous créeriez vraiment ce post Reddit avec une vraie image
+            contenant un message caché avec steghide ou outguess.</p>
+        </div>
+        
+        <hr style="border-color: #00ff00; margin: 40px 0;">
+        
+        <p>J'ai trouvé un fichier sur le téléphone. Un .txt cryptique :</p>
+        
+        <pre style="background: #000; padding: 20px; border: 1px solid #00ff00;">
+NIVEAU 2 - JOURNAL DE SORTIE
+
+Si tu lis ça, bravo.
+Tu as trouvé les coordonnées.
+Tu as compris l'énigme du Mont Fuji.
+Tu as (peut-être) décodé l'image Reddit.
+
+Le prochain niveau nécessite TROIS éléments :
+
+1. Le nombre qui s'est élevé au Mont Fuji en 2024 (frais, touristes, ou autre)
+2. Le message caché dans l'image Reddit (stéganographie)
+3. La combinaison des deux pour former le nom du fichier
+
+Format : level3_[INFO_FUJI]_[MESSAGE_REDDIT].html
+
+Exemple fictif : level3_5000_secret.html
+
+Mais trouve les VRAIES valeurs.
+
+Ou... si tu veux simplifier pour ton CTF :
+level3_the_electrical_station.html
+        </pre>
+        
+        <div class="message">
+            <p class="timestamp">[TIMESTAMP: 2024-01-15 18:21:47 UTC]</p>
+            <p>La batterie du téléphone vient de mourir.</p>
+            <p>Je dois continuer sans.</p>
+            <p>Les tuyaux grondent plus fort.</p>
+            <p>Je sens des vibrations sous mes pieds.</p>
+            <p>Quelque chose approche.</p>
+        </div>
+        
+        <p class="glitch-text" style="text-align: center; font-size: 28px; margin-top: 50px;">
+            ██ SEARCH THE WEB ██<br>
+            ██ FIND THE TRUTH ██<br>
+            ██ ESCAPE THE PIPES ██
+        </p>
+    </div>
+    
+    <!--
+    NOTES DE DÉVELOPPEMENT :
+    
+    Pour ce level dans un vrai CTF, vous devriez :
+    
+    1. Créer un vrai compte Reddit "Lost_In_L2_2024"
+    2. Poster une image de tuyaux avec steghide
+    3. Cacher un message dedans (ex: "extraction" ou "freedom")
+    
+    4. Créer un compte Twitter/X "@M4RK_Trapped"
+    5. Tweeter vraiment les coordonnées du Mont Fuji
+    
+    6. L'énigme du Mont Fuji :
+       - En 2024, les frais d'entrée au Mont Fuji sont passés de gratuit à 2000 yens
+       - Ou le nombre de touristes a augmenté à 300,000
+       - Utilisez une vraie news de 2024
+    
+    7. Le fichier suivant pourrait être :
+       level3_2000_extraction.html (2000 yens + message stégano "extraction")
+    
+    Mais pour simplifier, vous pouvez juste faire :
+    level3_the_electrical_station.html
+    
+    Et laisser les joueurs comprendre qu'ils doivent chercher.
+    -->
+</body>
+</html>

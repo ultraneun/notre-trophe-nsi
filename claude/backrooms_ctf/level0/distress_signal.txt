@@ -1,0 +1,82 @@
+╔═══════════════════════════════════════════════════════════╗
+║              SIGNAL DE DÉTRESSE - TRANSMISSION            ║
+║                    [PARTIELLEMENT CORROMPU]               ║
+╚═══════════════════════════════════════════════════════════╝
+
+[DÉBUT DE TRANSMISSION]
+
+À toute personne recevant ce message,
+
+Mon nom est M4RK. Développeur système. 28 ans. 
+Dernière position connue : Paris, Tour Eiffel, le 15 janvier 2024.
+
+Je suis coincé dans un endroit qui n'a pas de sens.
+Des couloirs infinis. Tout est jaune. Moquette humide.
+L'électricité fonctionne mais il n'y a aucune source visible.
+
+J'ai réussi à bricoler une connexion réseau avec un vieux routeur
+que j'ai trouvé dans une salle de maintenance. Signal faible mais stable.
+
+Je vais laisser des messages partout où je peux :
+- Forums abandonnés
+- Pastebins
+- Sites web oubliés
+- Commentaires de code
+- Métadonnées d'images
+
+Si vous trouvez ça, SUIVEZ MES INDICES.
+
+═════════════════════════════════════════════════════════════
+
+[DONNÉES TECHNIQUES]
+
+Dernière connexion réseau : 14:32 UTC
+Dernière position GPS : 48.8584° N, 2.2945° E
+Dernière recherche Google : "pourquoi ma prod crash"
+Dernier fichier ouvert : debug_logs_20240115.txt
+
+═════════════════════════════════════════════════════════════
+
+[MESSAGE CRYPTÉ - PRIORITÉ HAUTE]
+
+J'ai trouvé un terminal. Il m'a posé une question bizarre :
+
+"Quelle heure était-il quand la Tour t'a vu pour la dernière fois ?"
+
+Je ne comprends pas. J'étais à la Tour Eiffel ce matin pour prendre
+des photos. J'ai pris une photo à un moment précis. L'heure était...
+
+Merde. Je me souviens plus exactement. Mais j'ai la photo sur mon backup !
+
+Le fichier M4RK_backup.py contient les métadonnées de ma dernière photo.
+Mais il est... modifié. Quelque chose ne va pas dans le code.
+
+Trouvez l'heure. C'est la clé pour le Level 1.
+
+═════════════════════════════════════════════════════════════
+
+[INDICE SUPPLÉMENTAIRE]
+
+Si vous êtes perdus :
+1. Trouvez mes coordonnées GPS (c'est écrit en clair quelque part)
+2. Allez sur Google Maps (vous savez comment faire)
+3. Regardez les photos 360° de 2024 à cette position
+4. Trouvez une horloge visible
+5. L'heure affichée = le code pour Level 1
+
+Format du fichier suivant : level1_key_[HH:MM].html
+Exemple : level1_key_14:30.html
+
+Mais ce n'est PAS 14:30. Trouvez la bonne heure.
+
+═════════════════════════════════════════════════════════════
+
+[FIN DE TRANSMISSION]
+
+Bonne chance.
+Vous allez en avoir besoin.
+
+- M4RK
+
+P.S. : Le code source de entry_log.html contient quelque chose.
+      Toujours regarder le code source. TOUJOURS.

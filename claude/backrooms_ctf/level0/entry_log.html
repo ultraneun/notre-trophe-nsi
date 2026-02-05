@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JOURNAL D'ENTRÉE - [CORROMPU]</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'VT323', monospace;
+            padding: 20px;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+        
+        .terminal {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #000;
+            border: 2px solid #00ff00;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .glitch {
+            animation: glitch 3s infinite;
+        }
+        
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); color: #ff0000; }
+            40% { transform: translate(-2px, -2px); color: #00ff00; }
+            60% { transform: translate(2px, 2px); color: #0000ff; }
+            80% { transform: translate(2px, -2px); color: #00ff00; }
+            100% { transform: translate(0); }
+        }
+        
+        .corrupted {
+            background: #1a0000;
+            color: #ff0000;
+            padding: 10px;
+            margin: 20px 0;
+            border-left: 3px solid #ff0000;
+        }
+        
+        .timestamp {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .blink {
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+        
+        hr {
+            border: 1px solid #00ff00;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal">
+        <h1 class="glitch">╔═══════════════════════════════════╗</h1>
+        <h1 class="glitch">║   JOURNAL D'EXPLORATION - M4RK   ║</h1>
+        <h1 class="glitch">╚═══════════════════════════════════╝</h1>
+        
+        <p class="timestamp">[TIMESTAMP: 2024-01-15 14:32:07 UTC]</p>
+        <p class="timestamp">[LOCATION: UNKNOWN]</p>
+        <p class="timestamp">[STATUS: DISORIENTED]</p>
+        
+        <hr>
+        
+        <p>Je ne sais pas comment c'est arrivé.</p>
+        
+        <p>Un instant j'étais dans mon bureau, à débugger ce putain de code qui plantait en production.
+        J'ai fait un pas en arrière, j'ai trébuché sur le câble réseau et...</p>
+        
+        <p>...et maintenant je suis ici.</p>
+        
+        <p>Des murs jaunes à perte de vue. Moquette humide. Néons qui bourdonnent.
+        L'odeur... mon Dieu, cette odeur de vieux bureau abandonné.</p>
+        
+        <div class="corrupted">
+            <p><strong>[AVERTISSEMENT SYSTÈME]</strong></p>
+            <p>Connexion réseau instable. Paquets perdus: 87%</p>
+            <p>Tentative de géolocalisation... ÉCHEC</p>
+            <p>GPS: SIGNAL INTROUVABLE</p>
+            <p>Dernière position connue: 48.8584° N, 2.2945° E</p>
+        </div>
+        
+        <p>Mon téléphone capte rien. Pas de réseau. Mais bizarrement... j'ai réussi à me connecter
+        à quelque chose. Une sorte de réseau local. Aucune idée de comment ça marche ici.</p>
+        
+        <p>J'ai trouvé un vieux terminal dans un coin. Écran CRT poussiéreux.
+        Il affichait juste ça :</p>
+        
+        <pre style="background: #000; padding: 15px; border: 1px solid #00ff00;">
+LEVEL 0 - THE LOBBY
+STATUS: TRAPPED
+SURVIVAL PROBABILITY: 34%
+
+[SYSTEM MESSAGE]
+If you can read this, you've noclipped into reality.
+There's a way out. There's always a way out.
+But first, you need to understand where you are.
+
+Coordinates matter here. Not where you are.
+Where you WERE. Before the fall.
+
+Find the place of iron lady.
+The hour when shadows point northwest.
+When hands meet at confession time.
+
+Your previous location holds the key.
+The time will guide you forward.
+        </pre>
+        
+        <p>Je vais essayer de laisser des messages partout où je peux.
+        Si quelqu'un trouve ça... aidez-moi. Ou suivez mes traces pour sortir.</p>
+        
+        <p>Je commence à entendre des bruits. Des pas. Mais il n'y a personne.</p>
+        
+        <p class="timestamp">[TIMESTAMP: 2024-01-15 14:47:33 UTC]</p>
+        <p>Je dois continuer à avancer. Les murs se ressemblent tous mais je vais marquer mon chemin.</p>
+        
+        <hr>
+        
+        <p style="color: #666; font-size: 16px;">
+            [NOTE SYSTÈME: 2 fichiers annexes détectés dans le répertoire]<br>
+            - distress_signal.txt<br>
+            - M4RK_backup.py
+        </p>
+        
+        <p class="blink" style="text-align: center; color: #ff0000; font-size: 24px; margin-top: 40px;">
+            █ FIND THE TIME. FIND THE WAY. █
+        </p>
+    </div>
+    
+    <!-- 
+    Pour ceux qui regardent le code source (et vous devriez),
+    M4RK a laissé quelque chose ici avant de partir.
+    
+    Mais c'est encodé. Évidemment.
+    
+    SGUncyBnb25lIGRlZXBlci4gSSBmb3VuZCBzb21ldGhpbmcuIEEgZG9vci4gQnV0IGl0J3MgbG9ja2VkLgpUaGUgY29kZSBpcyBhIHRpbWUuIE5vdCBqdXN0IGFueSB0aW1lLgpUaGUgdGltZSB3aGVuIEkgd2FzIHN0aWxsIGluIHRoZSByZWFsIHdvcmxkLgpUaGUgbGFzdCBwbGFjZSBJIHNhdyBiZWZvcmUgdGhpcyBuaWdodG1hcmUuCgpGaW5kIG15IGxhc3QgbG9jYXRpb24uIEZpbmQgd2hlbiB0aGUgY2xvY2sgc2hvd2VkIHRoZSBhbnN3ZXIuCkZvcm1hdDogSEg6TU0gKDI0aCkKClRoZW4gbG9vayBmb3IgbGV2ZWwxX2tleV9bVElNRV0uaHRtbA==
+    -->
+</body>
+</html>
