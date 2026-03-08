@@ -6,7 +6,7 @@
 
         body {
             font-family: 'Courier New', monospace;
-            background-image: url('images/level0.png');
+            background-image: url('../images/level0.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
