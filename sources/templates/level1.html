@@ -4,14 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 1 - The Backrooms</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
 </head>
-
 <body>
-    
     <div class="container">
         <h1 class="bug">LEVEL 1</h1>
-        
         <div class="message">
             <p>Le bourdonnement mécanique résonne dans tout le parking.</p>
             <p>Les tuyaux au plafond fuient parfois. <span class="alert">Évitez l'eau</span>.</p>
@@ -19,10 +16,9 @@
             <p>D'autres survivants errent dans ces couloirs.</p>
             <p><em>Faites-leur confiance à vos risques et périls.</em></p>
         </div>
-        
-        <a href="templates/index.html">
         <button class="bouton">Explorer le parking</button>
-        </a>
+
+        <button class="bouton" onclick="window.location.href='/level2'">skip au prochain</button>
     </div>
 </body>
 </html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Level 0 - Exploration</title>
+    <link rel="stylesheet" href="/static/style0.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="bug">LE LOBBY</h1>
+        <div class="message">
+            <p>Signal fragmenté détecté : <span class="alert">51°30'</span></p>
+            <p><em>"Trouvez la sentinelle de la Tamise. L'heure de la faille est la clé."</em></p>
+    
+            {% if error %}
+            <p style="color: #ff4444; font-weight: bold; border: 1px solid #ff4444; padding: 5px; margin-bottom: 10px;">
+                {{ error }}
+            </p>
+            {% endif %}
+
+            <form action="/verify_level0" method="POST">
+                <input type="text" name="code" placeholder="HH:MM" required 
+               style="background: #1a1a1a; color: #e8dc9e; border: 1px solid #e8dc9e; padding: 10px; text-align: center;">
+                <br>
+                <button type="submit" class="bouton" style="margin-top: 15px;">SYNCHRONISER</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="sector_00.3_N" class="hidden"></div>
+
+    <script>
+        console.warn("ALERTE : Données temporelles dans les Headers vidéo. Suite coordonnées à décoder dans le CSS.");
+    </script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Level 0 - The Backrooms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style0.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1 class="bug">LEVEL 0</h1>
+        <div class="message">
+            <p>Vous n'auriez pas dû être ici.</p>
+            <p>Personne ne choisit d'entrer. <span class="alert">Vous avez glissé.</span></p>
+            <p>Les murs sont humides. Le bourdonnement ne s'arrête jamais.</p>
+        </div>
+        <button class="bouton">Ne pas fermer les yeux</button>
+    </div>
+
+    <div id="video-overlay">
+        <div class="tv">
+            <div class="tv-screen">
+                <video id="intro-video" src="/video_proxy"></video>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.bouton').addEventListener('click', function () {
+            const overlay = document.getElementById('video-overlay');
+            const video = document.getElementById('intro-video');
+            overlay.classList.add('active');
+            video.play();
+
+            video.addEventListener('ended', () => {
+                // Redirection vers la route Flask
+                window.location.href = '/level0exploration';
+            });
+        });
+    </script>
+</body>
+</html>
