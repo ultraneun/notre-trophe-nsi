@@ -76,8 +76,6 @@ body {
     transition: all 0.3s ease;
 }
 
-/* ─── VIDEO OVERLAY ─────────────────────────────────────────── */
-
 #video-overlay {
     display: none;
     position: fixed;
@@ -93,7 +91,6 @@ body {
     display: flex;
 }
 
-/* Brume Backrooms : jaune fluorescent grillé, beige institutionnel */
 #video-overlay::before {
     content: '';
     position: absolute;
@@ -109,7 +106,6 @@ body {
     pointer-events: none;
 }
 
-/* Grain pellicule par-dessus tout */
 #video-overlay::after {
     content: '';
     position: absolute;
@@ -148,8 +144,6 @@ body {
     50%       { transform: translateX(10px);  opacity: 0.8; }
 }
 
-/* ─── TV ─────────────────────────────────────────────────────── */
-
 .tv {
     position: relative;
     z-index: 3;
@@ -171,7 +165,6 @@ body {
     background: #000;
 }
 
-/* Scanlines */
 .tv-screen::after {
     content: '';
     position: absolute;
@@ -187,7 +180,6 @@ body {
     z-index: 2;
 }
 
-/* Vignette écran */
 .tv-screen::before {
     content: '';
     position: absolute;
