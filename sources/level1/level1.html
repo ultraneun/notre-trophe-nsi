@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 1 - The Backrooms</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="/level1/style1.css">
 </head>
-
 <body>
-    
+
+    <!-- vous avez bien fait de fouiller le code source : BCKRM{bon_début} -->
+
     <div class="container">
         <h1 class="bug">LEVEL 1</h1>
         
@@ -19,10 +20,44 @@
             <p>D'autres survivants errent dans ces couloirs.</p>
             <p><em>Faites-leur confiance à vos risques et périls.</em></p>
         </div>
-        
-        <a href="templates/index.html">
-        <button class="bouton">Explorer le parking</button>
-        </a>
+
+        <input type="text" id="flag-input" placeholder="Entrez le flag..." style="
+            background-color: #0f1a20;
+            color: #a0a0a0;
+            border: 3px solid #2a3a40;
+            padding: 1rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            letter-spacing: 0.1rem;
+            margin-bottom: 1rem;
+            outline: none;
+            width: 300px;
+            text-align: center;
+        ">
+        <button class="bouton" onclick="verifierFlag()">Valider</button>
+        <p id="message" style="color: #00b4d8; margin-top: 1rem;"></p>
+
     </div>
+
+    <script>
+        async function verifierFlag() {
+            const flag = document.getElementById('flag-input').value.trim();
+            
+            const reponse = await fetch('/verifier/1', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({flag: flag})
+            });
+            
+            const data = await reponse.json();
+            
+            if (data.succes) {
+                window.location.href = data.redirect;
+            } else {
+                document.getElementById('message').textContent = data.message;
+            }
+        }
+    </script>
+
 </body>
 </html>
