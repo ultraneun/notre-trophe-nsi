@@ -29,40 +29,15 @@
         </div>
     </div>
 
-    <audio id="murmure" loop>
-        <source src="/sons/murmure.mp3" type="audio/mpeg">
-    </audio>
-
     <script>
-        const murmure = document.getElementById('murmure');
-        murmure.volume = 0.02;
-
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('audio') === '1') {
-            murmure.play().catch(() => {});
-        }
-
-        document.addEventListener('click', function unlockAudio() {
-            murmure.play().catch(() => {});
-            document.removeEventListener('click', unlockAudio);
-        });
-
-        // Bouton "Ne pas fermer les yeux" -> Lance la vidéo
         document.getElementById('btn-yeux').addEventListener('click', function () {
-            murmure.pause();
-            murmure.currentTime = 0;
-
-            // Cache l'accueil et montre la vidéo
             document.getElementById('accueil').style.display = 'none';
             const overlay = document.getElementById('video-overlay');
             const video = document.getElementById('intro-video');
-            
             overlay.classList.add('active');
             video.play();
-
-            // Quand la vidéo se termine -> va à l'énigme
             video.addEventListener('ended', () => {
-                window.location.href = '/level0/level0.1.html';  
+                window.location.href = '/level0/level0.1.html';
             });
         });
     </script>
