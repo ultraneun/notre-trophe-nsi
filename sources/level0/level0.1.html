@@ -8,30 +8,25 @@
     <link rel="stylesheet" href="/level0/style0.1.css">
 </head>
 <body>
-
+ 
 <!-- SCENE -->
 <div id="scene">
     <img id="scene-img" src="/images/level0-mur.jpg" alt="">
 </div>
-
+ 
 <!-- HOTSPOTS -->
-<div class="hotspot" id="hs-mur"     style="left: 28%; top: 55%;" data-target="mur"></div>
-<div class="hotspot" id="hs-sortie"  style="left: 72%; top: 48%;" data-target="sortie"></div>
-<div class="hotspot danger" id="hs-monstre" style="left: 50%; top: 38%;" data-target="monstre"></div>
-
-<!-- HUD INDICES -->
-<div id="hud">
-    <div>Indices trouvés</div>
-    <div id="hud-slots">
-        <div class="slot" id="slot-0">_</div>
-        <div class="slot" id="slot-1">_</div>
-    </div>
-</div>
-
+<div class="hotspot"        id="hs-mur"     style="left: 28%; top: 55%;" data-target="mur"></div>
+<div class="hotspot"        id="hs-fleche"  style="left: 62%; top: 60%;" data-target="fleche"></div>
+<div class="hotspot"        id="hs-trou"    style="left: 45%; top: 75%;" data-target="trou"></div>
+<div class="hotspot"        id="hs-sortie"  style="left: 78%; top: 42%;" data-target="sortie"></div>
+<div class="hotspot danger" id="hs-monstre" style="left: 50%; top: 35%;" data-target="monstre"></div>
+<!-- Hotspot secret quasi invisible -->
+<div class="hotspot secret" id="hs-secret"  style="left: 12%; top: 18%;" data-target="secret"></div>
+ 
 <!-- NAV HINT -->
-<div id="nav-hint">Explorer la pièce</div>
-
-<!-- POPUP -->
+<div id="nav-hint">Quelque chose se cache ici...</div>
+ 
+<!-- POPUP normal -->
 <div id="popup">
     <div class="popup-inner">
         <div class="popup-title" id="popup-title">—</div>
@@ -39,171 +34,218 @@
         <button class="popup-close" id="popup-close">Continuer</button>
     </div>
 </div>
-
+ 
+<!-- JUMPSCARE OVERLAY -->
+<div id="jumpscare">
+    <img id="jumpscare-img" src="/images/level0-screamer.jpg" alt="">
+    <div id="jumpscare-text"></div>
+</div>
+ 
 <!-- CODE PANEL -->
 <div id="code-panel">
-    <label>Entrez le code</label>
+    <label>_ _ _</label>
     <div id="code-input-row">
-        <input type="text" id="reponse" maxlength="2" placeholder="??">
-        <button id="btn-valider">Valider</button>
+        <input type="text" id="reponse" maxlength="3" placeholder="???">
+        <button id="btn-valider">↵</button>
     </div>
     <div id="code-error"></div>
 </div>
-
-<!-- BLACKOUT -->
-<div id="blackout"></div>
-
+ 
+<!-- OVERLAY VIDÉO TRANSITION -->
+<div id="transition-overlay">
+    <video id="transition-video" src="/level0/Transition_niveau.mp4"></video>
+</div>
+ 
 <!-- AUDIO -->
-<audio id="amb"       loop src="/sons/murmure.mp3"></audio>
-<audio id="sfx-found"      src="/sons/found.mp3"></audio>
-<audio id="sfx-scare"      src="/sons/scare.mp3"></audio>
-
+<audio id="amb"          loop src="/sons/murmure.mp3"></audio>
+<audio id="sfx-found"         src="/sons/found.mp3"></audio>
+<audio id="sfx-jumpscare"     src="/sons/nsasr-jumpscare-sound-effect.mp3"></audio>
+ 
 <script>
     // === STATE ===
     const state = {
-        indices: [null, null],
-        visited: new Set(),
-        codeCorrect: '47'   // <-- CHANGE LE CODE ICI
+        codeCorrect: '391',
+        bloque: false
     };
-
+ 
+    // Message affiché après le jumpscare selon la combinaison tentée
+    const messagesJumpscare = {
+        '319': 'Vous avez commencé par la flèche. Mais la flèche ne vient pas en premier.',
+        '193': 'Le trou n\'est pas le début. C\'est la fin.',
+        '913': 'Neuf n\'ouvre rien. Relisez le mur.',
+        '931': 'La chute avant la flèche ? Il ne pardonne pas les erreurs d\'ordre.',
+        '139': 'Un seul est tombé en premier ? Non. Revenez au début.'
+    };
+ 
     // === AUDIO ===
     const amb = document.getElementById('amb');
     amb.volume = 0.03;
     document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
-
+ 
     function playSfx(id) {
         const el = document.getElementById(id);
-        if (el) { el.currentTime = 0; el.play().catch(() => {}); }
+        if (el) { el.currentTime = 0; el.volume = 1; el.play().catch(() => {}); }
     }
-
+ 
     // === DONNÉES DES HOTSPOTS ===
     const hotspotData = {
         mur: {
-            title: 'Le mur — quelque chose est gravé',
-            type: 'indice',
-            slot: 0,
-            valeur: '4',
+            title: 'Le mur',
             imgChange: '/images/level0-mur.jpg',
             content: `
-                <p class="popup-text">Vous approchez le mur. La moquette est imbibée. Vos doigts effleurent la surface.</p>
-                <p class="popup-text">Sous des années de poussière et d'humidité, quelque chose a été gravé. Profondément. Avec insistance.</p>
-                <div class="indice-reveal">4</div>
-                <p class="popup-text" style="font-size:0.8rem; color:#5a5a4a;">— Quelqu'un est passé avant vous.</p>
+                <p class="popup-text">Vous posez la main sur le mur. Humide. Froid.</p>
+                <p class="popup-text">Des griffures profondes et régulières. Comme si quelqu'un avait compté. Toujours à partir du même endroit. <span class="highlight">Trois coups. Toujours trois.</span></p>
+                <p class="popup-text italic">C'est là que tout a commencé. Le premier à être passé ici a laissé ça.</p>
+                <p class="popup-text faded">— Le début.</p>
+            `
+        },
+        fleche: {
+            title: 'La flèche',
+            imgChange: '/images/level0-mur-fleche.jpg',
+            content: `
+                <p class="popup-text">Une flèche tracée avec quelque chose de sombre. Elle pointe vers un numéro gravé plus loin.</p>
+                <p class="popup-text italic"><span class="highlight">Le neuvième couloir.</span> Celui que personne ne prend. Entre le départ et l'arrivée.</p>
+                <p class="popup-text">Ni au début ni à la fin. Quelque part au milieu de tout ça.</p>
+                <p class="popup-text faded">— Entre les deux.</p>
+            `
+        },
+        trou: {
+            title: 'Le trou dans le sol',
+            imgChange: '/images/level0-sol-trou.jpg',
+            content: `
+                <p class="popup-text">Vous regardez en bas. Noir. Profond.</p>
+                <p class="popup-text">Autour du trou, gravé dans la moquette pourrie :</p>
+                <p class="popup-text italic"><span class="highlight">"Un seul est tombé ici."</span> Tracé en dernier. Après tout le reste.</p>
+                <p class="popup-text">La chute est toujours la conclusion.</p>
+                <p class="popup-text faded">— La fin.</p>
             `
         },
         sortie: {
-            title: 'La sortie — ou ce qui y ressemble',
-            type: 'indice',
-            slot: 1,
-            valeur: '7',
+            title: "L'échelle",
             imgChange: '/images/level0-sortie.jpg',
             content: `
-                <p class="popup-text">Une porte. Elle tremble légèrement, comme si quelque chose respirait derrière.</p>
-                <p class="popup-text">Sur le chambranle, tracé au doigt dans la poussière, un chiffre. Il s'efface déjà.</p>
-                <div class="indice-reveal">7</div>
-                <p class="popup-text" style="font-size:0.8rem; color:#5a5a4a;">— Vite. Avant qu'il disparaisse.</p>
+                <p class="popup-text">Une échelle. Elle monte vers un trou dans le mur.</p>
+                <p class="popup-text">Sur les barreaux, gravé dans le métal rouillé :</p>
+                <p class="popup-text italic"><span class="highlight">"Le mur d'abord. Suis la flèche. Puis tombe."</span></p>
+                <p class="popup-text">Trois étapes. Dans cet ordre. Pas un autre.</p>
+                <p class="popup-text faded">— L'ordre ne ment pas.</p>
             `
         },
         monstre: {
-            title: '— ERREUR —',
-            type: 'danger',
+            title: '—',
             imgChange: '/images/level0-monstre.jpg',
             content: `
-                <p class="popup-text danger-text">Vous avez regardé.</p>
-                <p class="popup-text danger-text">Il n'aime pas qu'on regarde.</p>
-                <p class="popup-text" style="margin-top:1rem; font-size:0.8rem; color:#3a3a3a;">... Il s'est arrêté. Pour l'instant.</p>
+                <p class="popup-text danger-text">Il était là.</p>
+                <p class="popup-text danger-text">Il est toujours là.</p>
+                <p class="popup-text italic" style="margin-top:1rem;">Vous avez entendu <span class="highlight">trois bourdonnements</span> avant qu'il apparaisse. Comme toujours. Comme au début.</p>
+                <p class="popup-text faded">— Ne revenez pas ici.</p>
+            `
+        },
+        secret: {
+            title: '— ici —',
+            imgChange: null,
+            content: `
+                <p class="popup-text" style="font-size:0.8rem; color:#3a3a2a;">une tache sur le mur. presque rien.</p>
+                <p class="popup-text italic" style="font-size:0.85rem; letter-spacing:0.2rem;"><span class="highlight">mur. couloir. chute.</span></p>
+                <p class="popup-text faded">— dans cet ordre.</p>
             `
         }
     };
-
+ 
     // === HOTSPOTS CLICK ===
     document.querySelectorAll('.hotspot').forEach(hs => {
         hs.addEventListener('click', () => {
             const key = hs.dataset.target;
             const data = hotspotData[key];
             if (!data) return;
-
+ 
             if (data.imgChange) {
                 const img = document.getElementById('scene-img');
                 img.style.opacity = 0;
                 setTimeout(() => { img.src = data.imgChange; img.style.opacity = 1; }, 600);
             }
-
-            if (data.type === 'indice') playSfx('sfx-found');
-            if (data.type === 'danger') playSfx('sfx-scare');
-
-            if (data.type === 'indice' && !state.visited.has(key)) {
-                state.visited.add(key);
-                state.indices[data.slot] = data.valeur;
-                updateHUD();
-                hs.style.opacity = '0.3';
-                hs.style.pointerEvents = 'none';
-                checkAllFound();
-            }
-
+ 
+            if (key !== 'monstre') playSfx('sfx-found');
+ 
             showPopup(data.title, data.content);
         });
     });
-
+ 
     // === POPUP ===
     function showPopup(title, content) {
         document.getElementById('popup-title').textContent = title;
         document.getElementById('popup-content').innerHTML = content;
         document.getElementById('popup').classList.add('active');
     }
-
+ 
     document.getElementById('popup-close').addEventListener('click', () => {
         document.getElementById('popup').classList.remove('active');
     });
-
-    // === HUD ===
-    function updateHUD() {
-        state.indices.forEach((val, i) => {
-            const slot = document.getElementById(`slot-${i}`);
-            if (val !== null) {
-                slot.textContent = val;
-                slot.classList.add('found');
-            }
-        });
-    }
-
-    // === DÉVERROUILLER LE CODE ===
-    function checkAllFound() {
-        if (state.indices.every(v => v !== null)) {
-            setTimeout(() => {
-                document.getElementById('code-panel').classList.add('visible');
-                document.getElementById('nav-hint').textContent = 'Les chiffres forment un code...';
-            }, 800);
-        }
-    }
-
+ 
     // === VALIDATION CODE ===
     document.getElementById('btn-valider').addEventListener('click', validerCode);
     document.getElementById('reponse').addEventListener('keydown', e => {
         if (e.key === 'Enter') validerCode();
     });
-
+ 
     function validerCode() {
+        if (state.bloque) return;
+ 
         const val = document.getElementById('reponse').value.trim();
-        const errorEl = document.getElementById('code-error');
-        const panelEl = document.getElementById('code-panel');
-
+        document.getElementById('reponse').value = '';
+ 
         if (val === state.codeCorrect) {
-            errorEl.textContent = '';
-            const blackout = document.getElementById('blackout');
-            blackout.classList.add('fade');
-            amb.pause();
-            setTimeout(() => { window.location.href = '/level1'; }, 1800);
-        } else {
-            errorEl.textContent = 'Code incorrect. Cherchez encore.';
-            errorEl.classList.remove('shake');
-            void errorEl.offsetWidth;
-            errorEl.classList.add('shake');
-            panelEl.classList.remove('shake');
-            void panelEl.offsetWidth;
-            panelEl.classList.add('shake');
-            document.getElementById('reponse').value = '';
+            lancerTransition();
+            return;
         }
+ 
+        // Toute mauvaise combinaison → jumpscare avec message explicatif
+        const msg = messagesJumpscare[val] || "Ce n'est pas le bon ordre. Relisez tout.";
+        declencherJumpscare(msg);
+    }
+ 
+    // === JUMPSCARE ===
+    function declencherJumpscare(message) {
+        state.bloque = true;
+        amb.pause();
+ 
+        const js = document.getElementById('jumpscare');
+        const jsText = document.getElementById('jumpscare-text');
+ 
+        playSfx('sfx-jumpscare');
+        js.classList.add('active');
+ 
+        // Phase 1 — "IL VOUS A VU." en rouge
+        setTimeout(() => {
+            jsText.innerHTML = 'IL VOUS A VU.';
+            jsText.classList.add('visible');
+        }, 500);
+ 
+        // Phase 2 — message explicatif en blanc dessous
+        setTimeout(() => {
+            jsText.innerHTML = `IL VOUS A VU.<br><span class="js-reason">${message}</span>`;
+        }, 1200);
+ 
+        // Fermer après 3.5s
+        setTimeout(() => {
+            js.classList.remove('active');
+            jsText.classList.remove('visible');
+            jsText.innerHTML = '';
+            state.bloque = false;
+            amb.play().catch(() => {});
+        }, 3500);
+    }
+ 
+    // === TRANSITION VIDÉO PUIS LEVEL 1 ===
+    function lancerTransition() {
+        amb.pause();
+        const overlay = document.getElementById('transition-overlay');
+        const video = document.getElementById('transition-video');
+        overlay.classList.add('active');
+        video.play();
+        video.addEventListener('ended', () => {
+            window.location.href = '/level1';
+        });
     }
 </script>
 </body>
