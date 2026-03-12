@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 0.1 - The Backrooms</title>
+    <link rel="stylesheet" href="/level0/style0.css">
+</head>
+<body>
+    <div class="container">
+        <h1 class="bug">LEVEL 0.1</h1>
+        
+        <div class="enigme-container">
+            <div class="enigme-texte">
+                <p>Vous vous arrêtez sous un néon tremblant.</p>
+                <p class="enigme-main">Votre ombre se dédouble sous les lumières fluorescentes.</p>
+                <p class="enigme-main">Vous en comptez <span class="alert">4 au total</span>.</p>
+                <p style="margin-top: 2rem;">Un message griffonné sur le mur jaune :</p>
+                <p class="wall-message">"Vous n'êtes qu'UN.<br>Les autres sont EUX.<br>Combien sont-ILS ?"</p>
+            </div>
+            
+            <div class="enigme-input">
+                <input type="number" id="reponse" placeholder="?" maxlength="2">
+                <button class="bouton" id="valider">Valider</button>
+                <p class="error-message" id="error"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const input = document.getElementById('reponse');
+        const bouton = document.getElementById('valider');
+        const error = document.getElementById('error');
+
+        bouton.addEventListener('click', verifier);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifier();
+        });
+
+        function verifier() {
+            const reponse = input.value.trim();
+            
+            if (reponse === '3') {
+                error.style.color = '#00ff00';
+                error.textContent = 'Vous comprenez maintenant. Fuyez.';
+                setTimeout(() => {
+                    window.location.href = '/level1';
+                }, 2000);
+            } else if (reponse === '') {
+                error.style.color = '#ff6b6b';
+                error.textContent = 'Vous devez répondre pour avancer.';
+            } else {
+                error.style.color = '#ff6b6b';
+                error.textContent = 'Les ombres se rapprochent... Réessayez.';
+                input.value = '';
+                
+                // Animation de peur
+                document.body.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.body.style.animation = '';
+                }, 500);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="/level0/style0.css">
 </head>
 <body>
-    <div class="container">
+    <!-- Page d'accueil -->
+    <div class="container" id="accueil">
         <h1 class="bug">LEVEL 0</h1>
         <div class="message">
             <p>Vous n'auriez pas dû être ici.</p>
@@ -16,11 +17,11 @@
             <p>Vous marchez depuis combien de temps déjà ?</p>
             <p><em>Quelque chose marche aussi.</em></p>
         </div>
-        <button class="bouton">Ne pas fermer les yeux</button>
+        <button class="bouton" id="btn-yeux">Ne pas fermer les yeux</button>
     </div>
 
+    <!-- Overlay vidéo -->
     <div id="video-overlay">
-        <div class="silhouette"></div>
         <div class="tv">
             <div class="tv-screen">
                 <video id="intro-video" src="/level0/Backroom_intro.mp4"></video>
@@ -41,23 +42,27 @@
             murmure.play().catch(() => {});
         }
 
-        // Sécurité si accès direct sans passer par l'index
         document.addEventListener('click', function unlockAudio() {
             murmure.play().catch(() => {});
             document.removeEventListener('click', unlockAudio);
         });
 
-        document.querySelector('.bouton').addEventListener('click', function () {
+        // Bouton "Ne pas fermer les yeux" -> Lance la vidéo
+        document.getElementById('btn-yeux').addEventListener('click', function () {
             murmure.pause();
             murmure.currentTime = 0;
 
+            // Cache l'accueil et montre la vidéo
+            document.getElementById('accueil').style.display = 'none';
             const overlay = document.getElementById('video-overlay');
             const video = document.getElementById('intro-video');
+            
             overlay.classList.add('active');
             video.play();
 
+            // Quand la vidéo se termine -> va à l'énigme
             video.addEventListener('ended', () => {
-                window.location.href = '/level1';
+                window.location.href = '/level0/level0.1.html';  
             });
         });
     </script>

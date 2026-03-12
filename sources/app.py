@@ -16,6 +16,10 @@ def accueil():
 def level0():
     return send_from_directory('level0', 'level0.html')
 
+@app.route('/level0.1')
+def level0_1_direct():
+    return send_from_directory('level0', 'level0.1.html')
+
 @app.route('/level1')
 def level1():
     return send_from_directory('level1', 'level1.html')

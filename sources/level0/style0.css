@@ -194,3 +194,73 @@ body {
     display: block;
     filter: brightness(0.9) saturate(0.7) sepia(0.15);
 }
+
+.enigme-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.enigme-texte {
+    background-color: rgba(0, 0, 0, 0.7);
+    color: #e8dc9e;
+    padding: 2rem;
+    border: 2px solid #2a2a2a;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 2rem;
+}
+
+.enigme-texte p {
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+.enigme-main {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.wall-message {
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    color: #ff6b6b;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    font-weight: bold;
+    line-height: 1.8;
+    margin-top: 1rem;
+}
+
+.enigme-input {
+    text-align: center;
+}
+
+#reponse {
+    width: 80px;
+    height: 60px;
+    font-size: 2rem;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #e8dc9e;
+    border: 3px solid #4a4a4a;
+    font-family: 'Courier New', monospace;
+    margin-right: 1rem;
+}
+
+#reponse:focus {
+    outline: none;
+    border-color: #ff6b6b;
+    box-shadow: 0 0 15px rgba(255, 107, 107, 0.3);
+}
+
+.error-message {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    font-weight: bold;
+    min-height: 30px;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
