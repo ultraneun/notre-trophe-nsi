@@ -4,11 +4,39 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 1 - The Backrooms</title>
+    <!-- data-ref="NTHCMzAnMDAuMyJOIDBCMDcnMzYuNSJX" -->
+    <!-- epoch: juillet 2024 -->
     <link rel="stylesheet" href="/level1/style1.css">
+    <style>
+        /* Zone cliquable secrète - modifie bottom/left pour la placer
+           pile sur un élément de ton image de fond (tuyau, porte, etc.) */
+        #zone-secrete {
+            position: fixed;
+            bottom: 53%;   /* endroit caché */
+            left: 13.4%;     /* endroit caché */
+            width: 60px;
+            height: 60px;
+            cursor: default;
+            z-index: 10;
+            background: transparent;
+            border: none;
+            background: rgba(255, 0, 0, 0.4); cursor: pointer;
+        }
+
+        
+        
+        
+    </style>
 </head>
 <body>
 
     <!-- vous avez bien fait de fouiller le code source : BCKRM{bon_début} -->
+    <!--
+        Vous cherchez une sortie ?
+        Peut-être que les murs parlent.
+        NTHCMzAnMDAuMyJOIDBCMDcnMzYuNSJX
+        juillet 2024
+    -->
 
     <div class="container">
         <h1 class="bug">LEVEL 1</h1>
@@ -21,41 +49,20 @@
             <p><em>Faites-leur confiance à vos risques et périls.</em></p>
         </div>
 
-        <input type="text" id="flag-input" placeholder="Entrez le flag..." style="
-            background-color: #0f1a20;
-            color: #a0a0a0;
-            border: 3px solid #2a3a40;
-            padding: 1rem 2rem;
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            letter-spacing: 0.1rem;
-            margin-bottom: 1rem;
-            outline: none;
-            width: 300px;
-            text-align: center;
-        ">
-        <button class="bouton" onclick="verifierFlag()">Valider</button>
-        <p id="message" style="color: #00b4d8; margin-top: 1rem;"></p>
-
+        <p style="color: #2a3a40; font-size: 0.8rem; letter-spacing: 0.1rem; margin-top: 1rem;">
+            Il y a forcément une issue.
+        </p>
     </div>
 
+    <!-- Zone cliquable invisible — à positionner sur l'image de fond -->
+    <div id="zone-secrete" onclick="entrer()"></div>
+
     <script>
-        async function verifierFlag() {
-            const flag = document.getElementById('flag-input').value.trim();
-            
-            const reponse = await fetch('/verifier/1', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({flag: flag})
-            });
-            
-            const data = await reponse.json();
-            
-            if (data.succes) {
-                window.location.href = data.redirect;
-            } else {
-                document.getElementById('message').textContent = data.message;
-            }
+        // atob("NTHCMzAnMDAuMyJOIDBCMDcnMzYuNSJX") -> les coordonnées
+        // juillet 2024 -> cherchez ce lieu à cette date
+
+        function entrer() {
+            window.location.href = '/level1.1';
         }
     </script>
 
