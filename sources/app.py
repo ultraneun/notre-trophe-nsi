@@ -28,6 +28,16 @@ def level1():
 def level2():
     return send_from_directory('level2', 'level2.html')
 
+@app.route('/level3')
+def level3():
+    return send_from_directory('level3', 'level3.html')
+
+@app.route('/level3/<path:fichier>')
+def level3_static(fichier):
+    return send_from_directory('level3', fichier)
+
+
+
 # ... tu ajouteras level3, 4, 5 au fur et à mesure
 
 # ── Fichiers statiques de chaque niveau (CSS, etc.) ──────────────────────
