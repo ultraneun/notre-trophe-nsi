@@ -3,64 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level 0.1 - The Backrooms</title>
+    <title>Level 0 - Explorer</title>
     <link rel="stylesheet" href="/level0/style0.css">
+    <link rel="stylesheet" href="/level0/style0.1.css">
 </head>
 <body>
-    <div class="container">
-        <h1 class="bug">LEVEL 0.1</h1>
-        
-        <div class="enigme-container">
-            <div class="enigme-texte">
-                <p>Vous vous arrêtez sous un néon tremblant.</p>
-                <p class="enigme-main">Votre ombre se dédouble sous les lumières fluorescentes.</p>
-                <p class="enigme-main">Vous en comptez <span class="alert">4 au total</span>.</p>
-                <p style="margin-top: 2rem;">Un message griffonné sur le mur jaune :</p>
-                <p class="wall-message">"Vous n'êtes qu'UN.<br>Les autres sont EUX.<br>Combien sont-ILS ?"</p>
-            </div>
-            
-            <div class="enigme-input">
-                <input type="number" id="reponse" placeholder="?" maxlength="2">
-                <button class="bouton" id="valider">Valider</button>
-                <p class="error-message" id="error"></p>
-            </div>
-        </div>
+
+<!-- SCENE -->
+<div id="scene">
+    <img id="scene-img" src="/images/level0-mur.jpg" alt="">
+</div>
+
+<!-- HOTSPOTS -->
+<div class="hotspot" id="hs-mur"     style="left: 28%; top: 55%;" data-target="mur"></div>
+<div class="hotspot" id="hs-sortie"  style="left: 72%; top: 48%;" data-target="sortie"></div>
+<div class="hotspot danger" id="hs-monstre" style="left: 50%; top: 38%;" data-target="monstre"></div>
+
+<!-- HUD INDICES -->
+<div id="hud">
+    <div>Indices trouvés</div>
+    <div id="hud-slots">
+        <div class="slot" id="slot-0">_</div>
+        <div class="slot" id="slot-1">_</div>
     </div>
+</div>
 
-    <script>
-        const input = document.getElementById('reponse');
-        const bouton = document.getElementById('valider');
-        const error = document.getElementById('error');
+<!-- NAV HINT -->
+<div id="nav-hint">Explorer la pièce</div>
 
-        bouton.addEventListener('click', verifier);
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') verifier();
-        });
+<!-- POPUP -->
+<div id="popup">
+    <div class="popup-inner">
+        <div class="popup-title" id="popup-title">—</div>
+        <div id="popup-content"></div>
+        <button class="popup-close" id="popup-close">Continuer</button>
+    </div>
+</div>
 
-        function verifier() {
-            const reponse = input.value.trim();
-            
-            if (reponse === '3') {
-                error.style.color = '#00ff00';
-                error.textContent = 'Vous comprenez maintenant. Fuyez.';
-                setTimeout(() => {
-                    window.location.href = '/level1';
-                }, 2000);
-            } else if (reponse === '') {
-                error.style.color = '#ff6b6b';
-                error.textContent = 'Vous devez répondre pour avancer.';
-            } else {
-                error.style.color = '#ff6b6b';
-                error.textContent = 'Les ombres se rapprochent... Réessayez.';
-                input.value = '';
-                
-                // Animation de peur
-                document.body.style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    document.body.style.animation = '';
-                }, 500);
-            }
+<!-- CODE PANEL -->
+<div id="code-panel">
+    <label>Entrez le code</label>
+    <div id="code-input-row">
+        <input type="text" id="reponse" maxlength="2" placeholder="??">
+        <button id="btn-valider">Valider</button>
+    </div>
+    <div id="code-error"></div>
+</div>
+
+<!-- BLACKOUT -->
+<div id="blackout"></div>
+
+<!-- AUDIO -->
+<audio id="amb"       loop src="/sons/murmure.mp3"></audio>
+<audio id="sfx-found"      src="/sons/found.mp3"></audio>
+<audio id="sfx-scare"      src="/sons/scare.mp3"></audio>
+
+<script>
+    // === STATE ===
+    const state = {
+        indices: [null, null],
+        visited: new Set(),
+        codeCorrect: '47'   // <-- CHANGE LE CODE ICI
+    };
+
+    // === AUDIO ===
+    const amb = document.getElementById('amb');
+    amb.volume = 0.03;
+    document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
+
+    function playSfx(id) {
+        const el = document.getElementById(id);
+        if (el) { el.currentTime = 0; el.play().catch(() => {}); }
+    }
+
+    // === DONNÉES DES HOTSPOTS ===
+    const hotspotData = {
+        mur: {
+            title: 'Le mur — quelque chose est gravé',
+            type: 'indice',
+            slot: 0,
+            valeur: '4',
+            imgChange: '/images/level0-mur.jpg',
+            content: `
+                <p class="popup-text">Vous approchez le mur. La moquette est imbibée. Vos doigts effleurent la surface.</p>
+                <p class="popup-text">Sous des années de poussière et d'humidité, quelque chose a été gravé. Profondément. Avec insistance.</p>
+                <div class="indice-reveal">4</div>
+                <p class="popup-text" style="font-size:0.8rem; color:#5a5a4a;">— Quelqu'un est passé avant vous.</p>
+            `
+        },
+        sortie: {
+            title: 'La sortie — ou ce qui y ressemble',
+            type: 'indice',
+            slot: 1,
+            valeur: '7',
+            imgChange: '/images/level0-sortie.jpg',
+            content: `
+                <p class="popup-text">Une porte. Elle tremble légèrement, comme si quelque chose respirait derrière.</p>
+                <p class="popup-text">Sur le chambranle, tracé au doigt dans la poussière, un chiffre. Il s'efface déjà.</p>
+                <div class="indice-reveal">7</div>
+                <p class="popup-text" style="font-size:0.8rem; color:#5a5a4a;">— Vite. Avant qu'il disparaisse.</p>
+            `
+        },
+        monstre: {
+            title: '— ERREUR —',
+            type: 'danger',
+            imgChange: '/images/level0-monstre.jpg',
+            content: `
+                <p class="popup-text danger-text">Vous avez regardé.</p>
+                <p class="popup-text danger-text">Il n'aime pas qu'on regarde.</p>
+                <p class="popup-text" style="margin-top:1rem; font-size:0.8rem; color:#3a3a3a;">... Il s'est arrêté. Pour l'instant.</p>
+            `
         }
-    </script>
+    };
+
+    // === HOTSPOTS CLICK ===
+    document.querySelectorAll('.hotspot').forEach(hs => {
+        hs.addEventListener('click', () => {
+            const key = hs.dataset.target;
+            const data = hotspotData[key];
+            if (!data) return;
+
+            if (data.imgChange) {
+                const img = document.getElementById('scene-img');
+                img.style.opacity = 0;
+                setTimeout(() => { img.src = data.imgChange; img.style.opacity = 1; }, 600);
+            }
+
+            if (data.type === 'indice') playSfx('sfx-found');
+            if (data.type === 'danger') playSfx('sfx-scare');
+
+            if (data.type === 'indice' && !state.visited.has(key)) {
+                state.visited.add(key);
+                state.indices[data.slot] = data.valeur;
+                updateHUD();
+                hs.style.opacity = '0.3';
+                hs.style.pointerEvents = 'none';
+                checkAllFound();
+            }
+
+            showPopup(data.title, data.content);
+        });
+    });
+
+    // === POPUP ===
+    function showPopup(title, content) {
+        document.getElementById('popup-title').textContent = title;
+        document.getElementById('popup-content').innerHTML = content;
+        document.getElementById('popup').classList.add('active');
+    }
+
+    document.getElementById('popup-close').addEventListener('click', () => {
+        document.getElementById('popup').classList.remove('active');
+    });
+
+    // === HUD ===
+    function updateHUD() {
+        state.indices.forEach((val, i) => {
+            const slot = document.getElementById(`slot-${i}`);
+            if (val !== null) {
+                slot.textContent = val;
+                slot.classList.add('found');
+            }
+        });
+    }
+
+    // === DÉVERROUILLER LE CODE ===
+    function checkAllFound() {
+        if (state.indices.every(v => v !== null)) {
+            setTimeout(() => {
+                document.getElementById('code-panel').classList.add('visible');
+                document.getElementById('nav-hint').textContent = 'Les chiffres forment un code...';
+            }, 800);
+        }
+    }
+
+    // === VALIDATION CODE ===
+    document.getElementById('btn-valider').addEventListener('click', validerCode);
+    document.getElementById('reponse').addEventListener('keydown', e => {
+        if (e.key === 'Enter') validerCode();
+    });
+
+    function validerCode() {
+        const val = document.getElementById('reponse').value.trim();
+        const errorEl = document.getElementById('code-error');
+        const panelEl = document.getElementById('code-panel');
+
+        if (val === state.codeCorrect) {
+            errorEl.textContent = '';
+            const blackout = document.getElementById('blackout');
+            blackout.classList.add('fade');
+            amb.pause();
+            setTimeout(() => { window.location.href = '/level1'; }, 1800);
+        } else {
+            errorEl.textContent = 'Code incorrect. Cherchez encore.';
+            errorEl.classList.remove('shake');
+            void errorEl.offsetWidth;
+            errorEl.classList.add('shake');
+            panelEl.classList.remove('shake');
+            void panelEl.offsetWidth;
+            panelEl.classList.add('shake');
+            document.getElementById('reponse').value = '';
+        }
+    }
+</script>
 </body>
 </html>
