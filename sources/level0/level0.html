@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 0 - The Backrooms</title>
-    <link rel="stylesheet" href="style0.css">
+    <link rel="stylesheet" href="/level0/style0.css">
 </head>
 <body>
     <div class="container">
@@ -23,13 +23,13 @@
         <div class="silhouette"></div>
         <div class="tv">
             <div class="tv-screen">
-                <video id="intro-video" src="Backroom_intro.mp4"></video>
+                <video id="intro-video" src="/level0/Backroom_intro.mp4"></video>
             </div>
         </div>
     </div>
 
     <audio id="murmure" loop>
-        <source src="../sons/murmure.mp3" type="audio/mpeg">
+        <source src="/sons/murmure.mp3" type="audio/mpeg">
     </audio>
 
     <script>
@@ -57,7 +57,7 @@
             video.play();
 
             video.addEventListener('ended', () => {
-                window.location.href = '../level1/level1.html';
+                window.location.href = '/level1';
             });
         });
     </script>

@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_from_directory
+from flask import *
 
 app = Flask(__name__)
 app.secret_key = "backrooms_secret"
@@ -6,6 +6,10 @@ app.secret_key = "backrooms_secret"
 FLAGS = {
     1: {"flag": "BCKRM{bon_début}", "points": 100, "redirect": "/level2"},
 }
+
+@app.route('/')
+def accueil():
+    return redirect('/level0')
 
 # ── Pages des niveaux ────────────────────────────────────────────────────
 @app.route('/level0')
