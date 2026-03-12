@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 1.1 - The Backrooms</title>
+    <link rel="stylesheet" href="/level1/style1.css">
+    <style>
+        .coord-display {
+            font-size: 0.75rem;
+            color: #2a3a40;
+            margin-bottom: 2rem;
+            letter-spacing: 0.05rem;
+        }
+
+        #heure-input {
+            background-color: #0f1a20;
+            color: #a0a0a0;
+            border: 3px solid #2a3a40;
+            padding: 1rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.6rem;
+            letter-spacing: 0.3rem;
+            margin-bottom: 1rem;
+            outline: none;
+            width: 200px;
+            text-align: center;
+        }
+
+        #heure-input:focus {
+            border-color: #00b4d8;
+            box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="bug">LEVEL 1.1</h1>
+
+        <p class="coord-display">51°30'00.3"N &nbsp; 0°07'36.5"W</p>
+
+        <div class="message" style="max-width: 500px; margin-bottom: 2rem;">
+            <p>Vous reconnaissez l'endroit.</p>
+            <p>Vous y étiez. <span class="alert">Juillet 2024.</span></p>
+            <p><em>Quelle heure était-il ?</em></p>
+        </div>
+
+        <input type="text" id="heure-input" placeholder="HH:MM" maxlength="5">
+        <br>
+        <button class="bouton" id="valider">Valider</button>
+        <p id="message" style="color: #00b4d8; margin-top: 1rem;"></p>
+    </div>
+
+    <script>
+        const input = document.getElementById('heure-input');
+        const bouton = document.getElementById('valider');
+        const message = document.getElementById('message');
+
+        bouton.addEventListener('click', verifier);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') verifier();
+        });
+
+        // Format auto HH:MM
+        input.addEventListener('input', () => {
+            let val = input.value.replace(/[^0-9]/g, '');
+            if (val.length >= 3) val = val.slice(0, 2) + ':' + val.slice(2, 4);
+            input.value = val;
+        });
+
+        function verifier() {
+            const val = input.value.trim();
+
+            if (val === '06:10') {
+                message.style.color = '#00ff88';
+                message.textContent = 'Le bourdonnement change de tonalité. Une porte s\'ouvre.';
+                bouton.disabled = true;
+                setTimeout(() => {
+                    window.location.href = '/level2';
+                }, 2500);
+            } else if (val === '') {
+                message.style.color = '#ff6b6b';
+                message.textContent = 'Le silence est une réponse. Pas la bonne.';
+            } else {
+                message.style.color = '#ff6b6b';
+                message.textContent = 'Cette heure ne correspond à rien ici.';
+                input.value = '';
+                document.body.style.animation = 'shake 0.4s';
+                setTimeout(() => { document.body.style.animation = ''; }, 400);
+            }
+        }
+    </script>
+
+</body>
+</html>

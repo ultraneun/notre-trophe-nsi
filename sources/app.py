@@ -5,6 +5,7 @@ app.secret_key = "backrooms_secret"
 
 FLAGS = {
     1: {"flag": "BCKRM{bon_début}", "points": 100, "redirect": "/level2"},
+    2: {"flag": "BCKRM{06:10}",     "points": 100, "redirect": "/level2"},
 }
 
 @app.route('/')
@@ -24,6 +25,10 @@ def level0_1_direct():
 def level1():
     return send_from_directory('level1', 'level1.html')
 
+@app.route('/level1.1')
+def level1_1():
+    return send_from_directory('level1', 'level1.1.html')
+
 @app.route('/level2')
 def level2():
     return send_from_directory('level2', 'level2.html')
@@ -31,14 +36,6 @@ def level2():
 @app.route('/level3')
 def level3():
     return send_from_directory('level3', 'level3.html')
-
-@app.route('/level3/<path:fichier>')
-def level3_static(fichier):
-    return send_from_directory('level3', fichier)
-
-
-
-# ... tu ajouteras level3, 4, 5 au fur et à mesure
 
 # ── Fichiers statiques de chaque niveau (CSS, etc.) ──────────────────────
 @app.route('/level0/<path:fichier>')
@@ -52,6 +49,10 @@ def level1_static(fichier):
 @app.route('/level2/<path:fichier>')
 def level2_static(fichier):
     return send_from_directory('level2', fichier)
+
+@app.route('/level3/<path:fichier>')
+def level3_static(fichier):
+    return send_from_directory('level3', fichier)
 
 # ── Images et sons (dossiers partagés) ───────────────────────────────────
 @app.route('/images/<path:fichier>')
