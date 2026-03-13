@@ -3,18 +3,20 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+ 
 body {
     font-family: 'Courier New', monospace;
+    background-image: url('/images/level1.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    color: #2a2a2a;
     overflow: hidden;
-    position: relative;
     height: 100vh;
 }
-
+ 
+/* =============================================
+   VUE TERMINAL
+   ============================================= */
 .container {
     display: flex;
     flex-direction: column;
@@ -22,9 +24,185 @@ body {
     justify-content: center;
     height: 100vh;
     padding: 20px;
-    position: relative;
+    background: rgba(0, 0, 0, 0.55);
+    transition: opacity 0.6s ease;
 }
-
+ 
+.container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+ 
+/* =============================================
+   TERMINAL
+   ============================================= */
+.terminal {
+    max-width: 580px;
+    width: 100%;
+    background: rgba(4, 8, 12, 0.90);
+    border-left: 2px solid #00b4d8;
+    padding: 1.8rem 2rem;
+    box-shadow:
+        -4px 0 30px rgba(0, 180, 216, 0.08),
+        0 0 60px rgba(0, 0, 0, 0.8);
+}
+ 
+.terminal-header {
+    font-size: 0.62rem;
+    letter-spacing: 0.35rem;
+    color: #00b4d8;
+    text-transform: uppercase;
+    margin-bottom: 1.4rem;
+    opacity: 0.6;
+}
+ 
+.terminal-body {
+    font-size: 0.92rem;
+    color: #8a9a9e;
+    line-height: 2;
+    white-space: pre-wrap;
+    min-height: 180px;
+}
+ 
+.cursor {
+    display: inline-block;
+    color: #00b4d8;
+    animation: blink-cursor 1s steps(1) infinite;
+    font-size: 0.85rem;
+    vertical-align: baseline;
+    margin-left: 1px;
+}
+ 
+@keyframes blink-cursor {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+}
+ 
+/* =============================================
+   FOOTER TERMINAL
+   ============================================= */
+.terminal-footer {
+    margin-top: 1.8rem;
+    border-top: 1px solid #0a1a20;
+    padding-top: 1.4rem;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 1s ease, transform 1s ease;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+ 
+.terminal-footer.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+ 
+.terminal-hint {
+    font-size: 0.7rem;
+    color: #1a3a42;
+    letter-spacing: 0.1rem;
+    font-style: italic;
+}
+ 
+.terminal-hint::before {
+    content: '> ';
+    color: #00b4d8;
+    opacity: 0.3;
+}
+ 
+/* =============================================
+   BOUTONS TOGGLE
+   ============================================= */
+.bouton-toggle {
+    background: transparent;
+    color: #4a7a8a;
+    border: 1px solid #0a2a32;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+}
+ 
+.bouton-toggle:hover {
+    border-color: #00b4d8;
+    color: #00b4d8;
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.08);
+}
+ 
+.toggle-icon {
+    font-size: 0.9rem;
+    line-height: 1;
+}
+ 
+/* =============================================
+   VUE IMAGE
+   ============================================= */
+#vue-image {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+}
+ 
+#vue-image.active {
+    display: block;
+}
+ 
+/* Bouton retour flottant en haut à gauche */
+.bouton-retour {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 60;
+    background: rgba(4, 8, 12, 0.85);
+    color: #4a7a8a;
+    border: 1px solid #0a2a32;
+    padding: 0.6rem 1.2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.68rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.15rem;
+    transition: all 0.4s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+ 
+.bouton-retour:hover {
+    border-color: #00b4d8;
+    color: #00b4d8;
+    box-shadow: 0 0 15px rgba(0, 180, 216, 0.08);
+}
+ 
+/* =============================================
+   ZONE SECRÈTE
+   ============================================= */
+#zone-secrete {
+    position: fixed;
+    bottom: 72%;
+    left: 11%;
+    width: 80px;
+    height: 80px;
+    cursor: default;
+    z-index: 55;
+    background: transparent;
+}
+ 
+/* =============================================
+   CLASSES PARTAGÉES (level1 + level1.1)
+   ============================================= */
 .bug {
     font-size: 3rem;
     font-weight: bold;
@@ -34,49 +212,118 @@ body {
     color: #d0d0d0;
     text-shadow: 3px 3px 0px rgba(0, 80, 120, 0.6);
 }
-
+ 
 .message {
-    background-color: rgba(10, 15, 20, 0.95);
-    color: #a0a0a0;
+    background-color: rgba(4, 8, 12, 0.90);
+    color: #8a9a9e;
     padding: 2rem;
-    border: 3px solid #2a3a40;
+    border-left: 2px solid #00b4d8;
     max-width: 600px;
     text-align: center;
-    box-shadow: 0 0 30px rgba(0, 100, 150, 0.4);
+    box-shadow: -4px 0 30px rgba(0, 180, 216, 0.08), 0 0 60px rgba(0,0,0,0.8);
     margin-bottom: 2rem;
 }
-
+ 
 .message p {
-    line-height: 1.6;
+    line-height: 1.8;
     margin-bottom: 1rem;
 }
-
+ 
 .alert {
     color: #00b4d8;
     font-weight: bold;
     animation: blink 1.5s infinite;
 }
-
+ 
 @keyframes blink {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    50%       { opacity: 0.3; }
 }
-
+ 
 .bouton {
-    background-color: #0f1a20;
-    color: #a0a0a0;
-    border: 3px solid #2a3a40;
-    padding: 1rem 2rem;
+    background: transparent;
+    color: #4a7a8a;
+    border: 1px solid #0a2a32;
+    padding: 0.8rem 2rem;
     font-family: 'Courier New', monospace;
-    font-size: 1rem;
+    font-size: 0.78rem;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 0.1rem;
-    transition: all 0.3s ease;
+    letter-spacing: 0.2rem;
+    transition: all 0.4s ease;
 }
-
+ 
 .bouton:hover {
-    background-color: #1a2530;
-    box-shadow: 0 0 20px rgba(0, 180, 216, 0.5);
     border-color: #00b4d8;
+    color: #00b4d8;
+    box-shadow: 0 0 20px rgba(0, 180, 216, 0.1);
+}
+ 
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+    20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+ 
+/* =============================================
+   EFFET OUVERTURE DES YEUX
+   ============================================= */
+#eye-open {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    animation: blur-fade 3s ease-in-out forwards;
+    animation-delay: 0.3s;
+}
+ 
+#eye-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: #000;
+    z-index: 10000;
+    pointer-events: none;
+    animation: eye-open-top 3s cubic-bezier(0.25, 0, 0.3, 1) forwards;
+    animation-delay: 0.3s;
+}
+ 
+#eye-bottom {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50%;
+    background: #000;
+    z-index: 10000;
+    pointer-events: none;
+    animation: eye-open-bottom 3s cubic-bezier(0.25, 0, 0.3, 1) forwards;
+    animation-delay: 0.3s;
+}
+ 
+@keyframes eye-open-top {
+    0%   { transform: translateY(0%); }
+    30%  { transform: translateY(-15%); }
+    60%  { transform: translateY(-60%); }
+    85%  { transform: translateY(-95%); }
+    100% { transform: translateY(-100%); }
+}
+ 
+@keyframes eye-open-bottom {
+    0%   { transform: translateY(0%); }
+    30%  { transform: translateY(15%); }
+    60%  { transform: translateY(60%); }
+    85%  { transform: translateY(95%); }
+    100% { transform: translateY(100%); }
+}
+ 
+@keyframes blur-fade {
+    0%   { backdrop-filter: blur(20px); opacity: 1; }
+    50%  { backdrop-filter: blur(12px); opacity: 1; }
+    85%  { backdrop-filter: blur(3px);  opacity: 1; }
+    100% { backdrop-filter: blur(0px);  opacity: 0; }
 }
