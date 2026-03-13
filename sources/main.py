@@ -33,6 +33,10 @@ def level1_1():
 def level2():
     return send_from_directory('level2', 'level2.html')
 
+@app.route('/level2.1')
+def level2_1():
+    return send_from_directory('level2', 'level2.1.html')
+
 @app.route('/level3')
 def level3():
     return send_from_directory('level3', 'level3.html')
