@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 - Mémoire</title>
+    <link rel="stylesheet" href="/level3/style3.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="bug">NE PAS OUBLIER</h1>
+        <div class="infos">
+            <span>⏱️ <span id="timer">30</span>s</span>
+            <span>✅ <span id="paires">0</span>/6</span>
+        </div>
+        <div class="grille" id="grille"></div>
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const emojis = ['😱', '👁️', '🕷️', '💀', '🌑', '👻'];
+        let cartes = [...emojis, ...emojis]; // 12 cartes
+        let temps = 30;
+        let pairesFound = 0;
+        let carteRetournee = null;
+        let lock = false;
+
+        // Mélanger les cartes
+        cartes.sort(() => Math.random() - 0.5);
+
+        // Créer la grille
+        const grille = document.getElementById('grille');
+        cartes.forEach((emoji, index) => {
+            const carte = document.createElement('div');
+            carte.classList.add('carte');
+            carte.dataset.emoji = emoji;
+            carte.dataset.index = index;
+            carte.textContent = '?';
+            carte.addEventListener('click', () => retourner(carte));
+            grille.appendChild(carte);
+        });
+
+        // Timer
+        const interval = setInterval(() => {
+            temps--;
+            document.getElementById('timer').textContent = temps;
+            if (temps <= 0) {
+                clearInterval(interval);
+                echouer();
+            }
+        }, 1000);
+
+        function retourner(carte) {
+            if (lock || carte.classList.contains('retournee') || carte.classList.contains('trouvee')) return;
+
+            carte.textContent = carte.dataset.emoji;
+            carte.classList.add('retournee');
+
+            if (!carteRetournee) {
+                carteRetournee = carte;
+            } else {
+                lock = true;
+                if (carteRetournee.dataset.emoji === carte.dataset.emoji) {
+                    // Paire trouvée
+                    carte.classList.add('trouvee');
+                    carteRetournee.classList.add('trouvee');
+                    pairesFound++;
+                    document.getElementById('paires').textContent = pairesFound;
+                    carteRetournee = null;
+                    lock = false;
+
+                    if (pairesFound === 6) {
+                        clearInterval(interval);
+                        gagner();
+                    }
+                } else {
+                    // Mauvaise paire
+                    setTimeout(() => {
+                        carte.textContent = '?';
+                        carteRetournee.textContent = '?';
+                        carte.classList.remove('retournee');
+                        carteRetournee.classList.remove('retournee');
+                        carteRetournee = null;
+                        lock = false;
+                    }, 800);
+                }
+            }
+        }
+
+        function gagner() {
+            document.getElementById('message').textContent = "✅ BCKRM{p4rt1_";
+            document.getElementById('message').style.color = "#00ff88";
+            setTimeout(() => {
+                window.location.href = '/level3/level3_3.html';
+            }, 3000);
+        }
+
+        function echouer() {
+            document.getElementById('message').textContent = "❌ Trop lent. Le noir vous avale.";
+            document.getElementById('message').style.color = "#ff4444";
+            setTimeout(() => {
+                window.location.href = '/level3';
+            }, 2000);
+        }
+    </script>
+
+</body>
+</html>
