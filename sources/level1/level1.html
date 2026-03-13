@@ -7,12 +7,12 @@
     <link rel="stylesheet" href="/level1/style1.css">
 </head>
 <body>
- 
+
     <!-- Effet ouverture des yeux -->
     <div id="eye-open"></div>
     <div id="eye-top"></div>
     <div id="eye-bottom"></div>
- 
+
     <!-- VUE TERMINAL -->
     <div class="container" id="vue-terminal">
         <div class="terminal">
@@ -27,74 +27,88 @@
             </div>
         </div>
     </div>
- 
-    <!-- VUE IMAGE — image plein écran, terminal masqué -->
+
+    <!-- VUE IMAGE — image centrée avec ratio préservé, zone secrète fixe sur l'image -->
     <div id="vue-image">
         <button class="bouton-retour" id="btn-retour">
             <span class="toggle-icon">⊟</span> Afficher le rapport
         </button>
-        <!-- Zone cliquable secrète sur l'image -->
-        <div id="zone-secrete" onclick="entrer()"></div>
+
+        <div id="img-wrapper">
+            <img id="img-level1" src="/images/level1.png" alt="">
+            <div id="zone-secrete" onclick="entrer()"></div>
+        </div>
     </div>
- 
+
     <script>
+        // ── Typewriter ──────────────────────────────────────────────────
         const lignes = [
-            "Le bourdonnement mécanique résonne dans tout le parking.",
-            "Les tuyaux au plafond fuient parfois. Évitez l'eau.",
-            "Vous pouvez trouver de la nourriture et de l'eau potable ici.",
-            "D'autres survivants errent dans ces couloirs.",
-            "Faites-leur confiance à vos risques et périls.",
+            "f",
         ];
- 
-        const el = document.getElementById('terminal-text');
+
+        const el     = document.getElementById('terminal-text');
         const footer = document.getElementById('terminal-footer');
         const cursor = document.getElementById('cursor');
-        let ligneIndex = 0;
-        let charIndex = 0;
-        let texteComplet = '';
-        let typewriterDone = false;
- 
+        let ligneIndex = 0, charIndex = 0, texteComplet = '';
+
         function typeChar() {
             if (ligneIndex >= lignes.length) {
-                typewriterDone = true;
                 cursor.style.display = 'none';
                 setTimeout(() => footer.classList.add('visible'), 600);
                 return;
             }
- 
             const ligne = lignes[ligneIndex];
- 
             if (charIndex < ligne.length) {
                 texteComplet += ligne[charIndex];
                 el.textContent = texteComplet;
                 charIndex++;
-                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
-                setTimeout(typeChar, delay);
+                setTimeout(typeChar, ligne[charIndex - 1] === '.' ? 280 : 32);
             } else {
                 texteComplet += '\n';
                 el.textContent = texteComplet;
-                ligneIndex++;
-                charIndex = 0;
+                ligneIndex++; charIndex = 0;
                 setTimeout(typeChar, 420);
             }
         }
- 
         setTimeout(typeChar, 3400);
- 
-        // === TOGGLE VUES ===
+
+        // ── Redimensionne le wrapper pour que l'image garde son ratio ──
+        const img     = document.getElementById('img-level1');
+        const wrapper = document.getElementById('img-wrapper');
+
+        function redimensionner() {
+            const ratioImage   = img.naturalWidth / img.naturalHeight;
+            const ratioFenetre = window.innerWidth / window.innerHeight;
+            let w, h;
+            if (ratioFenetre > ratioImage) {
+                h = window.innerHeight;
+                w = h * ratioImage;
+            } else {
+                w = window.innerWidth;
+                h = w / ratioImage;
+            }
+            wrapper.style.width  = w + 'px';
+            wrapper.style.height = h + 'px';
+        }
+
+        img.addEventListener('load', redimensionner);
+        window.addEventListener('resize', redimensionner);
+        if (img.complete && img.naturalWidth) redimensionner();
+
+        // ── Toggle vues ─────────────────────────────────────────────────
         const vueTerminal = document.getElementById('vue-terminal');
-        const vueImage = document.getElementById('vue-image');
- 
+        const vueImage    = document.getElementById('vue-image');
+
         document.getElementById('btn-explorer').addEventListener('click', () => {
             vueTerminal.classList.add('hidden');
             vueImage.classList.add('active');
         });
- 
+
         document.getElementById('btn-retour').addEventListener('click', () => {
             vueImage.classList.remove('active');
             vueTerminal.classList.remove('hidden');
         });
- 
+
         function entrer() {
             window.location.href = '/level1.1';
         }
