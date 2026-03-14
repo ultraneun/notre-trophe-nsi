@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 - Sortie</title>
+    <link rel="stylesheet" href="/level3/style3.css">
+</head>
+<body class="level3_5">
+
+    <div class="container">
+        <h1 class="bug">SORTIE</h1>
+
+        <div class="message">
+            <span id="terminal-text"></span><span class="cursor">█</span>
+        </div>
+
+        <div id="code-footer">
+            <input type="text" id="code-input" placeholder="_ _ _ _" maxlength="4">
+            <button class="bouton" onclick="verifierCode()">ENTRER</button>
+            <button class="bouton" onclick="window.location.href='/level3'">
+                RECOMMENCER DEPUIS LE DÉBUT
+            </button>
+            <p id="message-code"></p>
+        </div>
+
+    <script>
+        const lignes = [
+            "Une porte.",
+            "Elle est verrouillée.",
+            "...",
+            "Un clavier à 4 chiffres.",
+            "Le premier : le nombre de paires du memory.",
+            "Le second : le nombre de flèches de la séquence.",
+            "Le troisième : le nombre de cibles éliminées.",
+            "...",
+            "Tu t'en souviens ?",
+        ];
+
+        const el = document.getElementById('terminal-text');
+        const footer = document.getElementById('code-footer');
+        let ligneIndex = 0;
+        let charIndex = 0;
+        let texteComplet = '';
+
+        function typeChar() {
+            if (ligneIndex >= lignes.length) {
+                setTimeout(() => footer.classList.add('visible'), 600);
+                return;
+            }
+            const ligne = lignes[ligneIndex];
+            if (charIndex < ligne.length) {
+                texteComplet += ligne[charIndex];
+                el.textContent = texteComplet;
+                charIndex++;
+                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                setTimeout(typeChar, delay);
+            } else {
+                texteComplet += '\n';
+                el.textContent = texteComplet;
+                ligneIndex++;
+                charIndex = 0;
+                setTimeout(typeChar, 420);
+            }
+        }
+
+        setTimeout(typeChar, 800);
+
+        async function verifierCode() {
+            const code = document.getElementById('code-input').value.trim();
+            const reponse = await fetch('/verifier/3', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({flag: code})
+            });
+            const data = await reponse.json();
+
+            if (data.succes) {
+                // Cacher le formulaire
+                footer.style.opacity = '0';
+                footer.style.pointerEvents = 'none';
+
+                // Nouveau texte qui s'écrit
+                const lignesFin = [
+                    "...",
+                    "La porte s'ouvre.",
+                    "...",
+                    "De l'autre côté.",
+                    "Un couloir.",
+                    "Encore.",
+                    "...",
+                    "Tu croyais rentrer chez toi ?",
+                    "...",
+                    "Les Backrooms ne te libèrent jamais.",
+                    "Continue.",
+                ];
+
+                texteComplet += '\n\n';
+                ligneIndex = 0;
+                charIndex = 0;
+
+                function typeFinale() {
+                    if (ligneIndex >= lignesFin.length) {
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 1500);
+                        return;
+                    }
+                    const ligne = lignesFin[ligneIndex];
+                    if (charIndex < ligne.length) {
+                        texteComplet += ligne[charIndex];
+                        el.textContent = texteComplet;
+                        charIndex++;
+                        const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                        setTimeout(typeFinale, delay);
+                    } else {
+                        texteComplet += '\n';
+                        el.textContent = texteComplet;
+                        ligneIndex++;
+                        charIndex = 0;
+                        setTimeout(typeFinale, 420);
+                    }
+                }
+
+                typeFinale();
+
+            } else {
+                document.getElementById('message-code').textContent = "❌ Mauvais code. Tu te souviens vraiment ?";
+                document.getElementById('message-code').style.color = "#ff4444";
+            }
+        }
+    </script>
+
+    <audio id="musique" loop>
+        <source src="/sons/Skip_to_my_Lou.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const musique = document.getElementById('musique');
+        musique.volume = 0.3;
+        document.addEventListener('click', function lancer() {
+            musique.play().catch(() => {});
+            document.removeEventListener('click', lancer);
+        }, { once: true });
+    </script>
+
+</body>
+</html>

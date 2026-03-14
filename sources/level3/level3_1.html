@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 - The Backrooms</title>
+    <link rel="stylesheet" href="/level3/style3.css">
+</head>
+<body class="level3_1">
+
+    <div class="container">
+        <h1 class="bug">ERREUR</h1>
+
+        <div class="message">
+            <span id="terminal-text"></span><span class="cursor">█</span>
+        </div>
+
+        <div id="suite-footer">
+            <button class="bouton" onclick="window.location.href='/level3/level3_2.html'">
+                COURIR
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const lignes = [
+            "Tu as éclaté le ballon.",
+            "...",
+            "Le silence s'est brisé.",
+            "Il t'a entendu.",
+            "Pour survivre, tu vas devoir prouver que ton esprit tient encore.",
+            "Ta mémoire.",
+            "Tes réflexes.",
+            "...",
+            "Il arrive.",
+            "COURS.",
+        ];
+
+        const el = document.getElementById('terminal-text');
+        const footer = document.getElementById('suite-footer');
+        let ligneIndex = 0;
+        let charIndex = 0;
+        let texteComplet = '';
+
+        function typeChar() {
+            if (ligneIndex >= lignes.length) {
+                setTimeout(() => footer.classList.add('visible'), 600);
+                return;
+            }
+
+            const ligne = lignes[ligneIndex];
+
+            if (charIndex < ligne.length) {
+                texteComplet += ligne[charIndex];
+                el.textContent = texteComplet;
+                charIndex++;
+                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                setTimeout(typeChar, delay);
+            } else {
+                texteComplet += '\n';
+                el.textContent = texteComplet;
+                ligneIndex++;
+                charIndex = 0;
+                setTimeout(typeChar, 420);
+            }
+        }
+
+        setTimeout(typeChar, 800);
+    </script>
+    <audio id="musique" loop>
+    <source src="/sons/Level_Fun.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    const musique = document.getElementById('musique');
+    musique.volume = 0.3;
+    document.addEventListener('click', function lancer() {
+        musique.play().catch(() => {});
+        document.removeEventListener('click', lancer);
+    }, { once: true });
+</script>
+</body>
+</html>

@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 - Aim</title>
+    <link rel="stylesheet" href="/level3/style3.css">
+</head>
+<body class="level3_4">
+
+    <!-- Texte d'intro -->
+    <div class="container" id="intro">
+        <div class="message">
+            <span id="terminal-text"></span><span class="cursor">█</span>
+        </div>
+    </div>
+
+    <!-- Jeu (caché au début) -->
+    <div id="jeu" style="display:none">
+        <div id="hud">
+            <span>🎯 <span id="score">0</span>/15</span>
+            <span>⏱️ <span id="timer">20</span>s</span>
+        </div>
+        <div id="zone-jeu"></div>
+    </div>
+
+    <p id="message"></p>
+
+    <script>
+        // ── Intro typewriter ────────────────────────────────────────────
+        const lignes = [
+            "Tu l'entends.",
+            "Il se rapproche.",
+            "...",
+            "20 secondes.",
+            "Élimine les cibles.",
+            "Ne rate pas.",
+        ];
+
+        const el = document.getElementById('terminal-text');
+        let ligneIndex = 0;
+        let charIndex = 0;
+        let texteComplet = '';
+
+        function typeChar() {
+            if (ligneIndex >= lignes.length) {
+                setTimeout(demarrerJeu, 800);
+                return;
+            }
+
+            const ligne = lignes[ligneIndex];
+
+            if (charIndex < ligne.length) {
+                texteComplet += ligne[charIndex];
+                el.textContent = texteComplet;
+                charIndex++;
+                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                setTimeout(typeChar, delay);
+            } else {
+                texteComplet += '\n';
+                el.textContent = texteComplet;
+                ligneIndex++;
+                charIndex = 0;
+                setTimeout(typeChar, 420);
+            }
+        }
+
+        setTimeout(typeChar, 800);
+
+        // ── Jeu ─────────────────────────────────────────────────────────
+        let score = 0;
+        let temps = 20;
+        let cibleActive = null;
+        let jeuTermine = false;
+        let timerInterval = null;
+
+        function demarrerJeu() {
+            document.getElementById('intro').style.display = 'none';
+            document.getElementById('jeu').style.display = 'block';
+
+            timerInterval = setInterval(() => {
+                temps--;
+                document.getElementById('timer').textContent = temps;
+                if (temps <= 0) {
+                    clearInterval(timerInterval);
+                    echouer();
+                }
+            }, 1000);
+
+            setTimeout(nouvelleCible, 500);
+        }
+
+        function nouvelleCible() {
+            if (jeuTermine) return;
+            if (cibleActive) cibleActive.remove();
+
+            const cible = document.createElement('img');
+            cible.src = '/images/level3/cible.png';
+            cible.classList.add('cible');
+
+            const x = Math.random() * (window.innerWidth - 80);
+            const y = Math.random() * (window.innerHeight - 80);
+            cible.style.left = x + 'px';
+            cible.style.top = y + 'px';
+
+            cible.addEventListener('click', () => {
+                if (jeuTermine) return;
+                score++;
+                document.getElementById('score').textContent = score;
+                cible.remove();
+                cibleActive = null;
+
+                if (score >= 15) {
+                    jeuTermine = true;
+                    clearInterval(timerInterval);
+                    gagner();
+                } else {
+                    setTimeout(nouvelleCible, 200);
+                }
+            });
+
+            document.getElementById('zone-jeu').appendChild(cible);
+            cibleActive = cible;
+
+            setTimeout(() => {
+                if (cible.parentNode && !jeuTermine) {
+                    cible.remove();
+                    setTimeout(nouvelleCible, 200);
+                }
+            }, 1500);
+        }
+
+        function gagner() {
+            document.getElementById('message').textContent = "✅ Tu as survécu.";
+            document.getElementById('message').style.color = "#00ff88";
+            setTimeout(() => {
+                window.location.href = '/level3/level3_5.html';
+            }, 2000);
+        }
+
+        function echouer() {
+            jeuTermine = true;
+            if (cibleActive) cibleActive.remove();
+            document.getElementById('message').textContent = "❌ Trop lent. Il t'a eu.";
+            document.getElementById('message').style.color = "#ff4444";
+            setTimeout(() => {
+                window.location.href = '/level3';
+            }, 2000);
+        }
+    </script>
+
+    <audio id="musique" loop>
+        <source src="/sons/Level_Fun.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const musique = document.getElementById('musique');
+        musique.volume = 0.3;
+        document.addEventListener('click', function lancer() {
+            musique.play().catch(() => {});
+            document.removeEventListener('click', lancer);
+        }, { once: true });
+    </script>
+
+</body>
+</html>

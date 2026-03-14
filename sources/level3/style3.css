@@ -16,13 +16,56 @@ body {
 
 /* ── Fond différent selon la page ── */
 body.level3 {
-    background-image: url('/images/PartyRooms1.webp');
+    background-image: url('/images/level3/PartyRooms1.webp');
     background-size: cover;
     background-position: center;
 }
 
 body.level3_2 {
-    background-color: #0a0a0a;
+    background-image: url('/images/level3/arcade.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+body.level3_3 {
+    background-image: url('/images/level3/mangeur.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+.sequence-affichee {
+    font-size: 2.5rem;
+    letter-spacing: 0.5rem;
+    min-height: 3rem;
+    color: #ff4444;
+}
+
+.fleches {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ligne-fleches {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.fleche {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+    background-color: #1a0a0a;
+    border: 2px solid #4a1a1a;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.fleche:hover {
+    border-color: #ff4444;
+    box-shadow: 0 0 10px rgba(255, 68, 68, 0.4);
+    transform: scale(1.1);
 }
 
 /* ── Commun ── */
@@ -76,14 +119,14 @@ body.level3_2 {
 /* ── Ballon invisible ── */
 #ballon {
     position: fixed;
-    top: 50%;
-    left: 50%;
+    top: 28%;
+    left: 96%;
     width: 80px;
     height: 80px;
     cursor: pointer;
     background: transparent;
     border-radius: 50%;
-    /* border: 2px dashed red; */
+    /*border: 2px dashed red; */
 }
 
 /* ── Jeu de mémoire ── */
@@ -127,4 +170,130 @@ body.level3_2 {
     font-size: 1.5rem;
     letter-spacing: 0.2rem;
     min-height: 2rem;
+}
+/* Curseur qui clignote */
+.cursor {
+    animation: blink 0.8s infinite;
+}
+
+/* Ballon caché au début, visible après le texte */
+#ballon-footer {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+#ballon-footer.visible {
+    opacity: 1;
+}
+
+body.level3_1 {
+    background-image: url('/images/level3/monstre3.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+#suite-footer {
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+#suite-footer.visible {
+    opacity: 1;
+}
+body.level3_4 {
+    background-image: url('/images/level3/jouons.jpg');
+    background-size: cover;
+    background-position: center;    
+    cursor: crosshair;
+}
+
+#hud {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 3rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    color: #d4a0a0;
+    z-index: 10;
+}
+
+#zone-jeu {
+    position: fixed;
+    inset: 0;
+}
+
+.cible {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    cursor: crosshair;
+    animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.15); }
+}
+
+#message {
+    position: fixed;
+    bottom: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5rem;
+    letter-spacing: 0.2rem;
+    font-family: 'Courier New', monospace;
+}
+
+body.level3_5 {
+    background-image: url('/images/level3/porte.png');
+    background-size: cover;
+    background-position: center;
+}
+
+#code-footer {
+    opacity: 0;
+    transition: opacity 0.5s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+#code-footer.visible {
+    opacity: 1;
+}
+
+#code-input {
+    background-color: #0f1a20;
+    color: #d4a0a0;
+    border: 3px solid #4a1a1a;
+    padding: 1rem 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    text-align: center;
+    width: 200px;
+    outline: none;
+    letter-spacing: 0.5rem;
+}
+.bouton {
+    background: transparent;
+    color: #e8dc9e;
+    border: 1px solid #3a3a2a;
+    padding: 0.8rem 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    transition: all 0.4s ease;
+}
+
+.bouton:hover {
+    border-color: #c8a84a;
+    color: #c8a84a;
+    box-shadow: 0 0 20px rgba(200, 168, 74, 0.1);
 }

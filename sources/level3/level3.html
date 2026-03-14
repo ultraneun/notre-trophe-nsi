@@ -6,25 +6,62 @@
     <title>Level 3 - The Backrooms</title>
     <link rel="stylesheet" href="/level3/style3.css">
 </head>
-<body>
+<body class="level3">
 
     <div class="container">
         <h1 class="bug">LEVEL 3</h1>
 
         <div class="message">
-            <p>Tu es arrivée ici après le toboggan. J'espère que la baignade était bien,
-                car tu ne vas plus t'amuser.<br>
-            <span class="alert">Ici, personne ne souffle les bougies.</span>
-            </p>
-            <p><em>Mais quelqu'un a laissé un ballon.</em></p>
-            <p><em>Trouve-le.</em></p>
+            <span id="terminal-text"></span><span class="cursor">█</span>
         </div>
 
-        <!-- le ballon invisible, tu ajustes top/left selon ton image -->
-        <div id="ballon" onclick="eclater()"></div>
+        <div id="ballon-footer">
+            <div id="ballon" onclick="eclater()"></div>
+        </div>
     </div>
 
     <script>
+        const lignes = [
+            "Tu es arrivé ici après le toboggan.",
+            "J'espère que la baignade était bien.",
+            "Car tu ne vas plus t'amuser.",
+            "Ici, personne ne souffle les bougies.",
+            "Mais quelqu'un a laissé un ballon.",
+            "Trouve-le.",
+        ];
+
+        const el = document.getElementById('terminal-text');
+        const footer = document.getElementById('ballon-footer');
+        let ligneIndex = 0;
+        let charIndex = 0;
+        let texteComplet = '';
+
+        function typeChar() {
+            if (ligneIndex >= lignes.length) {
+                // Tout le texte est écrit → on montre la zone du ballon
+                setTimeout(() => footer.classList.add('visible'), 600);
+                return;
+            }
+
+            const ligne = lignes[ligneIndex];
+
+            if (charIndex < ligne.length) {
+                texteComplet += ligne[charIndex];
+                el.textContent = texteComplet;
+                charIndex++;
+                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                setTimeout(typeChar, delay);
+            } else {
+                texteComplet += '\n';
+                el.textContent = texteComplet;
+                ligneIndex++;
+                charIndex = 0;
+                setTimeout(typeChar, 420);
+            }
+        }
+
+        setTimeout(typeChar, 800);
+
         function eclater() {
             document.getElementById('ballon').style.display = 'none';
             setTimeout(() => {
@@ -32,6 +69,17 @@
             }, 300);
         }
     </script>
+    <audio id="musique" loop>
+        <source src="/sons/Level_Fun.mp3" type="audio/mpeg">
+    </audio>
 
+    <script>
+        const musique = document.getElementById('musique');
+        musique.volume = 0.3;
+        document.addEventListener('click', function lancer() {
+            musique.play().catch(() => {});
+            document.removeEventListener('click', lancer);
+        }, { once: true });
+    </script>
 </body>
 </html>
