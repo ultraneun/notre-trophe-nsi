@@ -6,6 +6,7 @@ app.secret_key = "backrooms_secret"
 FLAGS = {
     1: {"flag": "BCKRM{bon_début}", "points": 100, "redirect": "/level2"},
     2: {"flag": "06:10", "points": 100, "redirect": "/level2"},
+    3: {"flag": "6515", "points": 300, "redirect": "/level4"},
     }
 
 @app.route('/')

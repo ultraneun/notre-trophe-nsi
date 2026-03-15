@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 3 - Séquence</title>
+    <link rel="stylesheet" href="/level3/style3.css">
+</head>
+<body class="level3_3">
+
+    <div class="container">
+        <h1 class="bug">REPRODUIS</h1>
+        <div class="infos">
+            <span>❤️ <span id="tentatives">2</span></span>
+            <span>MANCHE <span id="manche">1</span>/3</span>
+        </div>
+
+        <div id="sequence-affichee" class="sequence-affichee"></div>
+
+        <div class="fleches">
+            <div class="ligne-fleches">
+                <button class="fleche" onclick="jouer('⬆️')">⬆️</button>
+            </div>
+            <div class="ligne-fleches">
+                <button class="fleche" onclick="jouer('⬅️')">⬅️</button>
+                <button class="fleche" onclick="jouer('⬇️')">⬇️</button>
+                <button class="fleche" onclick="jouer('➡️')">➡️</button>
+            </div>
+        </div>
+
+        <p id="message"></p>
+    </div>
+
+    <script>
+        const FLECHES = ['⬆️', '⬅️', '⬇️', '➡️'];
+        let tentatives = 2;
+        let manche = 1;
+        let sequence = [];
+        let saisie = [];
+        let affichageEnCours = true;
+
+        function genererSequence() {
+            // 5 flèches aléatoires
+            sequence = [];
+            for (let i = 0; i < 5; i++) {
+                sequence.push(FLECHES[Math.floor(Math.random() * FLECHES.length)]);
+            }
+        }
+
+        function afficherSequence() {
+            affichageEnCours = true;
+            saisie = [];
+            const el = document.getElementById('sequence-affichee');
+            el.textContent = '';
+            let i = 0;
+            const interval = setInterval(() => {
+                el.textContent += sequence[i] + ' ';
+                i++;
+                if (i >= sequence.length) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        el.textContent = '? ? ? ? ?';
+                        affichageEnCours = false;
+                    }, 1000);
+                }
+            }, 700);
+        }
+
+        function jouer(fleche) {
+            if (affichageEnCours) return;
+
+            saisie.push(fleche);
+            document.getElementById('sequence-affichee').textContent = saisie.join(' ');
+
+            const index = saisie.length - 1;
+
+            if (saisie[index] !== sequence[index]) {
+                // Mauvaise touche
+                tentatives--;
+                document.getElementById('tentatives').textContent = tentatives;
+
+                if (tentatives <= 0) {
+                    document.getElementById('message').textContent = "❌ Il t'a rattrapé.";
+                    document.getElementById('message').style.color = "#ff4444";
+                    setTimeout(() => {
+                        window.location.href = '/level3';
+                    }, 2000);
+                } else {
+                    document.getElementById('message').textContent = "❌ Mauvaise séquence.";
+                    document.getElementById('message').style.color = "#ff4444";
+                    setTimeout(() => {
+                        document.getElementById('message').textContent = '';
+                        afficherSequence();
+                    }, 1500);
+                }
+                return;
+            }
+
+            // Séquence complète et correcte
+            if (saisie.length === sequence.length) {
+                if (manche < 3) {
+                    manche++;
+                    document.getElementById('manche').textContent = manche;
+                    document.getElementById('message').textContent = "✅ Continue.";
+                    document.getElementById('message').style.color = "#00ff88";
+                    setTimeout(() => {
+                        document.getElementById('message').textContent = '';
+                        genererSequence();
+                        afficherSequence();
+                    }, 1500);
+                } else {
+                    // 3 manches gagnées
+                    document.getElementById('message').textContent = "✅ Tu as survécu.";
+                    document.getElementById('message').style.color = "#00ff88";
+                    setTimeout(() => {
+                        window.location.href = '/level3/level3_4.html';
+                    }, 2000);
+                }
+            }
+        }
+
+        // Démarrer
+        genererSequence();
+        afficherSequence();
+    </script>
+
+    <audio id="musique" loop>
+        <source src="/sons/Level_Fun.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const musique = document.getElementById('musique');
+        musique.volume = 0.3;
+        document.addEventListener('click', function lancer() {
+            musique.play().catch(() => {});
+            document.removeEventListener('click', lancer);
+        }, { once: true });
+    </script>
+
+</body>
+</html>

@@ -6,7 +6,7 @@
     <title>Level 3 - Mémoire</title>
     <link rel="stylesheet" href="/level3/style3.css">
 </head>
-<body>
+<body class="level3_2">
 
     <div class="container">
         <h1 class="bug">NE PAS OUBLIER</h1>
@@ -19,29 +19,33 @@
     </div>
 
     <script>
-        const emojis = ['😱', '👁️', '🕷️', '💀', '🌑', '👻'];
-        let cartes = [...emojis, ...emojis]; // 12 cartes
+        const emojis = [
+            '/images/level3/creature.png',
+            '/images/level3/entities.webp',
+            '/images/level3/kitty.webp',
+            '/images/level3/Smiler.webp',
+            '/images/level3/walfas.jpg',
+            '/images/level3/monster.jpg',
+        ];
+        let cartes = [...emojis, ...emojis];
         let temps = 30;
         let pairesFound = 0;
         let carteRetournee = null;
         let lock = false;
 
-        // Mélanger les cartes
         cartes.sort(() => Math.random() - 0.5);
 
-        // Créer la grille
         const grille = document.getElementById('grille');
         cartes.forEach((emoji, index) => {
             const carte = document.createElement('div');
             carte.classList.add('carte');
             carte.dataset.emoji = emoji;
             carte.dataset.index = index;
-            carte.textContent = '?';
+            carte.innerHTML = '❓';              // ← changé
             carte.addEventListener('click', () => retourner(carte));
             grille.appendChild(carte);
         });
 
-        // Timer
         const interval = setInterval(() => {
             temps--;
             document.getElementById('timer').textContent = temps;
@@ -54,7 +58,7 @@
         function retourner(carte) {
             if (lock || carte.classList.contains('retournee') || carte.classList.contains('trouvee')) return;
 
-            carte.textContent = carte.dataset.emoji;
+            carte.innerHTML = `<img src="${carte.dataset.emoji}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;">`; // ← changé
             carte.classList.add('retournee');
 
             if (!carteRetournee) {
@@ -62,7 +66,6 @@
             } else {
                 lock = true;
                 if (carteRetournee.dataset.emoji === carte.dataset.emoji) {
-                    // Paire trouvée
                     carte.classList.add('trouvee');
                     carteRetournee.classList.add('trouvee');
                     pairesFound++;
@@ -75,10 +78,9 @@
                         gagner();
                     }
                 } else {
-                    // Mauvaise paire
                     setTimeout(() => {
-                        carte.textContent = '?';
-                        carteRetournee.textContent = '?';
+                        carte.innerHTML = '❓';              // ← changé
+                        carteRetournee.innerHTML = '❓';     // ← changé
                         carte.classList.remove('retournee');
                         carteRetournee.classList.remove('retournee');
                         carteRetournee = null;
@@ -103,7 +105,18 @@
                 window.location.href = '/level3';
             }, 2000);
         }
-    </script>
+            </script>
+            <audio id="musique" loop>
+            <source src="/sons/Skip_to_my_Lou.mp3" type="audio/mpeg">
+        </audio>
 
+<script>
+    const musique = document.getElementById('musique');
+    musique.volume = 0.3;
+    document.addEventListener('click', function lancer() {
+        musique.play().catch(() => {});
+        document.removeEventListener('click', lancer);
+    }, { once: true });
+</script>
 </body>
 </html>

@@ -4,61 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 1 - The Backrooms</title>
-    <!-- data-ref="NTHCMzAnMDAuMyJOIDBCMDcnMzYuNSJX" -->
-    <!-- epoch: juillet 2024 -->
     <link rel="stylesheet" href="/level1/style1.css">
-    <style>
-
-        /* Zone cliquable secrète - modifie bottom/left pour la placer
-           pile sur un élément de ton image de fond (tuyau, porte, etc.) */
-        #zone-secrete {
-            position: fixed;
-            bottom: 72%;   /* endroit caché */
-            left: 11%;     /* endroit caché */
-            width: 80px;
-            height: 80px;
-            cursor: default;
-            z-index: 10;
-            background: transparent;
-            border: none;
-        }
-
-        
-        
-        
-    </style>
 </head>
-<body style="
-    background-image: url('/images/level1.png');
-    height: 100vh;
-    margin: 0;
-">
+<body>
 
-    <div class="container">
-        <h1 class="bug">LEVEL 1</h1>
-        
-        <div class="message">
-            <p>Le bourdonnement mécanique résonne dans tout le parking.</p>
-            <p>Les tuyaux au plafond fuient parfois. <span class="alert">Évitez l'eau</span>.</p>
-            <p>Vous pouvez trouver de la nourriture et de l'eau potable ici.</p>
-            <p>D'autres survivants errent dans ces couloirs.</p>
-            <p><em>Faites-leur confiance à vos risques et périls.</em></p>
+    <!-- Effet ouverture des yeux -->
+    <div id="eye-open"></div>
+    <div id="eye-top"></div>
+    <div id="eye-bottom"></div>
+
+    <!-- VUE TERMINAL -->
+    <div class="container" id="vue-terminal">
+        <div class="terminal">
+            <div class="terminal-header">NIVEAU_01 // PARKING</div>
+            <div class="terminal-body">
+                <span id="terminal-text"></span><span class="cursor" id="cursor">█</span>
+            </div>
+            <div class="terminal-footer" id="terminal-footer">
+                <button class="bouton-toggle" id="btn-explorer">
+                    <span class="toggle-icon">⊞</span> Explorer la pièce
+                </button>
+            </div>
         </div>
-
-        <p style="color: #4b626b; font-size: 0.8rem; letter-spacing: 0.1rem; margin-top: 1rem;">
-            L’issue est là où s’élève le chemin...
-        </p>
     </div>
 
-    <!-- Zone cliquable invisible — à positionner sur l'image de fond -->
-    <div id="zone-secrete" onclick="entrer()"></div>
+    <!-- VUE IMAGE — image centrée avec ratio préservé, zone secrète fixe sur l'image -->
+    <div id="vue-image">
+        <button class="bouton-retour" id="btn-retour">
+            <span class="toggle-icon">⊟</span> Afficher le rapport
+        </button>
+
+        <div id="img-wrapper">
+            <img id="img-level1" src="/images/level1.png" alt="">
+            <div id="zone-secrete" onclick="entrer()"></div>
+        </div>
+    </div>
 
     <script>
+        // ── Typewriter ──────────────────────────────────────────────────
+        const lignes = [
+            "Un parking soutterain?",
+            "Les tuyaux au plafond fuient avec de l'eau polluée.",
+            "Vous trouverez sûrement de la nourriture.",
+            "Peut-être même qu'une issue s'y trouve.",
+            "Peut-être que lui aussi s'y trouve...",
+        ];
+
+        const el     = document.getElementById('terminal-text');
+        const footer = document.getElementById('terminal-footer');
+        const cursor = document.getElementById('cursor');
+        let ligneIndex = 0, charIndex = 0, texteComplet = '';
+
+        function typeChar() {
+            if (ligneIndex >= lignes.length) {
+                cursor.style.display = 'none';
+                setTimeout(() => footer.classList.add('visible'), 600);
+                return;
+            }
+            const ligne = lignes[ligneIndex];
+            if (charIndex < ligne.length) {
+                texteComplet += ligne[charIndex];
+                el.textContent = texteComplet;
+                charIndex++;
+                setTimeout(typeChar, ligne[charIndex - 1] === '.' ? 280 : 32);
+            } else {
+                texteComplet += '\n';
+                el.textContent = texteComplet;
+                ligneIndex++; charIndex = 0;
+                setTimeout(typeChar, 420);
+            }
+        }
+        setTimeout(typeChar, 3400);
+
+        // ── Redimensionne le wrapper pour que l'image garde son ratio ──
+        const img     = document.getElementById('img-level1');
+        const wrapper = document.getElementById('img-wrapper');
+
+        function redimensionner() {
+            const ratioImage   = img.naturalWidth / img.naturalHeight;
+            const ratioFenetre = window.innerWidth / window.innerHeight;
+            let w, h;
+            if (ratioFenetre > ratioImage) {
+                h = window.innerHeight;
+                w = h * ratioImage;
+            } else {
+                w = window.innerWidth;
+                h = w / ratioImage;
+            }
+            wrapper.style.width  = w + 'px';
+            wrapper.style.height = h + 'px';
+        }
+
+        img.addEventListener('load', redimensionner);
+        window.addEventListener('resize', redimensionner);
+        if (img.complete && img.naturalWidth) redimensionner();
+
+        // ── Toggle vues ─────────────────────────────────────────────────
+        const vueTerminal = document.getElementById('vue-terminal');
+        const vueImage    = document.getElementById('vue-image');
+
+        document.getElementById('btn-explorer').addEventListener('click', () => {
+            vueTerminal.classList.add('hidden');
+            vueImage.classList.add('active');
+        });
+
+        document.getElementById('btn-retour').addEventListener('click', () => {
+            vueImage.classList.remove('active');
+            vueTerminal.classList.remove('hidden');
+        });
 
         function entrer() {
             window.location.href = '/level1.1';
         }
     </script>
-
 </body>
 </html>
