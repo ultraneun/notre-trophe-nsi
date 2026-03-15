@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2 - Les Piscines</title>
+    <link rel="stylesheet" href="/level2/style2.css">
+</head>
+<body>
+
+<!-- SCENE -->
+<div id="scene">
+    <img id="scene-img" src="/images/level2.jpg" alt="">
+</div>
+
+<canvas id="drip-canvas"></canvas>
+<div id="water-level"></div>
+
+<div class="hotspot"        id="hs-vannes"    style="left: 28%; top: 55%;" data-target="vannes"></div>
+<div class="hotspot"        id="hs-tuyau"     style="left: 62%; top: 42%;" data-target="tuyau"></div>
+<div class="hotspot"        id="hs-toboggans" style="left: 74%; top: 63%;" data-target="toboggans"></div>
+<div class="hotspot"        id="hs-piscine"   style="left: 18%; top: 72%;" data-target="piscine"></div>
+<div class="hotspot danger" id="hs-monstre"   style="left: 46%; top: 27%;" data-target="monstre"></div>
+<div class="hotspot secret" id="hs-ombre"     style="left: 90%; top: 20%;" data-target="ombre"></div>
+
+<div id="nav-hint">Les couleurs ont un ordre.</div>
+
+<!-- POPUP -->
+<div id="popup">
+    <div class="popup-inner">
+        <div class="popup-title" id="popup-title">—</div>
+        <div id="popup-content"></div>
+        <button class="popup-close" id="popup-close">Continuer</button>
+    </div>
+</div>
+
+<!-- JUMPSCARE -->
+<div id="jumpscare">
+    <img id="jumpscare-img" src="/images/monstre2.png" alt="">
+    <div id="jumpscare-text"></div>
+</div>
+
+<!-- CODE PANEL -->
+<div id="code-panel">
+    <label>_ _ _</label>
+    <div id="code-input-row">
+        <input type="text" id="reponse" maxlength="3" placeholder="???">
+        <button id="btn-valider">↵</button>
+    </div>
+    <div id="code-error"></div>
+</div>
+
+<!-- TRANSITION -->
+<div id="transition-overlay">
+    <video id="transition-video" src="/level2/Transition_niveau.mp4"></video>
+</div>
+
+<!-- AUDIO -->
+<audio id="amb"          loop src="/sons/water-drip-ambiance.mp3"></audio>
+<audio id="sfx-found"         src="/sons/found.mp3"></audio>
+<audio id="sfx-splash"        src="/sons/splash.mp3"></audio>
+<audio id="sfx-jumpscare"     src="/sons/nsasr-jumpscare-sound-effect.mp3"></audio>
+
+<script>
+const state = {
+    codeCorrect: '341',
+    bloque: false
+};
+
+const messagesJumpscare = {
+    '314': "L'ordre des vannes n'est pas respecté. Regardez l'image.",
+    '134': "Vous avez commencé par le rouge. Ce n'est pas lui qui ouvre.",
+    '143': "Le rouge ne vient pas en deuxième.",
+    '413': "Le vert d'abord ? Regardez à nouveau quelle vanne porte le 3.",
+    '431': "Presque. Mais le rouge ferme la séquence.",
+    '333': "Vous n'avez pas encore trouvé les toboggans."
+};
+
+const amb = document.getElementById('amb');
+amb.volume = 0.04;
+document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
+
+function playSfx(id) {
+    const el = document.getElementById(id);
+    if (el) { el.currentTime = 0; el.volume = 0.9; el.play().catch(() => {}); }
+}
+
+const hotspotData = {
+    vannes: {
+        title: 'Le tuyau central',
+        imgChange: '/images/symbole2.jpg',
+        content: `
+            <p class="popup-text">Un long tuyau traverse le mur de bout en bout. Trois vannes y sont fixées. Chacune d'une couleur.</p>
+            <p class="popup-text italic">
+                Vanne <span class="highlight blue">BLEUE</span> — chiffre gravé dans le métal : <span class="highlight blue">3</span><br>
+                Vanne <span class="highlight green">VERTE</span> — chiffre effacé. Illisible.<br>
+                Vanne <span class="highlight red">ROUGE</span> — chiffre effacé. Illisible.
+            </p>
+            <p class="popup-text">En dessous, une plaque rouillée :</p>
+            <p class="popup-text italic"><em>"Les chiffres manquants sont gravés sur les toboggans.<br>Remettez-les dans l'ordre des vannes pour ouvrir le passage."</em></p>
+            <p class="popup-text faded">— Trouvez les chiffres manquants.</p>
+        `
+    },
+    tuyau: {
+        title: 'La salle des machines',
+        imgChange: '/images/level2tuyau.jpg',
+        content: `
+            <p class="popup-text">Des tuyaux partout. L'eau ruisselle le long des murs. Le sol est glissant.</p>
+            <p class="popup-text">Dans le fond de la salle, un toboggan descend du plafond.</p>
+            <p class="popup-text italic">Il est <span class="highlight red">rouge</span>. Entièrement rouge.</p>
+            <p class="popup-text">Vous vous approchez. Sur sa surface, gravé à même le plastique :</p>
+            <p class="popup-text italic"><span class="highlight red">1</span></p>
+            <p class="popup-text">Un seul chiffre. Tracé profondément.</p>
+            <p class="popup-text faded">— Un chiffre. Notez-le.</p>
+        `
+    },
+    toboggans: {
+        title: 'La salle des toboggans',
+        imgChange: '/images/toboggan.png',
+        content: `
+            <p class="popup-text">Trois toboggans tombent du plafond. Ils plongent tous vers le même bassin.</p>
+            <p class="popup-text">Vous cherchez un chiffre. Vous le trouvez sur le toboggan <span class="highlight green">vert</span>.</p>
+            <p class="popup-text">Gravé dans le plastique, à mi-hauteur :</p>
+            <p class="popup-text italic"><span class="highlight green">4</span></p>
+            <p class="popup-text faded">— Un chiffre de plus. Notez-le.</p>
+        `
+    },
+    piscine: {
+        title: 'Le bassin principal',
+        imgChange: '/images/level2.jpg',
+        content: `
+            <p class="popup-text">L'eau est immobile. Trop immobile. Elle ne réfléchit rien correctement.</p>
+            <p class="popup-text">Vous regardez le fond. Des carreaux. Des fissures. Rien d'autre.</p>
+            <p class="popup-text italic">Juste l'eau. Et le silence.</p>
+            <p class="popup-text">Quelque chose bouge sous la surface. Vous préférez ne pas regarder.</p>
+            <p class="popup-text faded">— Ce n'est pas ici.</p>
+        `
+    },
+    monstre: {
+        title: '—',
+        imgChange: '/images/monstre2.png',
+        content: `
+            <p class="popup-text danger-text">Il était dans l'eau.</p>
+            <p class="popup-text danger-text">Il est toujours dans l'eau.</p>
+            <p class="popup-text italic" style="margin-top:1rem;">Vous avez vu <span class="highlight">son reflet</span> avant de le voir lui. Il ne bouge pas. Il regarde.</p>
+            <p class="popup-text faded">— Ne revenez pas ici.</p>
+        `
+    },
+    ombre: {
+        title: '— sous la surface —',
+        imgChange: null,
+        content: `
+            <p class="popup-text" style="font-size:0.76rem; color:#0a2830;">une trace sur le mur. presque rien.</p>
+            <p class="popup-text italic" style="font-size:0.8rem; letter-spacing:0.25rem;"><span class="highlight">les couleurs ont un ordre.</span></p>
+            <p class="popup-text faded">— dans cet ordre.</p>
+        `
+    }
+};
+
+document.querySelectorAll('.hotspot').forEach(hs => {
+    hs.addEventListener('click', () => {
+        const key = hs.dataset.target;
+        const data = hotspotData[key];
+        if (!data) return;
+        if (data.imgChange) {
+            const img = document.getElementById('scene-img');
+            img.style.opacity = 0;
+            setTimeout(() => { img.src = data.imgChange; img.style.opacity = 1; }, 700);
+        }
+        playSfx(key === 'monstre' ? 'sfx-splash' : 'sfx-found');
+        showPopup(data.title, data.content);
+    });
+});
+
+function showPopup(title, content) {
+    document.getElementById('popup-title').textContent = title;
+    document.getElementById('popup-content').innerHTML = content;
+    document.getElementById('popup').classList.add('active');
+}
+document.getElementById('popup-close').addEventListener('click', () => {
+    document.getElementById('popup').classList.remove('active');
+});
+
+document.getElementById('btn-valider').addEventListener('click', validerCode);
+document.getElementById('reponse').addEventListener('keydown', e => {
+    if (e.key === 'Enter') validerCode();
+});
+
+function validerCode() {
+    if (state.bloque) return;
+    const val = document.getElementById('reponse').value.trim();
+    document.getElementById('reponse').value = '';
+    if (val === state.codeCorrect) { lancerTransition(); return; }
+    const msg = messagesJumpscare[val] || "Ce n'est pas le bon ordre. Relisez les vannes.";
+    declencherJumpscare(msg);
+}
+
+function declencherJumpscare(message) {
+    state.bloque = true;
+    amb.pause();
+    const js = document.getElementById('jumpscare');
+    const jsText = document.getElementById('jumpscare-text');
+    playSfx('sfx-jumpscare');
+    js.classList.add('active');
+    setTimeout(() => { jsText.innerHTML = 'IL VOUS A VU.'; jsText.classList.add('visible'); }, 380);
+    setTimeout(() => { jsText.innerHTML = `IL VOUS A VU.<br><span class="js-reason">${message}</span>`; }, 1050);
+    setTimeout(() => {
+        js.classList.remove('active');
+        jsText.classList.remove('visible');
+        jsText.innerHTML = '';
+        state.bloque = false;
+        amb.play().catch(() => {});
+    }, 3500);
+}
+
+function lancerTransition() {
+    amb.pause();
+    const overlay = document.getElementById('transition-overlay');
+    const video = document.getElementById('transition-video');
+    overlay.classList.add('active');
+    video.play();
+    video.addEventListener('ended', () => { window.location.href = '/level3'; });
+}
+
+(function initDrips() {
+    const canvas = document.getElementById('drip-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const drips = [];
+
+    function createDrip() {
+        drips.push({
+            x: Math.random() * canvas.width,
+            y: -10,
+            radius: Math.random() * 1.8 + 0.8,
+            speed: Math.random() * 1.4 + 0.4,
+            opacity: Math.random() * 0.25 + 0.04,
+            trail: []
+        });
+    }
+
+    function animateDrips() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (Math.random() < 0.012) createDrip();
+        for (let i = drips.length - 1; i >= 0; i--) {
+            const d = drips[i];
+            d.trail.push({ x: d.x, y: d.y });
+            if (d.trail.length > 20) d.trail.shift();
+            d.y += d.speed;
+            d.trail.forEach((pt, idx) => {
+                ctx.beginPath();
+                ctx.arc(pt.x, pt.y, d.radius * 0.45, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(0, 180, 210, ${(idx / d.trail.length) * d.opacity * 0.45})`;
+                ctx.fill();
+            });
+            ctx.beginPath();
+            ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0, 200, 230, ${d.opacity})`;
+            ctx.fill();
+            if (d.y > canvas.height + 20) drips.splice(i, 1);
+        }
+        requestAnimationFrame(animateDrips);
+    }
+
+    animateDrips();
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+})();
+</script>
+</body>
+</html>

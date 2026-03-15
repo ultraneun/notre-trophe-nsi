@@ -6,21 +6,62 @@
     <title>Level 2 - The Backrooms</title>
     <link rel="stylesheet" href="/level2/style2.css">
 </head>
+<body class="intro">
 
-<body>
-    
-    <div class="container">
-        <h1 class="bug">LEVEL 2</h1>
-        
-        <div class="message">
-            <p>Les tuyaux gouttent constamment dans les couloirs de maintenance.</p>
-            <p>L'eau monte lentement. <span class="alert">Ne restez pas trop longtemps</span>.</p>
-            <p>Les salles des machines émettent des bruits inquiétants.</p>
-            <p>Certaines portes mènent à des piscines abandonnées.</p>
-            <p><em>L'eau n'est pas potable.</em></p>
+    <div class="container" id="accueil">
+        <div class="terminal">
+            <div class="terminal-header">NIVEAU_02 // BACKROOMS — ZONE AQUATIQUE</div>
+            <div class="terminal-body">
+                <span id="terminal-text"></span><span class="cursor">█</span>
+            </div>
+            <div class="terminal-footer" id="terminal-footer">
+                <button class="bouton" id="btn-entrer">Descendre dans l'eau</button>
+            </div>
         </div>
-        
-        <button class="bouton">Découvrir les piscines</button>
     </div>
+
+    <script>
+        const lignes = [
+            "Les tuyaux gouttent constamment.",
+            "L'eau monte. Lentement. Sans s'arrêter.",
+            "Les salles des machines émettent des bruits que vous ne reconnaissez pas.",
+            "Certaines portes mènent à des piscines abandonnées.",
+            "L'eau n'est pas potable.",
+            "Quelque chose vit ici. Sous la surface.",
+        ];
+
+        const el = document.getElementById('terminal-text');
+        const footer = document.getElementById('terminal-footer');
+        let ligneIndex = 0;
+        let charIndex = 0;
+        let texteComplet = '';
+
+        function typeChar() {
+            if (ligneIndex >= lignes.length) {
+                setTimeout(() => footer.classList.add('visible'), 600);
+                return;
+            }
+            const ligne = lignes[ligneIndex];
+            if (charIndex < ligne.length) {
+                texteComplet += ligne[charIndex];
+                el.textContent = texteComplet;
+                charIndex++;
+                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                setTimeout(typeChar, delay);
+            } else {
+                texteComplet += '\n';
+                el.textContent = texteComplet;
+                ligneIndex++;
+                charIndex = 0;
+                setTimeout(typeChar, 420);
+            }
+        }
+
+        setTimeout(typeChar, 800);
+
+        document.getElementById('btn-entrer').addEventListener('click', function () {
+            window.location.href = '/level2.1';
+        });
+    </script>
 </body>
 </html>
