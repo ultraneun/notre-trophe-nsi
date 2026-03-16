@@ -4,10 +4,12 @@ app = Flask(__name__)
 app.secret_key = "backrooms_secret"
 
 FLAGS = {
-    1: {"flag": "BCKRM{bon_début}", "points": 100, "redirect": "/level2"},
-    2: {"flag": "06:10",            "points": 100, "redirect": "/level2"},
-    3: {"flag": "5130003",           "points": 150, "redirect": "/level1"},
-    4: {"flag": "007365",          "points": 150, "redirect": "/level1"},
+    1: {"flag": "391",       "points": 100, "redirect": "/level1"},  # level 0
+    2: {"flag": "06:10",     "points": 50,  "redirect": "/level2"},  # level 1 - code 1
+    3: {"flag": "5130003",   "points": 25,  "redirect": "/level2"},  # level 1 - code 2
+    4: {"flag": "007365",    "points": 25,  "redirect": "/level2"},  # level 1 - code 3
+                                                                      # level 2 - en cours
+    5: {"flag": "6515",      "points": 150, "redirect": "/level4"},  # level 3.5
 }
 
 @app.route('/')

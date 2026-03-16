@@ -64,7 +64,6 @@
 <script>
     // === STATE ===
     const state = {
-        codeCorrect: '391',
         bloque: false
     };
  
@@ -188,20 +187,25 @@
         if (e.key === 'Enter') validerCode();
     });
  
-    function validerCode() {
+    async function validerCode() {
         if (state.bloque) return;
- 
+
         const val = document.getElementById('reponse').value.trim();
         document.getElementById('reponse').value = '';
- 
-        if (val === state.codeCorrect) {
+
+        const res = await fetch('/verifier/1', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ flag: val })
+        });
+        const data = await res.json();
+
+        if (data.succes) {
             lancerTransition();
-            return;
+        } else {
+            const msg = messagesJumpscare[val] || "Ce n'est pas le bon ordre. Relisez tout.";
+            declencherJumpscare(msg);
         }
- 
-        // Toute mauvaise combinaison → jumpscare avec message explicatif
-        const msg = messagesJumpscare[val] || "Ce n'est pas le bon ordre. Relisez tout.";
-        declencherJumpscare(msg);
     }
  
     // === JUMPSCARE ===
