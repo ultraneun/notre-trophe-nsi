@@ -51,9 +51,7 @@
 </div>
 
 <!-- TRANSITION -->
-<div id="transition-overlay">
-    <video id="transition-video" src="/level2/Transition_niveau.mp4"></video>
-</div>
+<div id="transition-overlay"></div>
 
 <!-- AUDIO -->
 <audio id="amb"          loop src="/sons/water-drip-ambiance.mp3"></audio>
@@ -214,12 +212,12 @@ function declencherJumpscare(message) {
 }
 
 function lancerTransition() {
-    amb.pause();
+    if (amb) amb.pause();
     const overlay = document.getElementById('transition-overlay');
-    const video = document.getElementById('transition-video');
     overlay.classList.add('active');
-    video.play();
-    video.addEventListener('ended', () => { window.location.href = '/level3'; });
+    setTimeout(() => {
+        window.location.href = '../level3/level3.html';
+    }, 2200);
 }
 
 (function initDrips() {
