@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 4.1 - The Backrooms</title>
+    <link rel="stylesheet" href="/level4/style4.css">
+    <style>
+        body {
+            animation: fade-in-page 0.8s ease forwards;
+            background-image: url('/images/level4_1.jpg');
+            background-size: cover; background-position: center;
+        }
+        #layout {
+            display: flex; align-items: flex-start;
+            gap: 2.5rem; max-width: 960px; width: 100%;
+        }
+        #col-left  { flex: 1; min-width: 0; }
+        #col-right { flex-shrink: 0; width: 460px; }
+
+        /* ── Lecteur cassette ── */
+        #player {
+            background: rgba(4,6,8,0.96);
+            border: 1px solid #1a2830;
+            padding: 1.2rem 1.4rem;
+        }
+        #player-label {
+            font-size: 0.52rem; letter-spacing: 0.2rem;
+            color: #1a3040; text-transform: uppercase; margin-bottom: 1rem;
+        }
+
+        /* Grande preview */
+        #preview {
+            width: 100%; height: 190px;
+            background: #010305; border: 1px solid #0a1820;
+            position: relative; overflow: hidden; margin-bottom: 0.8rem;
+        }
+        #preview-img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.72) saturate(0.5);
+            display: none;
+        }
+        #preview-empty {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 0.5rem;
+        }
+        #preview-empty-icon { font-size: 1.4rem; opacity: 0.15; }
+        #preview-empty-txt {
+            font-size: 0.52rem; color: #1a3040;
+            letter-spacing: 0.18rem; text-transform: uppercase;
+        }
+        /* Timecode flouté — volontairement illisible */
+        #preview-tc {
+            position: absolute; bottom: 7px; left: 9px;
+            font-size: 0.7rem; color: rgba(255,255,255,0.6);
+            letter-spacing: 0.07rem; pointer-events: none;
+            filter: blur(4px); user-select: none;
+        }
+        #preview-scan {
+            position: absolute; inset: 0; pointer-events: none;
+            background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
+        }
+        /* Note d'enquête sur la preview */
+        #preview-note {
+            position: absolute; top: 8px; right: 8px;
+            background: rgba(4,6,8,0.88);
+            border-left: 2px solid #c8a96e44;
+            padding: 5px 8px; max-width: 160px;
+            font-size: 0.55rem; color: #8a9a88;
+            font-style: italic; line-height: 1.6;
+            display: none;
+        }
+
+        /* Film strip — 4 scènes mélangées */
+        #strip {
+            display: flex; gap: 5px; margin-bottom: 0.9rem;
+        }
+        .frame {
+            flex: 1; height: 60px;
+            border: 2px solid #0a1820;
+            background: #010305;
+            position: relative; cursor: pointer;
+            transition: border-color 0.2s;
+            overflow: hidden;
+        }
+        .frame:hover:not(.used) { border-color: #c8a96e44; }
+        .frame.selected { border-color: #c8a96e; }
+        .frame.used { opacity: 0.3; cursor: default; }
+        .frame img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: brightness(0.65) saturate(0.4);
+            /* Timecode masqué par un bandeau en bas */
+        }
+        .frame-mask {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 14px; background: #010305;
+        }
+        .frame-id {
+            position: absolute; top: 3px; left: 4px;
+            font-size: 0.42rem; color: #2a4050;
+            letter-spacing: 0.06rem;
+        }
+
+        /* Zone séquence */
+        #seq-zone {
+            background: #020508; border: 1px solid #0a1820;
+            padding: 0.7rem; margin-bottom: 0.7rem;
+        }
+        #seq-label {
+            font-size: 0.5rem; letter-spacing: 0.15rem;
+            color: #1a3040; text-transform: uppercase; margin-bottom: 0.6rem;
+        }
+        #seq-row { display: flex; gap: 4px; align-items: center; }
+        .seq-slot {
+            flex: 1; height: 50px;
+            border: 1px dashed #1a3040; background: #010305;
+            position: relative; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.2s; overflow: hidden;
+        }
+        .seq-slot.filled { border-style: solid; border-color: #c8a96e22; }
+        .seq-slot.filled:hover { border-color: #cc444444; }
+        .seq-slot img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.6) saturate(0.35); }
+        .seq-num {
+            position: absolute; bottom: 2px; right: 3px;
+            font-size: 0.4rem; color: #1a3040; pointer-events: none;
+        }
+        .seq-sep { color: #1a3040; font-size: 0.55rem; flex-shrink: 0; }
+
+        /* Indices narratifs sous les slots */
+        #indices-row {
+            display: flex; gap: 4px; margin-top: 5px;
+        }
+        .indice-cell {
+            flex: 1; min-height: 32px;
+            font-size: 0.48rem; color: #3a5a5e;
+            font-style: italic; line-height: 1.5;
+            padding: 3px 4px;
+            border-left: 1px solid #0a1820;
+        }
+        .indice-cell.revealed { color: #6a8a8e; }
+
+        #player-status {
+            font-size: 0.62rem; color: #4a6a72;
+            font-family: 'Courier New', monospace; min-height: 1rem;
+        }
+        #player-status.ok  { color: #5a9a6a; }
+        #player-status.err { color: #8a3030; }
+
+        #flag-input {
+            background: #080c0e; color: #a0a0a0;
+            border: 3px solid #1a2830; padding: 0.7rem 1.4rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem; letter-spacing: 0.2rem;
+            margin-bottom: 1rem; outline: none; width: 200px; text-align: center;
+        }
+        #flag-input:focus { border-color: #c8a96e; }
+    </style>
+</head>
+<body>
+    <a class="retour-lien" href="/level4?back=1">⊟ Retour</a>
+    <div class="container">
+        <div id="layout">
+
+            <!-- Gauche : contexte + validation -->
+            <div id="col-left">
+                <div class="message" style="max-width:340px;">
+                    <p>Une cassette a été retrouvée dans la maison.</p>
+                    <p>Quelqu'un filmait cette nuit-là.</p>
+                    <p><em>Les images ont été découpées et mélangées.</em></p>
+                    <p style="font-size:0.76rem; color:#4a5a44; margin-top:0.5rem; line-height:1.8;">
+                        Les timecodes ont été effacés.<br>
+                        Reconstituez l'ordre en observant<br>
+                        <strong style="color:#6a8a72;">ce qui se passe dans chaque scène.</strong>
+                    </p>
+                </div>
+
+                <!-- Journal d'enquête -->
+                <div id="journal" style="
+                    background:rgba(4,6,8,0.92); border-left:2px solid #1a2830;
+                    padding:1rem 1.2rem; max-width:340px; margin-bottom:1.5rem;
+                ">
+                    <p style="font-size:0.5rem;color:#1a3040;letter-spacing:0.18rem;text-transform:uppercase;margin-bottom:0.6rem;">JOURNAL D'ENQUÊTE</p>
+                    <div id="journal-entries" style="font-size:0.66rem;color:#3a5040;line-height:2;font-style:italic;">
+                        Sélectionnez une scène pour l'analyser.
+                    </div>
+                </div>
+
+                <input type="text" id="flag-input" placeholder="· · · ·" maxlength="6" readonly>
+                <br><br>
+                <button class="bouton" id="valider" disabled>Valider</button>
+                <p id="message" style="margin-top:1rem; font-family:'Courier New',monospace; font-size:0.8rem;"></p>
+            </div>
+
+            <!-- Droite : lecteur -->
+            <div id="col-right">
+                <div id="player">
+                    <p id="player-label">CASSETTE — ARCHIVES — 07.03.1991</p>
+
+                    <!-- Preview -->
+                    <div id="preview">
+                        <img id="preview-img" src="" alt="">
+                        <div id="preview-empty">
+                            <div id="preview-empty-icon">▶</div>
+                            <div id="preview-empty-txt">Sélectionnez une scène</div>
+                        </div>
+                        <div id="preview-tc">PM ??:??:?? MAR.07 1991</div>
+                        <div id="preview-scan"></div>
+                        <div id="preview-note"></div>
+                    </div>
+
+                    <!-- Strip -->
+                    <div id="strip"></div>
+
+                    <!-- Séquence -->
+                    <div id="seq-zone">
+                        <p id="seq-label">reconstitution — première scène → dernière scène</p>
+                        <div id="seq-row"></div>
+                        <div id="indices-row"></div>
+                    </div>
+
+                    <p id="player-status">cliquez sur une scène, puis sur une position</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+// ══ DONNÉES ════════════════════════════════════════════════
+// Ordre correct : A → B → C → D
+// Les timecodes sont CACHÉS. Le joueur doit déduire depuis les indices visuels/narratifs.
+
+const SCENES = {
+    'A': {
+        img: '/images/level4_5.jpg',
+        // Indice visuel : intérieur, lumière allumée, porte fermée
+        analyse: [
+            'Intérieur d\'une maison.',
+            'Les lumières sont allumées.',
+            'La porte du fond est fermée.',
+            'Quelqu\'un tient la caméra depuis le couloir.',
+        ],
+        indice_slot: 'intérieur — lumières allumées',
+    },
+    'B': {
+        img: '/images/level4_4.jpg',
+        // Indice visuel : route vide, nuit, lune visible, pas de brume encore
+        analyse: [
+            'Dehors. Une route déserte.',
+            'La lune est encore haute.',
+            'Pas de brume visible.',
+            'La personne vient de sortir.',
+        ],
+        indice_slot: 'dehors — lune haute, pas de brume',
+    },
+    'C': {
+        img: '/images/level4_8.jpg',
+        // Indice visuel : carrefour, lampadaire allumé, légère brume
+        analyse: [
+            'Un carrefour. Un lampadaire allumé.',
+            'La brume commence à apparaître.',
+            'La personne marche depuis un moment.',
+            'Le quartier semble plus loin derrière.',
+        ],
+        indice_slot: 'carrefour — brume naissante',
+    },
+    'D': {
+        img: '/images/level4_1.jpg',
+        // Indice visuel : parc, brume dense, lampe torche à la main
+        analyse: [
+            'Un parc. Brume très dense.',
+            'La personne utilise une lampe torche.',
+            'Elle est loin de toute habitation.',
+            'Un long moment s\'est écoulé.',
+        ],
+        indice_slot: 'parc — brume dense, lampe torche',
+    },
+};
+
+const CORRECT  = ['A','B','C','D'];
+const SHUFFLED = ['C','A','D','B']; // ordre affiché dans le strip
+
+let selected = null;
+const slots  = [null, null, null, null];
+
+// ══ BUILD STRIP ════════════════════════════════════════════
+const stripEl = document.getElementById('strip');
+SHUFFLED.forEach((sid, i) => {
+    const el = document.createElement('div');
+    el.className = 'frame';
+    el.dataset.sid = sid;
+    el.innerHTML = `
+        <img src="${SCENES[sid].img}" alt="">
+        <div class="frame-mask"></div>
+        <div class="frame-id">SCÈNE ${String.fromCharCode(65+i)}</div>
+    `;
+    el.addEventListener('click', () => clickFrame(sid));
+    stripEl.appendChild(el);
+});
+
+// ══ BUILD SLOTS ════════════════════════════════════════════
+const seqRow    = document.getElementById('seq-row');
+const indicesRow= document.getElementById('indices-row');
+
+for(let i=0; i<4; i++){
+    if(i > 0){
+        const sep = document.createElement('div');
+        sep.className = 'seq-sep'; sep.textContent = '→';
+        seqRow.appendChild(sep);
+    }
+    const slot = document.createElement('div');
+    slot.className = 'seq-slot';
+    slot.dataset.pos = i;
+    slot.innerHTML = `<span class="seq-num">${i+1}</span>`;
+    slot.addEventListener('click', () => clickSlot(i));
+    seqRow.appendChild(slot);
+
+    const ind = document.createElement('div');
+    ind.className = 'indice-cell';
+    ind.id = `ind-${i}`;
+    indicesRow.appendChild(ind);
+}
+
+// ══ INTERACTIONS ═══════════════════════════════════════════
+function clickFrame(sid){
+    // Si déjà placé → retirer
+    const pos = slots.indexOf(sid);
+    if(pos >= 0){
+        slots[pos] = null;
+        renderSlots();
+        restoreFrame(sid);
+    }
+    selected = (selected === sid) ? null : sid;
+    renderFrames();
+    updatePreview();
+    updateJournal();
+}
+
+function clickSlot(pos){
+    if(slots[pos] !== null){
+        // Libérer
+        const sid = slots[pos];
+        slots[pos] = null;
+        restoreFrame(sid);
+        renderSlots();
+        checkDone();
+        return;
+    }
+    if(!selected) return;
+    const existPos = slots.indexOf(selected);
+    if(existPos >= 0) slots[existPos] = null;
+    slots[pos] = selected;
+    greyFrame(selected);
+    selected = null;
+    renderFrames();
+    renderSlots();
+    updatePreview();
+    checkDone();
+}
+
+function renderFrames(){
+    document.querySelectorAll('.frame').forEach(f=>{
+        f.classList.toggle('selected', f.dataset.sid === selected);
+    });
+}
+function greyFrame(sid){
+    document.querySelectorAll('.frame').forEach(f=>{
+        if(f.dataset.sid === sid) f.classList.add('used');
+    });
+}
+function restoreFrame(sid){
+    document.querySelectorAll('.frame').forEach(f=>{
+        if(f.dataset.sid === sid) f.classList.remove('used');
+    });
+}
+
+function renderSlots(){
+    for(let i=0; i<4; i++){
+        const slot = document.querySelector(`.seq-slot[data-pos="${i}"]`);
+        const ind  = document.getElementById(`ind-${i}`);
+        slot.innerHTML = `<span class="seq-num">${i+1}</span>`;
+        slot.classList.remove('filled');
+        ind.textContent = '';
+        ind.classList.remove('revealed');
+        if(slots[i]){
+            const sc = SCENES[slots[i]];
+            slot.innerHTML = `<img src="${sc.img}" alt=""><span class="seq-num">${i+1}</span>`;
+            slot.classList.add('filled');
+            ind.textContent = sc.indice_slot;
+            ind.classList.add('revealed');
+        }
+    }
+}
+
+function updatePreview(){
+    const pImg   = document.getElementById('preview-img');
+    const pEmpty = document.getElementById('preview-empty');
+    const pNote  = document.getElementById('preview-note');
+    if(selected){
+        pImg.src = SCENES[selected].img;
+        pImg.style.display = 'block';
+        pEmpty.style.display = 'none';
+        pNote.style.display = 'block';
+        pNote.textContent = SCENES[selected].analyse[Math.floor(Math.random()*SCENES[selected].analyse.length)];
+    } else {
+        pImg.style.display = 'none';
+        pEmpty.style.display = 'flex';
+        pNote.style.display = 'none';
+    }
+}
+
+function updateJournal(){
+    const entries = document.getElementById('journal-entries');
+    if(!selected){ entries.style.color='#3a5040'; entries.textContent='Sélectionnez une scène pour l\'analyser.'; return; }
+    const sc = SCENES[selected];
+    entries.style.color = '#6a8a78';
+    entries.innerHTML = sc.analyse.map(l=>`— ${l}`).join('<br>');
+}
+
+function checkDone(){
+    const status = document.getElementById('player-status');
+    const fi     = document.getElementById('flag-input');
+    const btn    = document.getElementById('valider');
+
+    if(slots.some(s => s === null)){
+        status.className=''; status.textContent='placez les 4 scènes dans l\'ordre';
+        fi.value=''; btn.disabled=true; return;
+    }
+    const ok = slots.every((s,i) => s === CORRECT[i]);
+    if(ok){
+        status.className='ok'; status.textContent='séquence correcte.';
+        fi.value='4301'; btn.disabled=false;
+    } else {
+        status.className='err'; status.textContent='ordre incorrect — observez les détails de chaque scène.';
+        fi.value=''; btn.disabled=true;
+    }
+}
+
+// ══ VALIDATION ═════════════════════════════════════════════
+document.getElementById('valider').addEventListener('click', async ()=>{
+    const val = document.getElementById('flag-input').value.trim();
+    const msg = document.getElementById('message');
+    const rep = await fetch('/verifier/41',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({flag:val})
+    });
+    const data = await rep.json();
+    if(data.succes){
+        msg.style.color='#5a9a6a'; msg.textContent='Séquence enregistrée.';
+        document.getElementById('valider').disabled=true;
+        setTimeout(()=>{ window.location.href='/level4?done=4.1'; },1600);
+    } else {
+        msg.style.color='#cc5555'; msg.textContent='Incorrect.';
+    }
+});
+</script>
+</body>
+</html>

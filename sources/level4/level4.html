@@ -1,16 +1,303 @@
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
-
     <meta charset="UTF-8">
-    <title>Mon Site</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 4 - The Backrooms</title>
+    <link rel="stylesheet" href="/level4/style4.css">
 </head>
-
 <body>
-    
-</body>
 
+    <div id="transition-out"></div>
+
+    <!-- ══ FOUND FOOTAGE INTRO ══════════════════════════════ -->
+    <div id="intro">
+        <!-- L'image en fond qui tremble -->
+        <div id="ff-bg"></div>
+
+        <!-- Scanlines -->
+        <div id="ff-scanlines"></div>
+
+        <!-- Barre de glitch horizontale -->
+        <div id="ff-glitch"></div>
+
+        <!-- HUD caméra -->
+        <div id="ff-hud-tl">
+            <span id="ff-rec"><span id="ff-dot"></span>REC</span>
+        </div>
+        <div id="ff-hud-tr">
+            <span id="ff-bat">▮▮▮▯</span>
+        </div>
+        <div id="ff-hud-bl" id="ff-tc">PM &nbsp;0:00:40<br>MAR.07 1991</div>
+        <div id="ff-hud-br">BANDE_04</div>
+
+        <!-- Message central qui apparaît -->
+        <div id="ff-center">
+            <div id="ff-msg"></div>
+        </div>
+    </div>
+
+    <!-- ══ VUE PRINCIPALE ══════════════════════════════════ -->
+    <div id="scene">
+        <!-- L'image couvre tout l'écran -->
+        <div id="scene-bg"></div>
+
+        <!-- Scanlines permanentes légères -->
+        <div id="scene-scanlines"></div>
+
+        <!-- VHS timestamp -->
+        <div id="scene-tc">PM <span id="tc-time">0:00:40</span><br>MAR.07 1991</div>
+
+        <!-- REC indicateur -->
+        <div id="scene-rec"><span id="scene-dot"></span>REC</div>
+
+        <!-- Points d'interaction pulsants -->
+        <!-- Point 4.1 : sur la lampe du lampadaire -->
+        <div class="hotspot" id="hs-41" data-dest="/level4.3" data-label="SIGNAL">
+            <div class="hs-ring"></div>
+            <div class="hs-dot"></div>
+        </div>
+
+        <!-- Point 4.2 : sur la maison (fenêtre du milieu) -->
+        <div class="hotspot" id="hs-42" data-dest="/level4.2" data-label="BÂTIMENT">
+            <div class="hs-ring"></div>
+            <div class="hs-dot"></div>
+        </div>
+
+        <!-- Point 4.3 : sur le timecode VHS bas-gauche (la cassette qui tourne) -->
+        <div class="hotspot" id="hs-43" data-dest="/level4.1" data-label="CASSETTE">
+            <div class="hs-ring"></div>
+            <div class="hs-dot"></div>
+        </div>
+
+        <!-- Point finale : centre de la route, perspective fuyante -->
+        <div class="hotspot" id="hs-finale" data-dest="finale" data-label="SORTIE" data-verrou="true">
+            <div class="hs-ring"></div>
+            <div class="hs-dot"></div>
+        </div>
+
+        <!-- Labels au hover -->
+        <div id="hs-tooltip"></div>
+
+        <!-- HUD progression discret -->
+        <div id="scene-hud">
+            <div class="prog-item" id="prog-41"></div>
+            <div class="prog-item" id="prog-42"></div>
+            <div class="prog-item" id="prog-43"></div>
+        </div>
+    </div>
+
+    <!-- Popup verrou -->
+    <div id="popup-verrou">
+        <div id="popup-contenu">
+            <p id="popup-titre">ACCÈS REFUSÉ</p>
+            <p id="popup-texte"></p>
+            <button class="bouton" onclick="fermerPopup()">Compris</button>
+        </div>
+    </div>
+
+    <!-- Popup code final -->
+    <div id="popup-final">
+        <div id="popup-final-contenu">
+            <p class="popup-label">ACCÈS NIVEAU SUIVANT</p>
+            <p class="popup-sub">Code — 6 chiffres</p>
+            <div id="code-wrap" onclick="document.getElementById('code-raw').focus()">
+                <div id="code-display">_ _ _ _ _ _</div>
+                <input type="tel" id="code-raw" maxlength="6" style="position:absolute;opacity:0;width:1px;height:1px;">
+            </div>
+            <div style="display:flex;gap:10px;justify-content:center;margin-top:1.4rem;">
+                <button class="bouton" id="btn-retour-final">← Retour</button>
+                <button class="bouton" id="btn-valider-final">Valider</button>
+            </div>
+            <p id="final-msg"></p>
+        </div>
+    </div>
+
+<script>
+// ══ FOUND FOOTAGE INTRO ════════════════════════════════════
+const intro   = document.getElementById('intro');
+const scene   = document.getElementById('scene');
+const overlay = document.getElementById('transition-out');
+const ffMsg   = document.getElementById('ff-msg');
+const ffGlitch= document.getElementById('ff-glitch');
+
+// Tremblement caméra
+let shakeActive = true;
+let shakeX=0, shakeY=0, shakeR=0;
+function updateShake(){
+    if(!shakeActive) return;
+    shakeX = (Math.random()-0.5)*6;
+    shakeY = (Math.random()-0.5)*4;
+    shakeR = (Math.random()-0.5)*0.8;
+    document.getElementById('ff-bg').style.transform =
+        `translate(${shakeX}px,${shakeY}px) rotate(${shakeR}deg) scale(1.04)`;
+    setTimeout(updateShake, 60 + Math.random()*80);
+}
+updateShake();
+
+// Glitch bars
+setInterval(()=>{
+    if(Math.random()<0.3){
+        ffGlitch.style.top    = Math.random()*90+'%';
+        ffGlitch.style.height = (Math.random()*10+2)+'px';
+        ffGlitch.style.opacity= '1';
+        ffGlitch.style.background = Math.random()<0.5
+            ? 'rgba(255,255,255,0.55)'
+            : 'rgba(200,169,110,0.4)';
+        setTimeout(()=> ffGlitch.style.opacity='0', 60+Math.random()*120);
+    }
+}, 250);
+
+// Message séquencé
+const messages = [
+    { t: 800,  txt: '' },
+    { t: 1600, txt: '// BANDE TROUVÉE' },
+    { t: 3200, txt: '// BANDE TROUVÉE\n// PROPRIÉTÉ INCONNUE' },
+    { t: 5000, txt: '// BANDE TROUVÉE\n// PROPRIÉTÉ INCONNUE\n// 07 MARS 1991 — 00:40' },
+    { t: 6800, txt: '// BANDE TROUVÉE\n// PROPRIÉTÉ INCONNUE\n// 07 MARS 1991 — 00:40\n\n— APPUYEZ POUR LIRE —' },
+];
+messages.forEach(m => {
+    setTimeout(()=>{ ffMsg.textContent = m.txt; }, m.t);
+});
+
+// Sortie intro
+let introReady = false;
+setTimeout(()=>{ introReady=true; }, 3000);
+
+function exitIntro(){
+    if(!introReady) return;
+    shakeActive = false;
+    intro.classList.add('intro-exit');
+    setTimeout(()=>{
+        intro.style.display='none';
+        scene.classList.add('active');
+        majHUD(); startTcTick();
+    }, 700);
+}
+intro.addEventListener('click', exitIntro);
+document.addEventListener('keydown', ()=>{ if(intro.style.display!=='none') exitIntro(); });
+
+// ══ SCÈNE PRINCIPALE ══════════════════════════════════════
+function estDebloque(id){ return sessionStorage.getItem('lvl4_'+id)==='1'; }
+
+function majHUD(){
+    ['41','42','43'].forEach(id=>{
+        const ok = estDebloque('4.'+id.slice(-1));
+        document.getElementById('prog-'+id).classList.toggle('done', ok);
+        // Le hotspot correspondant change d'aspect si résolu
+        document.getElementById('hs-'+id).classList.toggle('resolved', ok);
+    });
+    const all = estDebloque('4.1') && estDebloque('4.2') && estDebloque('4.3');
+    document.getElementById('hs-finale').classList.toggle('ready', all);
+}
+
+// TC qui tourne
+let tcSec = 40;
+function startTcTick(){
+    setInterval(()=>{
+        tcSec = (tcSec+1) % 3600;
+        const m = String(Math.floor(tcSec/60)).padStart(2,'0');
+        const s = String(tcSec%60).padStart(2,'0');
+        document.getElementById('tc-time').textContent = `0:${m}:${s}`;
+    }, 1000);
+}
+
+// Tooltip
+const tooltip = document.getElementById('hs-tooltip');
+document.querySelectorAll('.hotspot').forEach(hs=>{
+    hs.addEventListener('mouseenter', ()=>{
+        tooltip.textContent = '▶ '+hs.dataset.label;
+        tooltip.style.opacity='1';
+    });
+    hs.addEventListener('mousemove', e=>{
+        tooltip.style.left=(e.clientX+16)+'px';
+        tooltip.style.top=(e.clientY-8)+'px';
+    });
+    hs.addEventListener('mouseleave', ()=>{ tooltip.style.opacity='0'; });
+
+    hs.addEventListener('click', function(){
+        const dest=this.dataset.dest, verrou=this.dataset.verrou==='true';
+        if(verrou){
+            if(estDebloque('4.1')&&estDebloque('4.2')&&estDebloque('4.3'))
+                ouvrirFinal();
+            else ouvrirVerrou();
+            return;
+        }
+        // Glitch de transition
+        scene.classList.add('glitch-out');
+        setTimeout(()=>overlay.classList.add('active'), 220);
+        setTimeout(()=>{ window.location.href=dest; }, 800);
+    });
+});
+
+// ══ POPUPS ════════════════════════════════════════════════
+function ouvrirVerrou(){
+    const nb=[estDebloque('4.1'),estDebloque('4.2'),estDebloque('4.3')].filter(Boolean).length;
+    let msg='Passage bloqué.';
+    if(nb===0)      msg+='<br><br>Trois choses vous échappent encore.';
+    else if(nb===1) msg+='<br><br>Deux éléments manquent.';
+    else            msg+='<br><br>Il vous manque un dernier élément.';
+    document.getElementById('popup-texte').innerHTML=msg;
+    document.getElementById('popup-verrou').classList.add('active');
+}
+function fermerPopup(){ document.getElementById('popup-verrou').classList.remove('active'); }
+
+function ouvrirFinal(){
+    document.getElementById('popup-final').classList.add('active');
+    setTimeout(()=>document.getElementById('code-raw').focus(),100);
+}
+document.getElementById('btn-retour-final').addEventListener('click',()=>{
+    document.getElementById('popup-final').classList.remove('active');
+});
+
+function fmtCode(v){ const c=v.padEnd(6,'_'); return `${c[0]} ${c[1]} ${c[2]} ${c[3]} ${c[4]} ${c[5]}`; }
+document.getElementById('code-raw').addEventListener('input',function(){
+    this.value=this.value.replace(/\D/g,'').slice(0,6);
+    document.getElementById('code-display').textContent=fmtCode(this.value);
+});
+document.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&document.getElementById('popup-final').classList.contains('active')) validerFinal();
+});
+document.getElementById('btn-valider-final').addEventListener('click', validerFinal);
+
+function validerFinal(){
+    const val=document.getElementById('code-raw').value;
+    const msg=document.getElementById('final-msg');
+    if(val==='431907'){
+        msg.style.color='#7acc88'; msg.textContent='Accès accordé.';
+        setTimeout(()=>{
+            document.getElementById('popup-final').classList.remove('active');
+            scene.classList.add('glitch-out');
+            overlay.classList.add('active');
+            setTimeout(()=>{ window.location.href='/level5'; },800);
+        },900);
+    } else {
+        msg.style.color='#cc5555'; msg.textContent='Code refusé.';
+        document.getElementById('code-display').classList.add('shake');
+        setTimeout(()=>{
+            document.getElementById('code-raw').value='';
+            document.getElementById('code-display').textContent=fmtCode('');
+            document.getElementById('code-display').classList.remove('shake');
+            msg.textContent='';
+            document.getElementById('code-raw').focus();
+        },700);
+    }
+}
+
+// Retour ?done= ou direct depuis sous-niveau
+const params=new URLSearchParams(window.location.search);
+const done=params.get('done');
+if(done){ sessionStorage.setItem('lvl4_'+done,'1'); history.replaceState({},'','/level4'); }
+
+// Si on revient d'un sous-niveau → passer l'intro directement
+if(done || document.referrer.includes('/level4.')){
+    intro.style.display='none';
+    scene.classList.add('active');
+    majHUD();
+    startTcTick();
+} else {
+    majHUD();
+}
+</script>
+</body>
 </html>

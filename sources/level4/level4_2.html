@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 4.2 - The Backrooms</title>
+    <link rel="stylesheet" href="/level4/style4.css">
+    <style>
+        body {
+            animation: fade-in-page 0.8s ease forwards;
+            background-image: url('/images/level4_2.jpg');
+            background-size: cover; background-position: center;
+        }
+        #layout { display:flex; align-items:flex-start; gap:2rem; max-width:880px; width:100%; }
+        #col-left { flex:1; min-width:0; }
+        #col-right { flex-shrink:0; }
+
+        #carnet {
+            background:rgba(4,6,8,0.96); border:1px solid #1a2830;
+            padding:1.2rem 1.4rem; width:380px;
+        }
+        #carnet-label {
+            font-size:0.54rem; letter-spacing:0.2rem;
+            color:#1a3040; text-transform:uppercase; margin-bottom:0.8rem;
+        }
+
+        /* Façade maison stylisée — SVG schématique, pas une vraie photo */
+        #facade {
+            width:100%; background:#010305;
+            border:1px solid #0a1820; margin-bottom:0.8rem;
+            padding:1rem; position:relative;
+        }
+        #facade svg { display:block; width:100%; }
+
+        /* Fenêtres SVG : on les gère via JS */
+        .win { cursor:pointer; transition:fill 0.3s; pointer-events:all; }
+        #facade svg { pointer-events:all; overflow:visible; }
+        .win:hover { opacity:0.8; }
+
+        /* Tableau */
+        #obs-table { width:100%; border-collapse:collapse; margin-bottom:0.8rem; }
+        #obs-table th {
+            font-size:0.48rem; color:#1a3a40; letter-spacing:0.14rem;
+            text-transform:uppercase; border-bottom:1px solid #0a1e28;
+            padding:0.3rem 0.5rem; text-align:left;
+        }
+        #obs-table td {
+            font-size:0.64rem; color:#5a7a7e;
+            padding:0.3rem 0.5rem; font-family:'Courier New',monospace;
+            border-bottom:1px solid #060e14;
+        }
+        .td-count { color:#c8a96e; }
+
+        /* Zone déduction — cachée jusqu'à résolution */
+        #deduction {
+            background:#020508; border:1px solid #0a1820;
+            padding:0.7rem; margin-bottom:0.6rem;
+            opacity:0; transition:opacity 0.8s;
+        }
+        #deduction.visible { opacity:1; }
+        #ded-label {
+            font-size:0.5rem; letter-spacing:0.15rem;
+            color:#1a3040; text-transform:uppercase; margin-bottom:0.5rem;
+        }
+        #ded-formula {
+            font-family:'Courier New',monospace;
+            font-size:0.72rem; color:#4a6a72; line-height:1.9;
+        }
+        .ded-hi { color:#c8a96e; }
+
+        #carnet-status {
+            font-size:0.64rem; color:#4a6a72;
+            font-family:'Courier New',monospace; min-height:1rem;
+        }
+        #carnet-status.ok { color:#5a9a6a; }
+
+        #flag-input {
+            background:#080c0e; color:#a0a0a0;
+            border:3px solid #1a2830; padding:0.7rem 1.4rem;
+            font-family:'Courier New',monospace;
+            font-size:1.2rem; letter-spacing:0.2rem;
+            margin-bottom:1rem; outline:none; width:200px; text-align:center;
+        }
+        #flag-input:focus { border-color:#c8a96e; }
+
+        .hint-tag {
+            display:inline-block; font-size:0.48rem; color:#1a3040;
+            border:1px solid #0a1e28; padding:2px 6px; margin:2px;
+            font-family:'Courier New',monospace; letter-spacing:0.07rem;
+        }
+    </style>
+</head>
+<body>
+    <a class="retour-lien" href="/level4?back=1">⊟ Retour</a>
+    <div class="container">
+        <div id="layout">
+            <div id="col-left">
+                <div class="message" style="max-width:320px;">
+                    <p>La maison d'en face.</p>
+                    <p>Des lumières s'allument et s'éteignent.</p>
+                    <p><em>Ce n'est pas aléatoire.</em></p>
+                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.4rem;">
+                        Comptez les fenêtres allumées<br>
+                        à chaque étage. L'ordre compte.
+                    </p>
+                </div>
+                <div style="margin-bottom:1rem;">
+                    <span class="hint-tag">RDC → étage 1 → étage 2</span>
+                    <span class="hint-tag">gauche → droite</span>
+                </div>
+                <input type="text" id="flag-input" placeholder="· ·" maxlength="6" readonly>
+                <br><br>
+                <button class="bouton" id="valider" disabled>Valider</button>
+                <p id="message" style="margin-top:1rem; font-family:'Courier New',monospace; font-size:0.8rem;"></p>
+            </div>
+
+            <div id="col-right">
+                <div id="carnet">
+                    <p id="carnet-label">OBSERVATION — MAISON — RUE DES ÉRABLES</p>
+
+                    <!-- Façade schématique SVG -->
+                    <div id="facade">
+                        <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Toit -->
+                            <polygon points="20,80 150,10 280,80" fill="#0a1218" stroke="#1a2830" stroke-width="1"/>
+                            <!-- Corps maison -->
+                            <rect x="20" y="78" width="260" height="122" fill="#080e14" stroke="#1a2830" stroke-width="1"/>
+                            <!-- Porte (centrée, ne chevauche pas les fenêtres) -->
+                            <rect x="127" y="152" width="30" height="48" fill="#060c12" stroke="#1a2830" stroke-width="1"/>
+                            <circle cx="153" cy="178" r="2" fill="#1a3040"/>
+
+                            <!-- Étage 2 (haut) : 2 fenêtres bien espacées -->
+                            <rect class="win" id="w-2a" data-etage="2" x="45"  y="90" width="50" height="35" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
+                            <rect class="win" id="w-2b" data-etage="2" x="195" y="90" width="50" height="35" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
+
+                            <!-- Étage 1 (bas) : 3 fenêtres, évitent la porte centrale -->
+                            <rect class="win" id="w-1a" data-etage="1" x="30"  y="140" width="40" height="30" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
+                            <rect class="win" id="w-1b" data-etage="1" x="85"  y="140" width="40" height="30" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
+                            <rect class="win" id="w-1c" data-etage="1" x="215" y="140" width="40" height="30" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
+                        </svg>
+                    </div>
+
+                    <!-- Tableau d'observations -->
+                    <table id="obs-table">
+                        <tr>
+                            <th>Étage</th>
+                            <th>Fenêtres</th>
+                            <th>Allumées</th>
+                        </tr>
+                        <tr>
+                            <td>2ème</td>
+                            <td id="obs-e2">○ / ○</td>
+                            <td class="td-count" id="cnt-e2">0</td>
+                        </tr>
+                        <tr>
+                            <td>1er</td>
+                            <td id="obs-e1">○ / ○ / ○</td>
+                            <td class="td-count" id="cnt-e1">0</td>
+                        </tr>
+                    </table>
+
+                    <!-- Déduction cachée au départ -->
+                    <div id="deduction">
+                        <p id="ded-label">déduction — code d'accès</p>
+                        <div id="ded-formula">
+                            étage 2 : <span class="ded-hi" id="d-e2">?</span><br>
+                            étage 1 : <span class="ded-hi" id="d-e1">?</span><br>
+                            <span style="color:#1a3040">──────────</span><br>
+                            code &nbsp;: <span class="ded-hi" id="d-code">??</span>
+                        </div>
+                    </div>
+
+                    <p id="carnet-status">cliquez sur les fenêtres pour les allumer / éteindre</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+// État initial : TOUTES ÉTEINTES — le joueur doit trouver la bonne config
+// Solution : étage 2 = 1 allumée (w-2a), étage 1 = 2 allumées (w-1a + w-1c)
+// Code = concaténation : "12" → mais le vrai flag = "19" (indice : 1×étage2 + 9×??? non)
+// 
+// Logique retenue : étage 2 compte = 1, étage 1 compte = 2
+// Le joueur voit le pattern "1" et "2" → code = "12"... 
+// MAIS : dans le niveau, la maison a un numéro. 
+// Le flag = "19" car c'est écrit sur la façade (on le révèle quand c'est bon)
+// Simplifions : la solution est 1 fenêtre étage 2 + 2 fenêtres étage 1,
+// et quand c'est correct on révèle que la maison est le n°19.
+// Flag = "19"
+
+const FENETRES = {
+    'w-2a': { etage:2 },
+    'w-2b': { etage:2 },
+    'w-1a': { etage:1 },
+    'w-1b': { etage:1 },
+    'w-1c': { etage:1 },
+};
+const SOLUTION = { 'w-2a':true, 'w-2b':false, 'w-1a':true, 'w-1b':false, 'w-1c':true };
+
+// État courant — tout éteint au départ
+const etat = { 'w-2a':false, 'w-2b':false, 'w-1a':false, 'w-1b':false, 'w-1c':false };
+
+const LIT_COLOR  = '#c8901a';
+const LIT_STROKE = '#c8a96e';
+const OFF_COLOR  = '#0a1820';
+const OFF_STROKE = '#1a2830';
+
+// Attacher les clics
+Object.keys(FENETRES).forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('click', ()=>{
+        etat[id] = !etat[id];
+        update();
+    });
+});
+
+function update(){
+    // MAJ visuels SVG
+    Object.keys(FENETRES).forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        el.setAttribute('fill',   etat[id] ? LIT_COLOR  : OFF_COLOR);
+        el.setAttribute('stroke', etat[id] ? LIT_STROKE : OFF_STROKE);
+    });
+
+    // Compter par étage
+    const cnt2 = ['w-2a','w-2b'].filter(id=>etat[id]).length;
+    const cnt1 = ['w-1a','w-1b','w-1c'].filter(id=>etat[id]).length;
+
+    const s2 = ['w-2a','w-2b'].map(id=>etat[id]?'●':'○').join(' / ');
+    const s1 = ['w-1a','w-1b','w-1c'].map(id=>etat[id]?'●':'○').join(' / ');
+    document.getElementById('obs-e2').textContent = s2;
+    document.getElementById('obs-e1').textContent = s1;
+    document.getElementById('cnt-e2').textContent = cnt2;
+    document.getElementById('cnt-e1').textContent = cnt1;
+
+    const ded = document.getElementById('deduction');
+    const status = document.getElementById('carnet-status');
+    const fi  = document.getElementById('flag-input');
+    const btn = document.getElementById('valider');
+
+    // Vérifier si la solution est atteinte
+    const correct = Object.keys(SOLUTION).every(id => etat[id] === SOLUTION[id]);
+
+    if(correct){
+        ded.classList.add('visible');
+        document.getElementById('d-e2').textContent = cnt2;
+        document.getElementById('d-e1').textContent = cnt1;
+        document.getElementById('d-code').textContent = '19';
+        status.className='ok';
+        status.textContent = 'pattern reconnu — n°19 confirmé';
+        fi.value='19'; btn.disabled=false;
+    } else {
+        ded.classList.remove('visible');
+        document.getElementById('d-e2').textContent = '?';
+        document.getElementById('d-e1').textContent = '?';
+        document.getElementById('d-code').textContent = '??';
+        status.className='';
+        status.textContent='cliquez sur les fenêtres pour les allumer / éteindre';
+        fi.value=''; btn.disabled=true;
+    }
+}
+
+// Init — tout éteint
+update();
+
+document.getElementById('valider').addEventListener('click', async ()=>{
+    const val = document.getElementById('flag-input').value.trim();
+    const msg = document.getElementById('message');
+    const rep = await fetch('/verifier/42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+    const data = await rep.json();
+    if(data.succes){
+        msg.style.color='#5a9a6a'; msg.textContent='Adresse confirmée. N°19, Rue des Érables.';
+        document.getElementById('valider').disabled=true;
+        setTimeout(()=>{ window.location.href='/level4?done=4.2'; },1800);
+    } else {
+        msg.style.color='#cc5555'; msg.textContent='Incorrect.';
+    }
+});
+</script>
+</body>
+</html>
