@@ -5,15 +5,15 @@ app.secret_key = "backrooms_secret"
 
 FLAGS = {
     1: {"flag": "BCKRM{bon_début}", "points": 100, "redirect": "/level2"},
-    2: {"flag": "06:10", "points": 100, "redirect": "/level2"},
-    3: {"flag": "6515", "points": 300, "redirect": "/level4"},
-    }
+    2: {"flag": "06:10",            "points": 100, "redirect": "/level2"},
+    3: {"flag": "5130003",           "points": 150, "redirect": "/level1"},
+    4: {"flag": "007365",          "points": 150, "redirect": "/level1"},
+}
 
 @app.route('/')
 def accueil():
     return redirect('/level0')
 
-# ── Pages des niveaux ────────────────────────────────────────────────────
 @app.route('/level0')
 def level0():
     return send_from_directory('level0', 'level0.html')
@@ -30,6 +30,14 @@ def level1():
 def level1_1():
     return send_from_directory('level1', 'level1.1.html')
 
+@app.route('/level1.2')
+def level1_2():
+    return send_from_directory('level1', 'level1.2.html')
+
+@app.route('/level1.3')
+def level1_3():
+    return send_from_directory('level1', 'level1.3.html')
+
 @app.route('/level2')
 def level2():
     return send_from_directory('level2', 'level2.html')
@@ -42,7 +50,6 @@ def level2_1():
 def level3():
     return send_from_directory('level3', 'level3.html')
 
-# ── Fichiers statiques de chaque niveau (CSS, etc.) ──────────────────────
 @app.route('/level0/<path:fichier>')
 def level0_static(fichier):
     return send_from_directory('level0', fichier)
@@ -59,7 +66,6 @@ def level2_static(fichier):
 def level3_static(fichier):
     return send_from_directory('level3', fichier)
 
-# ── Images et sons (dossiers partagés) ───────────────────────────────────
 @app.route('/images/<path:fichier>')
 def images(fichier):
     return send_from_directory('images', fichier)
@@ -68,15 +74,12 @@ def images(fichier):
 def sons(fichier):
     return send_from_directory('sons', fichier)
 
-# ── Vérification des flags ───────────────────────────────────────────────
 @app.route('/verifier/<int:niveau>', methods=['POST'])
 def verifier(niveau):
     data = request.get_json()
     flag_soumis = data['flag'].strip()
-
     if niveau not in FLAGS:
         return jsonify({"succes": False, "message": "Niveau inconnu"})
-
     if flag_soumis == FLAGS[niveau]["flag"]:
         return jsonify({"succes": True, "redirect": FLAGS[niveau]["redirect"]})
     else:

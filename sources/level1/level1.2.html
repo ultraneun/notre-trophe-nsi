@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 1.2 - The Backrooms</title>
+    <link rel="stylesheet" href="/level1/style1.css">
+    <style>
+        body { animation: fade-in-page 0.8s ease forwards; background-image: url('/images/level1.2.png'); }
+
+        .container { background: rgba(0,0,0,0.6); }
+
+        /* Layout horizontal */
+        #layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 2.5rem;
+            max-width: 820px;
+            width: 100%;
+        }
+
+        /* Colonne gauche : texte */
+        #col-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Colonne droite : jeu */
+        #col-right {
+            flex-shrink: 0;
+        }
+
+        .message {
+            margin-bottom: 1.5rem;
+        }
+
+        #rh-wrap {
+            background: rgba(4,8,12,0.92);
+            border-left: 2px solid #1a3040;
+            padding: 1.2rem 1.5rem;
+        }
+        #rh-label {
+            font-size: 0.58rem; letter-spacing: 0.2rem;
+            color: #1a3a40; text-transform: uppercase; margin-bottom: 0.8rem;
+        }
+        #board-wrap { position: relative; display: inline-block; margin-bottom: 0.6rem; }
+        #board {
+            position: relative; width: 330px; height: 330px;
+            background: #080e14;
+            border: 2px solid #0f1e2a;
+            border-radius: 3px; overflow: visible;
+        }
+        .cbg {
+            position: absolute; width: 55px; height: 55px;
+            border: 1px solid #0c1820;
+        }
+        #exit-zone {
+            position: absolute; right: -10px; top: 111px;
+            width: 10px; height: 55px;
+            background: #3a0000;
+            border-radius: 0 2px 2px 0;
+        }
+        #exit-arrow {
+            position: absolute; right: -26px; top: 118px;
+            font-size: 16px; color: #6a1010;
+            font-family: monospace;
+        }
+        .car {
+            position: absolute; border-radius: 3px;
+            cursor: grab; user-select: none; z-index: 10;
+            overflow: hidden;
+        }
+        .car:active { cursor: grabbing; z-index: 20; }
+        .car svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+        #moves-bar {
+            font-size: 0.72rem; color: #8a9a9e;
+            letter-spacing: 0.05rem; margin-bottom: 0.4rem;
+            font-family: 'Courier New', monospace;
+        }
+        #moves-num { color: #c0c0c0; }
+        #moves-warn { }
+        #rh-status {
+            font-size: 0.72rem; color: #8a9a9e;
+            letter-spacing: 0.04rem; min-height: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+        #rh-code {
+            font-size: 1rem; font-weight: bold;
+            letter-spacing: 0.2rem; color: #c0c0c0;
+            min-height: 1.2rem; margin-top: 0.3rem;
+            font-family: 'Courier New', monospace;
+        }
+        #btn-rst {
+            font-family: 'Courier New', monospace;
+            font-size: 0.68rem; background: rgba(4,8,12,0.85);
+            color: #4a7a8a; border: 1px solid #0a2030;
+            padding: 5px 14px; cursor: pointer;
+            letter-spacing: 0.1rem; text-transform: uppercase;
+            margin-top: 0.5rem;
+        }
+        #btn-rst:hover { color: #00b4d8; border-color: #00b4d8; }
+
+        #flag-input {
+            background-color: #0f1a20; color: #a0a0a0;
+            border: 3px solid #2a3a40; padding: 0.8rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem; letter-spacing: 0.2rem;
+            margin-bottom: 1rem; outline: none; width: 220px; text-align: center;
+        }
+        #flag-input:focus { border-color: #00b4d8; }
+    </style>
+</head>
+<body>
+    <a class="retour-lien" href="/level1">⊟ Retour</a>
+
+    <!-- S. — ..... .---- ...-- ----- ----- ----- ...-- -->
+
+    <div class="container">
+        <div id="layout">
+
+            <!-- Gauche : texte + input -->
+            <div id="col-left">
+                <div class="message">
+                    <p>Des voitures abandonnées encombrent le parking</p>
+                    <p>Certaines semblent avoir été déplacées récemment.</p>
+                    <p>La voiture rouge fonctionne encore.</p>
+                    <p>C'est votre unique chance de fuir.</p>
+                </div>
+                <input type="text" id="flag-input" placeholder="·······" maxlength="10" readonly>
+                <br><br>
+                <button class="bouton" id="valider" disabled>Valider</button>
+                <p id="message" style="color:#00b4d8; margin-top:1rem;"></p>
+            </div>
+
+            <!-- Droite : jeu -->
+            <div id="col-right">
+                <div id="rh-wrap">
+                    <p id="rh-label">parking — niveau -2 — sortie →</p>
+                    <div id="board-wrap">
+                        <div id="board"></div>
+                        <div id="exit-zone"></div>
+                        <div id="exit-arrow">→</div>
+                    </div>
+                    <div id="moves-bar">
+                        mouvements : <span id="moves-num">0</span> / 15
+                        <span id="moves-warn"></span>
+                    </div>
+                    <div id="rh-status">dégagez le passage pour la voiture marquée</div>
+                    <div id="rh-code"></div>
+                    <button id="btn-rst">↺ réinitialiser</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+const S=55, G=6, MAX=15;
+
+const INIT=[
+    {id:'Ve', color:'#2a3a1a', stripe:'#3a5025', or:'h', sz:2, row:0, col:0},
+    {id:'Ja', color:'#3a3010', stripe:'#504218', or:'v', sz:3, row:0, col:5},
+    {id:'Vi', color:'#1e1a30', stripe:'#2e2848', or:'v', sz:3, row:1, col:0},
+    {id:'Bl', color:'#0e1e30', stripe:'#162840', or:'v', sz:3, row:1, col:3},
+    {id:'R',  color:'#4a0a08', stripe:'#6a1210', or:'h', sz:2, row:2, col:1, target:true},
+    {id:'Or', color:'#3a1e08', stripe:'#502a0e', or:'v', sz:2, row:4, col:0},
+    {id:'Bc', color:'#0e2830', stripe:'#163848', or:'h', sz:2, row:4, col:4},
+    {id:'Vf', color:'#1a2a10', stripe:'#263a18', or:'h', sz:3, row:5, col:1},
+];
+
+let cars=INIT.map(c=>({...c})), moves=0, won=false, lost=false;
+
+const board=document.getElementById('board');
+for(let r=0;r<G;r++) for(let c=0;c<G;c++){
+    const d=document.createElement('div');
+    d.className='cbg'; d.style.left=c*S+'px'; d.style.top=r*S+'px';
+    board.appendChild(d);
+}
+
+function carSVG(car,w,h){
+    const isH=car.or==='h', col=car.color, str=car.stripe, isTgt=car.target;
+    let svg=`<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">`;
+    svg+=`<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="${col}"/>`;
+    if(isH){
+        svg+=`<rect x="${w*.1}" y="${h*.25}" width="${w*.8}" height="${h*.5}" rx="2" fill="${str}"/>`;
+        svg+=`<rect x="${w*.2}" y="${h*.28}" width="${w*.6}" height="${h*.38}" rx="2" fill="rgba(180,220,255,0.08)"/>`;
+        svg+=`<ellipse cx="${w*.2}" cy="${h*.85}" rx="${w*.1}" ry="${h*.1}" fill="#060a0e"/>`;
+        svg+=`<ellipse cx="${w*.8}" cy="${h*.85}" rx="${w*.1}" ry="${h*.1}" fill="#060a0e"/>`;
+        svg+=`<ellipse cx="${w*.2}" cy="${h*.15}" rx="${w*.1}" ry="${h*.1}" fill="#060a0e"/>`;
+        svg+=`<ellipse cx="${w*.8}" cy="${h*.15}" rx="${w*.1}" ry="${h*.1}" fill="#060a0e"/>`;
+        svg+=`<rect x="${w*.05}" y="${h*.06}" width="${w*.9}" height="${h*.12}" rx="2" fill="rgba(255,255,255,0.07)"/>`;
+        if(isTgt){
+            svg+=`<rect x="${w*.42}" y="${h*.3}" width="${w*.16}" height="${h*.4}" rx="1" fill="rgba(200,40,20,0.7)"/>`;
+            svg+=`<rect x="${w*.25}" y="${h*.44}" width="${w*.5}" height="${h*.14}" rx="1" fill="rgba(200,40,20,0.7)"/>`;
+        }
+    } else {
+        svg+=`<rect x="${w*.25}" y="${h*.1}" width="${w*.5}" height="${h*.8}" rx="2" fill="${str}"/>`;
+        svg+=`<rect x="${w*.28}" y="${h*.2}" width="${w*.44}" height="${h*.6}" rx="2" fill="rgba(180,220,255,0.08)"/>`;
+        svg+=`<ellipse cx="${w*.15}" cy="${h*.2}" rx="${w*.1}" ry="${h*.06}" fill="#060a0e"/>`;
+        svg+=`<ellipse cx="${w*.85}" cy="${h*.2}" rx="${w*.1}" ry="${h*.06}" fill="#060a0e"/>`;
+        svg+=`<ellipse cx="${w*.15}" cy="${h*.8}" rx="${w*.1}" ry="${h*.06}" fill="#060a0e"/>`;
+        svg+=`<ellipse cx="${w*.85}" cy="${h*.8}" rx="${w*.1}" ry="${h*.06}" fill="#060a0e"/>`;
+        svg+=`<rect x="${w*.06}" y="${h*.05}" width="${w*.12}" height="${h*.9}" rx="2" fill="rgba(255,255,255,0.07)"/>`;
+        if(isTgt){
+            svg+=`<rect x="${w*.42}" y="${h*.3}" width="${w*.16}" height="${h*.4}" rx="1" fill="rgba(200,40,20,0.7)"/>`;
+            svg+=`<rect x="${w*.25}" y="${h*.44}" width="${w*.5}" height="${h*.14}" rx="1" fill="rgba(200,40,20,0.7)"/>`;
+        }
+    }
+    svg+=`</svg>`;
+    return svg;
+}
+
+const els={};
+
+function occ(excl){
+    const s=new Set();
+    cars.forEach(c=>{
+        if(c.id===excl)return;
+        if(c.or==='h')for(let x=c.col;x<c.col+c.sz;x++)s.add(c.row+','+x);
+        else for(let y=c.row;y<c.row+c.sz;y++)s.add(y+','+c.col);
+    });
+    return s;
+}
+
+function tryMove(car,nc,nr){
+    if(won||lost)return;
+    const o=occ(car.id);
+    let moved=false;
+    if(car.or==='h'){
+        nc=Math.max(0,Math.min(G-car.sz,nc));
+        if(nc===car.col)return;
+        const step=nc>car.col?1:-1;
+        let best=car.col,cur=car.col+step;
+        while(cur!==nc+step){
+            const lead=step>0?cur+car.sz-1:cur;
+            if(lead>=0&&lead<G&&o.has(car.row+','+lead))break;
+            best=cur;cur+=step;
+        }
+        if(best!==car.col){moves++;car.col=best;moved=true;}
+    } else {
+        nr=Math.max(0,Math.min(G-car.sz,nr));
+        if(nr===car.row)return;
+        const step=nr>car.row?1:-1;
+        let best=car.row,cur=car.row+step;
+        while(cur!==nr+step){
+            const lead=step>0?cur+car.sz-1:cur;
+            if(lead>=0&&lead<G&&o.has(lead+','+car.col))break;
+            best=cur;cur+=step;
+        }
+        if(best!==car.row){moves++;car.row=best;moved=true;}
+    }
+    if(moved)update();
+}
+
+function render(){
+    Object.values(els).forEach(e=>e.remove());
+    cars.forEach(car=>{
+        const w=(car.or==='h'?car.sz:1)*S-6;
+        const h=(car.or==='v'?car.sz:1)*S-6;
+        const el=document.createElement('div');
+        el.className='car';
+        el.style.left=(car.col*S+3)+'px';
+        el.style.top=(car.row*S+3)+'px';
+        el.style.width=w+'px';
+        el.style.height=h+'px';
+        el.innerHTML=carSVG(car,w,h);
+        if(car.target)el.style.outline='1px solid #4a1010';
+        addDrag(el,car);
+        board.appendChild(el);
+        els[car.id]=el;
+    });
+}
+
+function update(){
+    render();
+    const left=MAX-moves;
+    document.getElementById('moves-num').textContent=moves;
+    const w=document.getElementById('moves-warn');
+    w.textContent=left<=5?` — ${left} restant${left>1?'s':''}` :'';
+    w.style.color=left<=3?'#cc3030':'#886020';
+
+    const red=cars.find(c=>c.target);
+    const st=document.getElementById('rh-status');
+    const cd=document.getElementById('rh-code');
+    const fi=document.getElementById('flag-input');
+    const btn=document.getElementById('valider');
+
+    if(!won&&red.col+red.sz===G){
+        won=true;
+        st.style.color='#38b048';st.textContent='sortie. le code apparaît.';
+        cd.textContent='5130003';
+        fi.value='5130003';btn.disabled=false;
+        return;
+    }
+    if(moves>=MAX&&!won){
+        lost=true;
+        st.style.color='#8a1010';st.textContent='plus de mouvements. recommencez.';
+    } else if(!won){
+        st.style.color='#8a9a9e';
+        st.textContent='dégagez le passage pour la voiture marquée';
+        cd.textContent='';fi.value='';btn.disabled=true;
+    }
+}
+
+function addDrag(el,car){
+    let sx,sy,sc,sr;
+    const start=(x,y)=>{sx=x;sy=y;sc=car.col;sr=car.row;};
+    const move=(x,y)=>{
+        if(car.or==='h')tryMove(car,Math.round(sc+(x-sx)/S),car.row);
+        else tryMove(car,car.col,Math.round(sr+(y-sy)/S));
+    };
+    el.addEventListener('mousedown',e=>{
+        e.preventDefault();start(e.clientX,e.clientY);
+        const mm=e2=>move(e2.clientX,e2.clientY);
+        const mu=()=>{document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);};
+        document.addEventListener('mousemove',mm);document.addEventListener('mouseup',mu);
+    });
+    el.addEventListener('touchstart',e=>{
+        e.preventDefault();const t=e.touches[0];start(t.clientX,t.clientY);
+        const tm=e2=>{const t2=e2.touches[0];move(t2.clientX,t2.clientY);};
+        const te=()=>{el.removeEventListener('touchmove',tm);el.removeEventListener('touchend',te);};
+        el.addEventListener('touchmove',tm,{passive:false});el.addEventListener('touchend',te);
+    },{passive:false});
+}
+
+document.getElementById('btn-rst').addEventListener('click',()=>{
+    cars=INIT.map(c=>({...c}));moves=0;won=false;lost=false;
+    document.getElementById('moves-num').textContent='0';
+    document.getElementById('moves-warn').textContent='';
+    document.getElementById('rh-status').style.color='#8a9a9e';
+    document.getElementById('rh-status').textContent='dégagez le passage pour la voiture marquée';
+    document.getElementById('rh-code').textContent='';
+    document.getElementById('flag-input').value='';
+    document.getElementById('valider').disabled=true;
+    document.getElementById('message').textContent='';
+    render();
+});
+
+document.getElementById('valider').addEventListener('click',async()=>{
+    const val=document.getElementById('flag-input').value.trim();
+    const rep=await fetch('/verifier/3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+    const data=await rep.json();
+    const msg=document.getElementById('message');
+    if(data.succes){
+        msg.style.color='#38b048';msg.textContent='Vous avez compris.';
+        document.getElementById('valider').disabled=true;
+        setTimeout(()=>{sessionStorage.setItem('lvl1_1.2','1');window.location.href='/level1?done=1.2';},1800);
+    } else {
+        msg.style.color='#ff6b6b';msg.textContent='Incorrect.';
+    }
+});
+
+render();
+</script>
+</body>
+</html>

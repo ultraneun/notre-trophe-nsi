@@ -1,9 +1,5 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
- 
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
     font-family: 'Courier New', monospace;
     background-image: url('/images/level1.png');
@@ -12,357 +8,333 @@ body {
     background-repeat: no-repeat;
     overflow: hidden;
     height: 100vh;
+    transition: transform 1s cubic-bezier(0.4, 0, 1, 1);
 }
- 
-/* =============================================
-   VUE TERMINAL
-   ============================================= */
+body.zoom-out { transform: scale(3); }
+
+@keyframes fade-in-page { from{opacity:0} to{opacity:1} }
+
+/* ── Transition sortie ────────────────────── */
+#transition-out {
+    position: fixed; inset: 0;
+    background: #000; z-index: 99999;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.7s ease;
+}
+#transition-out.active { opacity: 1; pointer-events: all; }
+
+/* ── VUE TERMINAL ─────────────────────────── */
 .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh;
-    padding: 20px;
-    background: rgba(0, 0, 0, 0.55);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    height: 100vh; padding: 20px;
+    background: rgba(0,0,0,0.55);
     transition: opacity 0.6s ease;
 }
- 
-.container.hidden {
-    opacity: 0;
-    pointer-events: none;
-}
- 
-/* =============================================
-   TERMINAL
-   ============================================= */
+.container.hidden { opacity: 0; pointer-events: none; }
+
+/* ── TERMINAL ─────────────────────────────── */
 .terminal {
-    max-width: 580px;
-    width: 100%;
-    background: rgba(4, 8, 12, 0.90);
+    max-width: 580px; width: 100%;
+    background: rgba(4,8,12,0.92);
     border-left: 2px solid #00b4d8;
     padding: 1.8rem 2rem;
-    box-shadow:
-        -4px 0 30px rgba(0, 180, 216, 0.08),
-        0 0 60px rgba(0, 0, 0, 0.8);
+    box-shadow: -4px 0 30px rgba(0,180,216,0.08), 0 0 60px rgba(0,0,0,0.8);
 }
- 
 .terminal-header {
-    font-size: 0.62rem;
-    letter-spacing: 0.35rem;
-    color: #00b4d8;
-    text-transform: uppercase;
-    margin-bottom: 1.4rem;
-    opacity: 0.6;
+    font-size: 0.62rem; letter-spacing: 0.35rem;
+    color: #00b4d8; text-transform: uppercase;
+    margin-bottom: 1.4rem; opacity: 0.6;
 }
- 
 .terminal-body {
-    font-size: 0.92rem;
-    color: #8a9a9e;
-    line-height: 2;
-    white-space: pre-wrap;
-    min-height: 180px;
+    font-size: 0.92rem; color: #8a9a9e;
+    line-height: 2; white-space: pre-wrap; min-height: 180px;
 }
- 
+.terminal-skip {
+    font-size: 0.55rem; color: #1a3040;
+    letter-spacing: 0.15rem; margin-top: 0.6rem;
+    text-transform: uppercase; opacity: 0;
+    transition: opacity 1s ease; cursor: pointer;
+}
 .cursor {
-    display: inline-block;
-    color: #00b4d8;
+    display: inline-block; color: #00b4d8;
     animation: blink-cursor 1s steps(1) infinite;
-    font-size: 0.85rem;
-    vertical-align: baseline;
-    margin-left: 1px;
+    font-size: 0.85rem; vertical-align: baseline; margin-left: 1px;
 }
- 
-@keyframes blink-cursor {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
-}
- 
-/* =============================================
-   FOOTER TERMINAL
-   ============================================= */
+@keyframes blink-cursor { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* ── FOOTER TERMINAL ──────────────────────── */
 .terminal-footer {
     margin-top: 1.8rem;
     border-top: 1px solid #0a1a20;
     padding-top: 1.4rem;
-    opacity: 0;
-    transform: translateY(6px);
+    opacity: 0; transform: translateY(6px);
     transition: opacity 1s ease, transform 1s ease;
     pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
+    display: flex; align-items: center; gap: 1rem;
 }
- 
-.terminal-footer.visible {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
-}
- 
-.terminal-hint {
-    font-size: 0.7rem;
-    color: #1a3a42;
-    letter-spacing: 0.1rem;
-    font-style: italic;
-}
- 
-.terminal-hint::before {
-    content: '> ';
-    color: #00b4d8;
-    opacity: 0.3;
-}
- 
-/* =============================================
-   BOUTONS TOGGLE
-   ============================================= */
+.terminal-footer.visible { opacity: 1; transform: translateY(0); pointer-events: all; }
+
+/* ── BOUTONS ──────────────────────────────── */
 .bouton-toggle {
-    background: transparent;
-    color: #4a7a8a;
+    background: transparent; color: #4a7a8a;
     border: 1px solid #0a2a32;
     padding: 0.6rem 1.2rem;
     font-family: 'Courier New', monospace;
-    font-size: 0.68rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.15rem;
+    font-size: 0.68rem; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.15rem;
     transition: all 0.4s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    white-space: nowrap;
+    display: flex; align-items: center; gap: 0.5rem;
 }
- 
-.bouton-toggle:hover {
-    border-color: #00b4d8;
-    color: #00b4d8;
-    box-shadow: 0 0 15px rgba(0, 180, 216, 0.08);
-}
- 
-.toggle-icon {
-    font-size: 0.9rem;
-    line-height: 1;
-}
- 
-/* =============================================
-   VUE IMAGE
-   ============================================= */
-#vue-image {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 50;
-    background: transparent;
-    align-items: center;
-    justify-content: center;
-}
- 
-#vue-image.active {
-    display: flex;
-}
+.bouton-toggle:hover { border-color: #00b4d8; color: #00b4d8; }
+.toggle-icon { font-size: 0.9rem; line-height: 1; }
 
-/* Wrapper redimensionné en JS pour conserver le ratio de l'image */
-#img-wrapper {
-    position: relative;
-}
-
-#img-level1 {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-}
-
-#vue-image::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url('/images/level1.png');
-    background-size: cover;
-    background-position: center;
-    filter: blur(40px) brightness(0.4) saturate(1.4);
-    transform: scale(1.1); /* évite les bords blancs du blur */
-    z-index: 0;
-}
-
-#img-wrapper {
-    position: relative;
-    z-index: 1; /* passe au-dessus du fond flouté */
-}
-
-/* =============================================
-   ZONE SECRÈTE
-   position en % = toujours au même endroit sur l'image
-   ============================================= */
-#zone-secrete {
-    position: absolute;
-    top:  37.75%;
-    left: 56.5%;
-    width: 7%;
-    height: 20%;
-    cursor: pointer;
-    z-index: 55;
-    background: rgba(255, 255, 255, 0.25);
-    opacity: 60%;
-    transform: rotate(-1deg);
-    clip-path: polygon(0.5% 3.75%, 100% 0%, 100% 100%, 0% 95%);
-
-}
-
-/* =============================================
-   BOUTON RETOUR
-   ============================================= */
 .bouton-retour {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 60;
-    background: rgba(4, 8, 12, 0.85);
-    color: #4a7a8a;
-    border: 1px solid #0a2a32;
+    position: fixed; top: 20px; left: 20px; z-index: 60;
+    background: rgba(4,8,12,0.92);
+    color: #4a7a8a; border: 1px solid #0a2a32;
     padding: 0.6rem 1.2rem;
     font-family: 'Courier New', monospace;
-    font-size: 0.68rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.15rem;
+    font-size: 0.68rem; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.15rem;
     transition: all 0.4s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    display: flex; align-items: center; gap: 0.5rem;
 }
- 
-.bouton-retour:hover {
-    border-color: #00b4d8;
-    color: #00b4d8;
-    box-shadow: 0 0 15px rgba(0, 180, 216, 0.08);
+.bouton-retour:hover { border-color: #00b4d8; color: #00b4d8; }
+
+.retour-lien {
+    position: fixed; top: 20px; left: 20px;
+    font-size: 0.68rem; color: #4a7a8a;
+    text-decoration: none; letter-spacing: 0.15rem;
+    text-transform: uppercase; border: 1px solid #0a2a32;
+    padding: 0.6rem 1.2rem; transition: all 0.4s;
+    font-family: 'Courier New', monospace;
+    background: rgba(4,8,12,0.92);
 }
- 
-/* =============================================
-   CLASSES PARTAGÉES (level1 + level1.1)
-   ============================================= */
-.bug {
-    font-size: 3rem;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.2rem;
-    margin-bottom: 2rem;
-    color: #d0d0d0;
-    text-shadow: 3px 3px 0px rgba(0, 80, 120, 0.6);
-}
- 
-.message {
-    background-color: rgba(4, 8, 12, 0.90);
-    color: #8a9a9e;
-    padding: 2rem;
-    border-left: 2px solid #00b4d8;
-    max-width: 600px;
-    text-align: center;
-    box-shadow: -4px 0 30px rgba(0, 180, 216, 0.08), 0 0 60px rgba(0,0,0,0.8);
-    margin-bottom: 2rem;
-}
- 
-.message p {
-    line-height: 1.8;
-    margin-bottom: 1rem;
-}
- 
-.alert {
-    color: #00b4d8;
-    font-weight: bold;
-    animation: blink 1.5s infinite;
-}
- 
-@keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0.3; }
-}
- 
+.retour-lien:hover { color: #00b4d8; border-color: #00b4d8; }
+
 .bouton {
-    background: transparent;
-    color: #4a7a8a;
+    background: transparent; color: #4a7a8a;
     border: 1px solid #0a2a32;
     padding: 0.8rem 2rem;
     font-family: 'Courier New', monospace;
-    font-size: 0.78rem;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.2rem;
+    font-size: 0.78rem; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 0.2rem;
     transition: all 0.4s ease;
 }
- 
-.bouton:hover {
-    border-color: #00b4d8;
-    color: #00b4d8;
-    box-shadow: 0 0 20px rgba(0, 180, 216, 0.1);
+.bouton:hover { border-color: #00b4d8; color: #00b4d8; box-shadow: 0 0 20px rgba(0,180,216,0.1); }
+.bouton:disabled { opacity: 0.3; cursor: default; }
+
+/* ── VUE IMAGE ────────────────────────────── */
+#vue-image {
+    display: none; position: fixed; inset: 0;
+    z-index: 50; background: transparent;
+    align-items: center; justify-content: center;
 }
- 
+#vue-image.active { display: flex; }
+#vue-image::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: url('/images/level1.png');
+    background-size: cover; background-position: center;
+    filter: blur(40px) brightness(0.4) saturate(1.4);
+    transform: scale(1.1); z-index: 0;
+}
+#img-wrapper { position: relative; z-index: 1; }
+#img-level1 { display: block; width: 100%; height: 100%; object-fit: fill; }
+
+/* ── HUD ──────────────────────────────────── */
+#hud-progression {
+    position: fixed; bottom: 20px; left: 50%;
+    transform: translateX(-50%); z-index: 60;
+    display: flex; align-items: center; gap: 12px;
+    background: rgba(4,8,12,0.92);
+    border: 1px solid #0a2a32;
+    padding: 0.5rem 1.4rem; font-size: 1.1rem;
+}
+.hud-item { color: #2a3a40; transition: color 0.4s; }
+.hud-sep  { color: #0a2030; font-size: 0.7rem; }
+
+/* ── ZONES SECRÈTES ───────────────────────── */
+.zone {
+    position: absolute; cursor: pointer; z-index: 55;
+    background: rgba(255,255,255,0);
+    transition: background 0.4s ease;
+}
+.zone:hover { background: rgba(255,255,255,0.10); }
+
+#zone-secrete  { top:37.75%; left:56.5%; width:7%; height:20%; transform:rotate(-1deg); clip-path:polygon(0.5% 3.75%,100% 0%,100% 100%,0% 95%); }
+#zone-secrete2 { top:7.5%; left:10.5%; width:18.5%; height:30%; clip-path:polygon(2% 19%,100% 63%,58% 75%,57% 87%,12% 65%,12% 80%,0% 77.5%); }
+#zone-secrete3 { top:24%; left:83.25%; width:9.35%; height:50%; clip-path:polygon(68% 2.5%,86% 0,99.5% 96.5%,9% 93.5%,1% 5.5%); }
+
+/* ── POPUP VERROU ─────────────────────────── */
+#popup-verrou {
+    display: none; position: fixed; inset: 0;
+    z-index: 200; background: rgba(0,0,0,0.75);
+    align-items: center; justify-content: center;
+}
+#popup-verrou.active { display: flex; }
+#popup-contenu {
+    background: rgba(4,8,12,0.97);
+    border-left: 2px solid #ff4444;
+    padding: 2rem 2.5rem; max-width: 360px; text-align: center;
+}
+#popup-titre {
+    font-size: 0.65rem; letter-spacing: 0.3rem;
+    color: #ff4444; text-transform: uppercase; margin-bottom: 1rem;
+}
+#popup-texte {
+    color: #8a9a9e; font-size: 0.88rem;
+    line-height: 1.8; margin-bottom: 1.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+/* ── POPUP COORDS ─────────────────────────── */
+#popup-coords {
+    display: none; position: fixed; inset: 0;
+    z-index: 200; background: rgba(0,0,0,0.75);
+    align-items: center; justify-content: center;
+}
+#popup-coords.active { display: flex; }
+#popup-coords-contenu {
+    background: rgba(4,8,12,0.97);
+    border-left: 2px solid #00b4d8;
+    padding: 2rem 2.5rem; max-width: 420px;
+    text-align: center; width: 90%;
+}
+.popup-label {
+    font-size: 0.6rem; letter-spacing: 0.3rem;
+    color: #00b4d8; text-transform: uppercase; margin-bottom: 0.5rem;
+}
+.popup-sub {
+    font-size: 0.8rem; color: #4a6a72;
+    margin-bottom: 1.5rem; letter-spacing: 0.08rem;
+}
+.coords-input-groupe {
+    display: flex; flex-direction: column; gap: 10px;
+    margin-bottom: 1.2rem;
+}
+.coords-input {
+    background: #0a1520; color: #a0a0a0;
+    border: 2px solid #0a2a32;
+    padding: 0.7rem 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 1rem; letter-spacing: 0.1rem;
+    outline: none; text-align: center;
+    width: 100%;
+}
+.coords-input:focus { border-color: #00b4d8; }
+.coords-input::placeholder { color: #1a3040; }
+#coords-message {
+    margin-top: 0.8rem; font-size: 0.82rem;
+    font-family: 'Courier New', monospace;
+    min-height: 1.2rem;
+}
+
+/* ── CLASSES PARTAGÉES ────────────────────── */
+.bug {
+    font-size: 3rem; font-weight: bold;
+    text-transform: uppercase; letter-spacing: 0.2rem;
+    margin-bottom: 2rem; color: #d0d0d0;
+    text-shadow: 3px 3px 0px rgba(0,80,120,0.6);
+}
+.message {
+    background-color: rgba(4,8,12,0.92);
+    color: #8a9a9e; padding: 2rem;
+    border-left: 2px solid #00b4d8;
+    max-width: 600px; text-align: center;
+    box-shadow: -4px 0 30px rgba(0,180,216,0.08), 0 0 60px rgba(0,0,0,0.8);
+    margin-bottom: 2rem;
+}
+.message p { line-height: 1.8; margin-bottom: 1rem; }
+.alert { color: #00b4d8; font-weight: bold; animation: blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
-    20%, 40%, 60%, 80% { transform: translateX(10px); }
+    0%,100%{transform:translateX(0)}
+    10%,30%,50%,70%,90%{transform:translateX(-10px)}
+    20%,40%,60%,80%{transform:translateX(10px)}
 }
- 
-/* =============================================
-   EFFET OUVERTURE DES YEUX
-   ============================================= */
+
+/* ── EFFET YEUX ───────────────────────────── */
 #eye-open {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    animation: blur-fade 3s ease-in-out forwards;
-    animation-delay: 0.3s;
+    position:fixed; inset:0; z-index:9999; pointer-events:none;
+    backdrop-filter:blur(20px);
+    animation:blur-fade 3s ease-in-out forwards; animation-delay:0.3s;
 }
- 
 #eye-top {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: #000;
-    z-index: 10000;
-    pointer-events: none;
-    animation: eye-open-top 3s cubic-bezier(0.25, 0, 0.3, 1) forwards;
-    animation-delay: 0.3s;
+    position:fixed; top:0; left:0; width:100%; height:50%;
+    background:#000; z-index:10000; pointer-events:none;
+    animation:eye-open-top 3s cubic-bezier(0.25,0,0.3,1) forwards; animation-delay:0.3s;
 }
- 
 #eye-bottom {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: #000;
-    z-index: 10000;
-    pointer-events: none;
-    animation: eye-open-bottom 3s cubic-bezier(0.25, 0, 0.3, 1) forwards;
-    animation-delay: 0.3s;
+    position:fixed; bottom:0; left:0; width:100%; height:50%;
+    background:#000; z-index:10000; pointer-events:none;
+    animation:eye-open-bottom 3s cubic-bezier(0.25,0,0.3,1) forwards; animation-delay:0.3s;
 }
- 
 @keyframes eye-open-top {
-    0%   { transform: translateY(0%); }
-    30%  { transform: translateY(-15%); }
-    60%  { transform: translateY(-60%); }
-    85%  { transform: translateY(-95%); }
-    100% { transform: translateY(-100%); }
+    0%{transform:translateY(0%)} 30%{transform:translateY(-15%)}
+    60%{transform:translateY(-60%)} 85%{transform:translateY(-95%)} 100%{transform:translateY(-100%)}
 }
- 
 @keyframes eye-open-bottom {
-    0%   { transform: translateY(0%); }
-    30%  { transform: translateY(15%); }
-    60%  { transform: translateY(60%); }
-    85%  { transform: translateY(95%); }
-    100% { transform: translateY(100%); }
+    0%{transform:translateY(0%)} 30%{transform:translateY(15%)}
+    60%{transform:translateY(60%)} 85%{transform:translateY(95%)} 100%{transform:translateY(100%)}
 }
- 
 @keyframes blur-fade {
-    0%   { backdrop-filter: blur(20px); opacity: 1; }
-    50%  { backdrop-filter: blur(12px); opacity: 1; }
-    85%  { backdrop-filter: blur(3px);  opacity: 1; }
-    100% { backdrop-filter: blur(0px);  opacity: 0; }
+    0%{backdrop-filter:blur(20px);opacity:1}
+    50%{backdrop-filter:blur(12px);opacity:1}
+    85%{backdrop-filter:blur(3px);opacity:1}
+    100%{backdrop-filter:blur(0px);opacity:0}
+}
+
+
+/* ── Fix bouton valider visible ───────────────────────── */
+.bouton {
+    background: rgba(4,8,12,0.85) !important;
+    color: #4a7a8a !important;
+    border: 1px solid #1a3a48 !important;
+}
+.bouton:hover:not(:disabled) {
+    background: rgba(0,180,216,0.08) !important;
+    border-color: #00b4d8 !important;
+    color: #00b4d8 !important;
+}
+.bouton:disabled { opacity: 0.3; cursor: default; }
+
+/* ── Popup coords ─────────────────────────────────────── */
+#popup-coords {
+    display:none; position:fixed; inset:0;
+    z-index:200; background:rgba(0,0,0,0.78);
+    align-items:center; justify-content:center;
+}
+#popup-coords.active { display:flex; }
+#popup-coords-contenu {
+    background:rgba(4,8,12,0.97);
+    border-left:2px solid #00b4d8;
+    padding:2rem 2.5rem; max-width:400px;
+    text-align:center; width:90%;
+}
+.popup-label {
+    font-size:0.6rem; letter-spacing:0.3rem;
+    color:#00b4d8; text-transform:uppercase; margin-bottom:0.5rem;
+}
+.popup-sub { font-size:0.8rem; color:#4a6a72; margin-bottom:1.5rem; letter-spacing:0.08rem; }
+
+.coord-ligne { position:relative; }
+.coord-display {
+    font-family:'Courier New',monospace;
+    font-size:1.3rem; color:#a0a0a0;
+    background:#0a1520; border:2px solid #0a2a32;
+    padding:0.6rem 1rem; letter-spacing:0.12rem;
+    cursor:text; transition:border-color 0.3s;
+}
+.coord-display:focus-within,
+.coord-ligne:focus-within .coord-display { border-color:#00b4d8; }
+.coord-hidden-input {
+    position:absolute; opacity:0; width:1px; height:1px;
+    top:0; left:0; pointer-events:none;
+}
+
+#coords-message {
+    margin-top:0.8rem; font-size:0.82rem;
+    font-family:'Courier New',monospace; min-height:1.2rem;
 }

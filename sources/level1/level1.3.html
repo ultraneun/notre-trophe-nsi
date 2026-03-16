@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 1.3 - The Backrooms</title>
+    <link rel="stylesheet" href="/level1/style1.css">
+    <style>
+        body { animation: fade-in-page 0.8s ease forwards; background-image: url('/images/level1.3.png'); }
+
+        .container { background: rgba(0,0,0,0.6); }
+
+        /* Layout horizontal */
+        #layout {
+            display: flex;
+            align-items: flex-start;
+            gap: 2.5rem;
+            max-width: 820px;
+            width: 100%;
+        }
+        #col-left { flex: 1; min-width: 0; }
+        #col-right { flex-shrink: 0; }
+
+        .message { margin-bottom: 1.5rem; }
+
+        #puzzle-wrap {
+            background: rgba(4,8,12,0.92);
+            border-left: 2px solid #1a3040;
+            padding: 1.2rem 1.5rem;
+        }
+        #puzzle-label {
+            font-size: 0.58rem; letter-spacing: 0.2rem;
+            color: #1a3a40; text-transform: uppercase; margin-bottom: 0.8rem;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(5, 66px);
+            grid-template-rows: repeat(5, 66px);
+            gap: 0;
+            background: #050c12;
+            border-radius: 3px;
+            margin-bottom: 0.8rem;
+        }
+        .cell {
+            width: 66px; height: 66px;
+            background: #050c12;
+            position: relative; cursor: pointer;
+        }
+        .cell:hover:not(.fixed) { background: #0a1620; }
+        .cell.fixed { cursor: default; }
+        .cell svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+        #digits-row {
+            display: flex; gap: 5px; margin-bottom: 0.7rem; align-items: center;
+        }
+        .digit-slot {
+            width: 30px; height: 34px;
+            background: #0a1520;
+            border: 2px solid #0d2030;
+            border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem; font-weight: bold;
+            color: transparent;
+            transition: color 0.4s, border-color 0.4s;
+        }
+        .digit-slot.revealed { color: #a0a0a0; }
+
+        #puzzle-hint { font-size: 0.68rem; color: #4a6a72; letter-spacing: 0.06rem; }
+        #status {
+            font-size: 0.72rem; color: #8a9a9e;
+            letter-spacing: .05rem; min-height: 1rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Courier New', monospace;
+        }
+        #flag-input {
+            background-color: #0f1a20; color: #a0a0a0;
+            border: 3px solid #2a3a40; padding: 0.8rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.3rem; letter-spacing: 0.2rem;
+            margin-bottom: 1rem; outline: none; width: 220px; text-align: center;
+        }
+        #flag-input:focus { border-color: #00b4d8; }
+    </style>
+</head>
+<body>
+    <a class="retour-lien" href="/level1">⊟ Retour</a>
+    <div class="container">
+        <div id="layout">
+
+            <!-- Gauche : texte + input -->
+            <div id="col-left">
+                <div class="message">
+                    <p>Des tuyaux courent le long du plafond.</p>
+                    <p><em>Chacun mène quelque part.</em></p>
+                    <p><em>Reliez-les tous.</em></p>
+                </div>
+                <input type="text" id="flag-input" placeholder="·······" maxlength="10" readonly>
+                <br><br>
+                <button class="bouton" id="valider" disabled>Valider</button>
+                <p id="message" style="color:#00b4d8; margin-top:1rem;"></p>
+            </div>
+
+            <!-- Droite : puzzle -->
+            <div id="col-right">
+                <div id="puzzle-wrap">
+                    <p id="puzzle-label">ventilation — niveau sous-sol</p>
+                    <div id="grid"></div>
+                    <div id="digits-row"></div>
+                    <p id="status"></p>
+                    <p id="puzzle-hint">cliquez sur un tuyau pour le faire pivoter</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+<script>
+function os(sh,r){
+    if(sh==='I')return r%2===0?[1,0,1,0]:[0,1,0,1];
+    return[[1,1,0,0],[0,1,1,0],[0,0,1,1],[1,0,0,1]][((r%4)+4)%4];
+}
+const OPP=[2,3,0,1];
+const N=5;
+function nbr(i,d){const r=Math.floor(i/N),c=i%N;if(d===0&&r>0)return i-N;if(d===1&&c<N-1)return i+1;if(d===2&&r<N-1)return i+N;if(d===3&&c>0)return i-1;return-1;}
+function s(c){return{t:'s',c};}
+function d(c){return{t:'d',c};}
+function p(c,sh,sr){return{t:'p',c,sh,sr};}
+
+const DATA=[
+    s('b'),       p('r','L',1), s('r'),       s('v'),       p('v','L',2),
+    p('b','I',0), p('r','I',0), p('y','L',1), s('y'),       p('v','I',0),
+    p('b','I',0), p('r','I',0), d('y'),       p('v','L',1), p('v','L',3),
+    p('b','I',0), d('r'),       d('v'),       p('v','L',3), s('g'),
+    p('b','L',1), d('b'),       d('g'),       p('g','I',1), p('g','L',3),
+];
+
+const COLOR_ORDER=['b','r','y','v','g'];
+const DIGS={b:'0',r:'0',y:'7',v:'3',g:'6'};
+const BONUS_DIGIT='5';
+
+// Couleurs assombries backrooms
+const COLS={b:'#1a4a6a',r:'#6a1a10',y:'#5a4a08',v:'#3a1a5a',g:'#0e3a18'};
+
+const INITR=[0,3,0,0,0, 1,2,3,0,3, 3,1,0,0,1, 2,0,0,1,0, 0,0,0,3,0];
+const rots=DATA.map((c,i)=>c.t==='p'?INITR[i]:0);
+
+// Couleurs allumées (quand connecté) — un peu plus lumineuses mais toujours sombres
+const COLS_LIT={b:'#2a6a9a',r:'#9a2a18',y:'#8a6a12',v:'#5a2a8a',g:'#185a28'};
+
+function conn(a,b,dir){
+    const ca=DATA[a],cb=DATA[b];
+    if(!ca.c||!cb.c||ca.c!==cb.c||ca.t==='e'||cb.t==='e')return false;
+    const sa=ca.t==='p'?os(ca.sh,rots[a]):[1,1,1,1];
+    const sb=cb.t==='p'?os(cb.sh,rots[b]):[1,1,1,1];
+    return !!(sa[dir]&&sb[OPP[dir]]);
+}
+function flood(start){
+    const col=DATA[start].c;
+    const vis=new Set([start]);const q=[start];
+    while(q.length){const cur=q.shift();for(let d=0;d<4;d++){const n=nbr(cur,d);if(n<0||vis.has(n))continue;if(DATA[n].c!==col)continue;if(conn(cur,n,d)){vis.add(n);q.push(n);}}}
+    return vis;
+}
+function getAct(){
+    const act=new Array(25).fill(null);
+    DATA.forEach((c,i)=>{if(c.t==='s'){const r=flood(i);r.forEach(j=>{act[j]=c.c;});}});
+    return act;
+}
+function checkAll(){
+    const res={};
+    DATA.forEach((c,i)=>{if(c.t==='s'){const di=DATA.findIndex(x=>x.t==='d'&&x.c===c.c);res[c.c]=di>=0&&flood(i).has(di);}});
+    return res;
+}
+
+const grid=document.getElementById('grid');
+const divs=[];
+DATA.forEach((cell,i)=>{
+    const div=document.createElement('div');
+    div.className='cell'+(cell.t==='e'||cell.t==='s'||cell.t==='d'?' fixed':'');
+    if(cell.t==='p')div.addEventListener('click',()=>{rots[i]=(rots[i]+1)%4;render();});
+    grid.appendChild(div);divs.push(div);
+});
+
+const digRow=document.getElementById('digits-row');
+const slots=[];
+COLOR_ORDER.forEach(c=>{
+    const slot=document.createElement('div');
+    slot.className='digit-slot';
+    slot.style.borderColor=COLS_LIT[c]+'88';
+    slot.textContent=DIGS[c];
+    digRow.appendChild(slot);
+    slots.push({el:slot,c});
+});
+const sep=document.createElement('span');
+sep.style.cssText='font-family:monospace;font-size:0.7rem;color:#1a3040;margin:0 2px;';
+sep.textContent='+';
+digRow.appendChild(sep);
+const bonusSlot=document.createElement('div');
+bonusSlot.className='digit-slot';
+bonusSlot.style.borderColor='#ffffff18';
+bonusSlot.textContent=BONUS_DIGIT;
+digRow.appendChild(bonusSlot);
+
+function makeSVG(cell,i,ac){
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 66 66');
+    if(cell.t==='e')return svg;
+
+    const baseCol=COLS[cell.c];
+    const litCol=COLS_LIT[cell.c];
+    const lit=ac?litCol:baseCol;
+    const cx=33,cy=33,hw=8;
+
+    if(cell.t==='s'||cell.t==='d'){
+        const ring=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        ring.setAttribute('cx','33');ring.setAttribute('cy','33');ring.setAttribute('r','15');
+        ring.setAttribute('fill','none');ring.setAttribute('stroke',ac?litCol:baseCol);
+        ring.setAttribute('stroke-width','3');ring.setAttribute('opacity','0.5');
+        const body=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        body.setAttribute('cx','33');body.setAttribute('cy','33');body.setAttribute('r','9');
+        body.setAttribute('fill',ac?litCol:baseCol);
+        const hi=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        hi.setAttribute('cx','30');hi.setAttribute('cy','30');hi.setAttribute('r','3');
+        hi.setAttribute('fill','rgba(255,255,255,0.2)');
+        svg.appendChild(ring);svg.appendChild(body);svg.appendChild(hi);
+        return svg;
+    }
+
+    const sides=os(cell.sh,rots[i]);
+    const ends=[[cx,0],[66,cy],[cx,66],[0,cy]];
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+
+    sides.forEach((open,d)=>{
+        if(!open)return;
+        const ex=ends[d][0],ey=ends[d][1];
+        const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1',String(cx));line.setAttribute('y1',String(cy));
+        line.setAttribute('x2',String(ex));line.setAttribute('y2',String(ey));
+        line.setAttribute('stroke',lit);line.setAttribute('stroke-width',String(hw*2));
+        line.setAttribute('stroke-linecap','butt');
+        g.appendChild(line);
+    });
+
+    const ctr=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    ctr.setAttribute('x',String(cx-hw));ctr.setAttribute('y',String(cy-hw));
+    ctr.setAttribute('width',String(hw*2));ctr.setAttribute('height',String(hw*2));
+    ctr.setAttribute('fill',lit);
+    g.appendChild(ctr);
+
+    sides.forEach((open,d)=>{
+        if(!open)return;
+        const ex=ends[d][0],ey=ends[d][1];
+        const cap=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        cap.setAttribute('cx',String(ex));cap.setAttribute('cy',String(ey));
+        cap.setAttribute('r',String(hw));cap.setAttribute('fill',lit);
+        g.appendChild(cap);
+    });
+
+    // Reflet subtil
+    sides.forEach((open,d)=>{
+        if(!open)return;
+        const ex=ends[d][0],ey=ends[d][1];
+        const rf=document.createElementNS('http://www.w3.org/2000/svg','line');
+        rf.setAttribute('stroke','rgba(255,255,255,0.12)');
+        rf.setAttribute('stroke-width',String(hw*0.5));
+        rf.setAttribute('stroke-linecap','round');
+        if(d===0||d===2){rf.setAttribute('x1',String(cx+hw*.5));rf.setAttribute('y1',String(cy));rf.setAttribute('x2',String(ex+hw*.5));rf.setAttribute('y2',String(ey));}
+        else{rf.setAttribute('x1',String(cx));rf.setAttribute('y1',String(cy-hw*.5));rf.setAttribute('x2',String(ex));rf.setAttribute('y2',String(ey-hw*.5));}
+        g.appendChild(rf);
+    });
+
+    svg.appendChild(g);
+    return svg;
+}
+
+function render(){
+    const act=getAct();
+    const sol=checkAll();
+    divs.forEach((div,i)=>{div.innerHTML='';div.appendChild(makeSVG(DATA[i],i,act[i]));});
+
+    const allOk=COLOR_ORDER.every(c=>sol[c]);
+    slots.forEach(({el,c})=>{
+        if(sol[c]){el.classList.add('revealed');el.style.borderColor=COLS_LIT[c];}
+        else{el.classList.remove('revealed');el.style.borderColor=COLS_LIT[c]+'55';}
+    });
+    if(allOk){bonusSlot.classList.add('revealed');bonusSlot.style.borderColor='#ffffff44';}
+    else{bonusSlot.classList.remove('revealed');bonusSlot.style.borderColor='#ffffff18';}
+
+    const st=document.getElementById('status');
+    const fi=document.getElementById('flag-input');
+    const btn=document.getElementById('valider');
+
+    if(allOk){
+        const flag=COLOR_ORDER.map(c=>DIGS[c]).join('')+BONUS_DIGIT;
+        fi.value=flag;btn.disabled=false;
+        st.style.color='#38b048';st.textContent='tous les circuits sont reliés';
+    } else {
+        fi.value='';btn.disabled=true;
+        const done=COLOR_ORDER.filter(c=>sol[c]);
+        st.style.color='#8a9a9e';
+        st.textContent=done.length?done.length+'/'+COLOR_ORDER.length+' circuits reliés':'';
+    }
+}
+render();
+
+document.getElementById('valider').addEventListener('click',async()=>{
+    const val=document.getElementById('flag-input').value.trim();
+    const rep=await fetch('/verifier/4',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+    const data=await rep.json();
+    const msg=document.getElementById('message');
+    if(data.succes){
+        msg.style.color='#38b048';msg.textContent='Le circuit est complet.';
+        document.getElementById('valider').disabled=true;
+        setTimeout(()=>{sessionStorage.setItem('lvl1_1.3','1');window.location.href='/level1?done=1.3';},1800);
+    } else {
+        msg.style.color='#ff6b6b';msg.textContent='Ce chemin ne mène nulle part.';
+    }
+});
+</script>
+</body>
+</html>

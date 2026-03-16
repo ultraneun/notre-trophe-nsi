@@ -6,105 +6,97 @@
     <title>Level 1.1 - The Backrooms</title>
     <link rel="stylesheet" href="/level1/style1.css">
     <style>
-        .coord-display {
-            font-size: 0.75rem;
-            color: #2a3a40;
-            margin-bottom: 2rem;
-            letter-spacing: 0.05rem;
-        }
+        body { animation: fade-in-page 0.8s ease forwards; background-image: url('/images/level1.1.jpg'); }
 
-        #heure-input {
-            background-color: #0f1a20;
-            color: #a0a0a0;
-            border: 3px solid #2a3a40;
-            padding: 1rem 2rem;
+        .heure-display {
             font-family: 'Courier New', monospace;
-            font-size: 1.6rem;
-            letter-spacing: 0.3rem;
+            font-size: 2.8rem;
+            color: #a0a0a0;
+            letter-spacing: 0.4rem;
             margin-bottom: 1rem;
-            outline: none;
-            width: 200px;
-            text-align: center;
+            background: #0f1a20;
+            border: 3px solid #2a3a40;
+            padding: 0.6rem 2rem;
+            display: inline-block;
         }
-
-        #heure-input:focus {
-            border-color: #00b4d8;
-            box-shadow: 0 0 15px rgba(0, 180, 216, 0.2);
+        #heure-raw {
+            position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0;
         }
+        .heure-wrap { cursor: text; }
+        .heure-wrap:focus-within .heure-display { border-color: #00b4d8; }
     </style>
 </head>
-<body style="
-    background-image: url('/images/level1.1.jpg');
-    height: 100vh;
-    margin: 0;
-">
+<body>
+    <a class="retour-lien" href="/level1">⊟ Retour</a>
 
     <div class="container">
-        <h1 class="bug">LEVEL 1.1</h1>
 
-        <div class="message" style="max-width: 500px; margin-bottom: 2rem;">
-            <p>Quelqu'un a laissé un appareil photo.</p>
-            <p>La dernière photo date de <span class="alert">Juillet 2024.</span></p>
-            <p><em>L'appareil se souvient d'où il était.</em></p>
-            <p><em>L'endroit se souvient de l'heure.</em></p>
+        <div class="message" style="max-width:500px; margin-bottom:2rem;">
+            <p>Vous devez rejoindre les coordonnées</p>
+            <p>Il semble que vous soyez en <span class="alert">Juillet 2024.</span></p>
+            <p><em>Mais quelle heure est-t-il ?</em></p>
         </div>
 
-        <input type="text" id="heure-input" placeholder="HH:MM" maxlength="5">
-        <br>
+        <div class="heure-wrap" onclick="document.getElementById('heure-raw').focus()">
+            <div class="heure-display" id="heure-display">__:__</div>
+            <input type="tel" id="heure-raw" maxlength="4">
+        </div>
+        <br><br>
         <button class="bouton" id="valider">Valider</button>
-        <p id="message" style="color: #00b4d8; margin-top: 1rem;"></p>
+        <p id="message" style="color:#00b4d8; margin-top:1rem;"></p>
     </div>
 
     <script>
-        const input = document.getElementById('heure-input');
-        const bouton = document.getElementById('valider');
+        const raw     = document.getElementById('heure-raw');
+        const display = document.getElementById('heure-display');
+        const bouton  = document.getElementById('valider');
         const message = document.getElementById('message');
 
+        function formaterHeure(chiffres){
+            const c = chiffres.padEnd(4,'_');
+            return `${c[0]}${c[1]}:${c[2]}${c[3]}`;
+        }
+
+        raw.addEventListener('input', function(){
+            this.value = this.value.replace(/\D/g,'').slice(0,4);
+            display.textContent = formaterHeure(this.value);
+        });
+
         bouton.addEventListener('click', verifier);
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') verifier();
-        });
+        raw.addEventListener('keypress', e => { if(e.key==='Enter') verifier(); });
 
-        // Format auto HH:MM
-        input.addEventListener('input', () => {
-            let val = input.value.replace(/[^0-9]/g, '');
-            if (val.length >= 3) val = val.slice(0, 2) + ':' + val.slice(2, 4);
-            input.value = val;
-        });
+        // Focus auto au chargement
+        setTimeout(()=>raw.focus(), 600);
 
-        async function verifier() {
-            const val = input.value.trim();
-
-            if (val === '') {
-                message.style.color = '#ff6b6b';
-                message.textContent = 'Le silence est une réponse. Pas la bonne.';
+        async function verifier(){
+            const val = raw.value.trim();
+            if(val.length < 4){
+                message.style.color='#ff6b6b';
+                message.textContent='Entrez une heure complète.';
                 return;
             }
-
-            const reponse = await fetch('/verifier/2', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({flag: val})
+            // Reconstruit HH:MM pour le serveur
+            const flagFormate = val.slice(0,2)+':'+val.slice(2,4);
+            const rep  = await fetch('/verifier/2',{
+                method:'POST',
+                headers:{'Content-Type':'application/json'},
+                body:JSON.stringify({flag:flagFormate})
             });
-            
-            const data = await reponse.json();
-
-            if (data.succes) {
-                message.style.color = '#00ff88';
-                message.textContent = 'Le bourdonnement change de tonalité. Une porte s\'ouvre.';
-                bouton.disabled = true;
-                setTimeout(() => {
-                    window.location.href = data.redirect;
-                }, 2500);
+            const data = await rep.json();
+            if(data.succes){
+                message.style.color='#00ff88';
+                message.textContent='Le bourdonnement change de tonalité. Une porte s\'ouvre.';
+                bouton.disabled=true;
+                setTimeout(()=>{ window.location.href=data.redirect; },2500);
             } else {
-                message.style.color = '#ff6b6b';
-                message.textContent = 'Cette heure ne correspond à rien ici.';
-                input.value = '';
-                document.body.style.animation = 'shake 0.4s';
-                setTimeout(() => { document.body.style.animation = ''; }, 400);
+                message.style.color='#ff6b6b';
+                message.textContent='Cette heure ne correspond à rien ici.';
+                raw.value='';
+                display.textContent=formaterHeure('');
+                document.body.style.animation='shake 0.4s';
+                setTimeout(()=>{ document.body.style.animation=''; raw.focus(); },400);
             }
         }
     </script>
-
 </body>
 </html>

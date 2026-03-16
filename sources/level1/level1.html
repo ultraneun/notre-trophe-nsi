@@ -8,18 +8,18 @@
 </head>
 <body>
 
-    <!-- Effet ouverture des yeux -->
     <div id="eye-open"></div>
     <div id="eye-top"></div>
     <div id="eye-bottom"></div>
+    <div id="transition-out"></div>
 
-    <!-- VUE TERMINAL -->
     <div class="container" id="vue-terminal">
         <div class="terminal">
             <div class="terminal-header">NIVEAU_01 // PARKING</div>
             <div class="terminal-body">
                 <span id="terminal-text"></span><span class="cursor" id="cursor">█</span>
             </div>
+            <div class="terminal-skip" id="terminal-skip">[ espace ] passer</div>
             <div class="terminal-footer" id="terminal-footer">
                 <button class="bouton-toggle" id="btn-explorer">
                     <span class="toggle-icon">⊞</span> Explorer la pièce
@@ -28,94 +28,235 @@
         </div>
     </div>
 
-    <!-- VUE IMAGE — image centrée avec ratio préservé, zone secrète fixe sur l'image -->
     <div id="vue-image">
-        <button class="bouton-retour" id="btn-retour">
-            <span class="toggle-icon">⊟</span> Afficher le rapport
-        </button>
-
+        <button class="bouton-retour" id="btn-retour">⊟ Rapport</button>
         <div id="img-wrapper">
             <img id="img-level1" src="/images/level1.png" alt="">
-            <div id="zone-secrete" onclick="entrer()"></div>
+            <div id="zone-secrete"  class="zone" data-dest="/level1.1" data-verrou="true"></div>
+            <div id="zone-secrete2" class="zone" data-dest="/level1.2"></div>
+            <div id="zone-secrete3" class="zone" data-dest="/level1.3"></div>
+        </div>
+        <div id="hud-progression">
+            <span class="hud-item" id="hud-12">⬡</span>
+            <span class="hud-item" id="hud-13">⬡</span>
+            <span class="hud-sep">→</span>
+            <span class="hud-item" id="hud-porte">🔒</span>
+        </div>
+    </div>
+
+    <!-- Popup verrou simple -->
+    <div id="popup-verrou">
+        <div id="popup-contenu">
+            <p id="popup-titre">ACCÈS RESTREINT</p>
+            <p id="popup-texte"></p>
+            <button class="bouton" onclick="fermerPopup()">Compris</button>
+        </div>
+    </div>
+
+    <!-- Popup coords -->
+    <div id="popup-coords">
+        <div id="popup-coords-contenu">
+            <p class="popup-label">ACCÈS NIVEAU SUIVANT</p>
+            <p class="popup-sub">Entrez les coordonnées</p>
+
+            <!-- Latitude : format  00°00'00.0"N  -->
+            <div class="coord-ligne">
+                <div class="coord-display" id="lat-display">__°__'__._"N</div>
+                <input type="tel" id="lat-raw" class="coord-hidden-input" maxlength="7" placeholder="">
+            </div>
+
+            <!-- Longitude : format  0°00'00.0"W  -->
+            <div class="coord-ligne" style="margin-top:10px;">
+                <div class="coord-display" id="lon-display">_°__'__._"W</div>
+                <input type="tel" id="lon-raw" class="coord-hidden-input" maxlength="6" placeholder="">
+            </div>
+
+            <div style="display:flex;gap:10px;justify-content:center;margin-top:1.4rem;">
+                <button class="bouton" id="btn-coords-retour">← Retour</button>
+                <button class="bouton" id="btn-coords-valider">Valider</button>
+            </div>
+            <p id="coords-message"></p>
         </div>
     </div>
 
     <script>
-        // ── Typewriter ──────────────────────────────────────────────────
+        // ── Typewriter ────────────────────────────────────────────
         const lignes = [
-            "Un parking soutterain?",
-            "Les tuyaux au plafond fuient avec de l'eau polluée.",
-            "Vous trouverez sûrement de la nourriture.",
-            "Peut-être même qu'une issue s'y trouve.",
-            "Peut-être que lui aussi s'y trouve...",
+            "Un parking souterrain?",
+            "Les tuyaux au plafond fuient. Évitez l'eau.",
+            "Vous pouvez peut-être trouver de la nourriture.",
+            "peut-être même une issue",
+            "Un conseil, NOTEZ ce que vous apprenez.",
         ];
-
-        const el     = document.getElementById('terminal-text');
+        const el = document.getElementById('terminal-text');
         const footer = document.getElementById('terminal-footer');
+        const skip   = document.getElementById('terminal-skip');
         const cursor = document.getElementById('cursor');
-        let ligneIndex = 0, charIndex = 0, texteComplet = '';
+        let ligneIndex=0, charIndex=0, texteComplet='', typewriterFini=false, timeoutId=null;
 
+        function finirTypewriter() {
+            if (typewriterFini) return;
+            typewriterFini = true;
+            if (timeoutId) clearTimeout(timeoutId);
+            texteComplet = lignes.join('\n');
+            el.textContent = texteComplet;
+            cursor.style.display = 'none';
+            skip.style.display = 'none';
+            footer.classList.add('visible');
+        }
         function typeChar() {
-            if (ligneIndex >= lignes.length) {
-                cursor.style.display = 'none';
-                setTimeout(() => footer.classList.add('visible'), 600);
-                return;
-            }
+            if (ligneIndex >= lignes.length) { finirTypewriter(); return; }
             const ligne = lignes[ligneIndex];
             if (charIndex < ligne.length) {
-                texteComplet += ligne[charIndex];
-                el.textContent = texteComplet;
+                texteComplet += ligne[charIndex]; el.textContent = texteComplet;
                 charIndex++;
-                setTimeout(typeChar, ligne[charIndex - 1] === '.' ? 280 : 32);
+                timeoutId = setTimeout(typeChar, ligne[charIndex-1]==='.'?280:32);
             } else {
-                texteComplet += '\n';
-                el.textContent = texteComplet;
-                ligneIndex++; charIndex = 0;
-                setTimeout(typeChar, 420);
+                texteComplet += '\n'; el.textContent = texteComplet;
+                ligneIndex++; charIndex=0; timeoutId = setTimeout(typeChar, 420);
             }
         }
-        setTimeout(typeChar, 3400);
+        document.addEventListener('keydown', e => { if(e.code==='Space'&&!typewriterFini){e.preventDefault();finirTypewriter();} });
+        document.getElementById('vue-terminal').addEventListener('click', ()=>{ if(!typewriterFini) finirTypewriter(); });
+        setTimeout(()=>{ skip.style.opacity='1'; typeChar(); }, 3400);
 
-        // ── Redimensionne le wrapper pour que l'image garde son ratio ──
-        const img     = document.getElementById('img-level1');
-        const wrapper = document.getElementById('img-wrapper');
+        // ── Ratio image ───────────────────────────────────────────
+        const img=document.getElementById('img-level1'), wrapper=document.getElementById('img-wrapper');
+        function redimensionner(){
+            const ri=img.naturalWidth/img.naturalHeight, rf=window.innerWidth/window.innerHeight;
+            let w,h;
+            if(rf>ri){h=window.innerHeight;w=h*ri;}else{w=window.innerWidth;h=w/ri;}
+            wrapper.style.width=w+'px'; wrapper.style.height=h+'px';
+        }
+        img.addEventListener('load',redimensionner);
+        window.addEventListener('resize',redimensionner);
+        if(img.complete&&img.naturalWidth) redimensionner();
 
-        function redimensionner() {
-            const ratioImage   = img.naturalWidth / img.naturalHeight;
-            const ratioFenetre = window.innerWidth / window.innerHeight;
-            let w, h;
-            if (ratioFenetre > ratioImage) {
-                h = window.innerHeight;
-                w = h * ratioImage;
+        // ── Toggle vues ───────────────────────────────────────────
+        const vueTerminal=document.getElementById('vue-terminal');
+        const vueImage=document.getElementById('vue-image');
+        document.getElementById('btn-explorer').addEventListener('click',()=>{
+            vueTerminal.classList.add('hidden'); vueImage.classList.add('active'); majHUD();
+        });
+        document.getElementById('btn-retour').addEventListener('click',()=>{
+            vueImage.classList.remove('active'); vueTerminal.classList.remove('hidden');
+        });
+
+        // ── HUD ───────────────────────────────────────────────────
+        function estDebloque(id){ return sessionStorage.getItem('lvl1_'+id)==='1'; }
+        function majHUD(){
+            const ok12=estDebloque('1.2'), ok13=estDebloque('1.3');
+            const h12=document.getElementById('hud-12'), h13=document.getElementById('hud-13');
+            h12.textContent=ok12?'⬢':'⬡'; h12.style.color=ok12?'#00b4d8':'#2a3a40';
+            h13.textContent=ok13?'⬢':'⬡'; h13.style.color=ok13?'#00b4d8':'#2a3a40';
+            document.getElementById('hud-porte').textContent=(ok12&&ok13)?'🔓':'🔒';
+        }
+
+        // ── Zones ─────────────────────────────────────────────────
+        const overlay=document.getElementById('transition-out');
+        document.querySelectorAll('.zone').forEach(zone=>{
+            zone.addEventListener('click',function(){
+                const dest=this.dataset.dest, verrou=this.dataset.verrou==='true';
+                if(verrou){
+                    estDebloque('1.2')&&estDebloque('1.3') ? ouvrirPopupCoords() : ouvrirPopupVerrou();
+                    return;
+                }
+                const rect=this.getBoundingClientRect();
+                const ox=((rect.left+rect.width/2)/window.innerWidth*100).toFixed(1)+'%';
+                const oy=((rect.top+rect.height/2)/window.innerHeight*100).toFixed(1)+'%';
+                document.body.style.transformOrigin=`${ox} ${oy}`;
+                document.body.classList.add('zoom-out');
+                setTimeout(()=>overlay.classList.add('active'),300);
+                setTimeout(()=>{ window.location.href=dest; },1100);
+            });
+        });
+
+        // ── Popup verrou ──────────────────────────────────────────
+        function ouvrirPopupVerrou(){
+            const ok12=estDebloque('1.2'), ok13=estDebloque('1.3');
+            let msg='Cette porte est verrouillée.';
+            if(!ok12&&!ok13) msg+='<br>Il vous manque deux informations.';
+            else msg+='<br>Il vous manque encore quelque chose.';
+            document.getElementById('popup-texte').innerHTML=msg;
+            document.getElementById('popup-verrou').classList.add('active');
+        }
+        function fermerPopup(){ document.getElementById('popup-verrou').classList.remove('active'); }
+
+        // ── Popup coords avec auto-format ─────────────────────────
+        function ouvrirPopupCoords(){
+            document.getElementById('popup-coords').classList.add('active');
+            resetCoordsInput();
+            document.getElementById('lat-raw').focus();
+        }
+        function fermerPopupCoords(){
+            document.getElementById('popup-coords').classList.remove('active');
+        }
+
+        document.getElementById('btn-coords-retour').addEventListener('click', fermerPopupCoords);
+        document.getElementById('btn-coords-valider').addEventListener('click', validerCoords);
+
+        // Format latitude  : 7 chiffres → 00°00'00.0"N
+        function formaterLat(chiffres){
+            const c = chiffres.padEnd(7,'_');
+            return `${c[0]}${c[1]}°${c[2]}${c[3]}'${c[4]}${c[5]}.${c[6]}"N`;
+        }
+        // Format longitude : 6 chiffres → 0°00'00.0"W
+        function formaterLon(chiffres){
+            const c = chiffres.padEnd(6,'_');
+            return `${c[0]}°${c[1]}${c[2]}'${c[3]}${c[4]}.${c[5]}"W`;
+        }
+
+        function resetCoordsInput(){
+            document.getElementById('lat-raw').value='';
+            document.getElementById('lon-raw').value='';
+            document.getElementById('lat-display').textContent=formaterLat('');
+            document.getElementById('lon-display').textContent=formaterLon('');
+            document.getElementById('coords-message').textContent='';
+        }
+
+        document.getElementById('lat-raw').addEventListener('input', function(){
+            this.value=this.value.replace(/\D/g,'').slice(0,7);
+            document.getElementById('lat-display').textContent=formaterLat(this.value);
+            if(this.value.length===7) document.getElementById('lon-raw').focus();
+        });
+        document.getElementById('lon-raw').addEventListener('input', function(){
+            this.value=this.value.replace(/\D/g,'').slice(0,6);
+            document.getElementById('lon-display').textContent=formaterLon(this.value);
+        });
+
+        // Backspace depuis lon vide → revient sur lat
+        document.getElementById('lon-raw').addEventListener('keydown', function(e){
+            if(e.key==='Backspace'&&this.value==='') document.getElementById('lat-raw').focus();
+        });
+
+        document.addEventListener('keydown', e=>{
+            if(e.key==='Enter'&&document.getElementById('popup-coords').classList.contains('active')) validerCoords();
+        });
+
+        function validerCoords(){
+            const lat=document.getElementById('lat-raw').value;
+            const lon=document.getElementById('lon-raw').value;
+            const msg=document.getElementById('coords-message');
+
+            if(lat==='5130003'&&lon==='007365'){
+                msg.style.color='#00ff88'; msg.textContent='Accès accordé.';
+                setTimeout(()=>{
+                    fermerPopupCoords();
+                    document.body.classList.add('zoom-out');
+                    overlay.classList.add('active');
+                    setTimeout(()=>{ window.location.href='/level1.1'; },800);
+                },900);
             } else {
-                w = window.innerWidth;
-                h = w / ratioImage;
+                msg.style.color='#ff6b6b'; msg.textContent='Coordonnées incorrectes.';
+                setTimeout(()=>{ resetCoordsInput(); document.getElementById('lat-raw').focus(); },800);
             }
-            wrapper.style.width  = w + 'px';
-            wrapper.style.height = h + 'px';
         }
 
-        img.addEventListener('load', redimensionner);
-        window.addEventListener('resize', redimensionner);
-        if (img.complete && img.naturalWidth) redimensionner();
-
-        // ── Toggle vues ─────────────────────────────────────────────────
-        const vueTerminal = document.getElementById('vue-terminal');
-        const vueImage    = document.getElementById('vue-image');
-
-        document.getElementById('btn-explorer').addEventListener('click', () => {
-            vueTerminal.classList.add('hidden');
-            vueImage.classList.add('active');
-        });
-
-        document.getElementById('btn-retour').addEventListener('click', () => {
-            vueImage.classList.remove('active');
-            vueTerminal.classList.remove('hidden');
-        });
-
-        function entrer() {
-            window.location.href = '/level1.1';
-        }
+        // Retour avec ?done=
+        const params=new URLSearchParams(window.location.search);
+        const done=params.get('done');
+        if(done){ sessionStorage.setItem('lvl1_'+done,'1'); history.replaceState({},'','/level1'); }
+        majHUD();
     </script>
 </body>
 </html>
