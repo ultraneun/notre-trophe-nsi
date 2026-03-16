@@ -1,21 +1,203 @@
 from flask import *
+from database import init_db, ajouter_joueur, valider_niveau, get_niveaux_valides, get_leaderboard
 
 app = Flask(__name__)
 app.secret_key = "backrooms_secret"
 
-FLAGS = {
-    1: {"flag": "391",       "points": 100, "redirect": "/level1"},  # level 0
-    2: {"flag": "06:10",     "points": 50,  "redirect": "/level2"},  # level 1 - code 1
-    3: {"flag": "5130003",   "points": 25,  "redirect": "/level2"},  # level 1 - code 2
-    4: {"flag": "007365",    "points": 25,  "redirect": "/level2"},  # level 1 - code 3
-                                                                      # level 2 - en cours
-    5: {"flag": "6515",      "points": 150, "redirect": "/level4"},  # level 3.5
+init_db()
+
+# Génère une nouvelle clé secrète à chaque lancement
+# → invalide tous les cookies existants
+import os
+app.secret_key = os.urandom(24)
+
+# Ordre obligatoire des niveaux (anticheat)
+ORDRE_NIVEAUX = {
+    '/level1':   1,
+    '/level1.1': 1,
+    '/level1.2': 1,
+    '/level1.3': 1,
+    '/level2':   4,
+    '/level2.1': 4,
+    '/level3':   5,
+    '/level3.5': 5,
+    '/level4':   5,
+    '/level5':   5,
 }
+
+def niveau_accessible(pseudo, route):
+    # Admin = pas d'anticheat
+    if pseudo.lower() == "admin":
+        return True
+    
+    for chemin, flag_requis in ORDRE_NIVEAUX.items():
+        if route.startswith(chemin):
+            valides = get_niveaux_valides(pseudo)
+            if flag_requis not in valides:
+                return False
+    return True
+
+FLAGS = {
+    1: {"flag": "391",      "points": 100, "redirect": "/level1"},
+    2: {"flag": "06:10",    "points": 50,  "redirect": "/level2"},
+    3: {"flag": "5130003",  "points": 25,  "redirect": "/level2"},
+    4: {"flag": "007365",   "points": 25,  "redirect": "/level2"},
+    5: {"flag": "6515",     "points": 150, "redirect": "/level4"},
+}
+
+
+# === PAGE PSEUDO ===
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        pseudo = request.form.get('pseudo', '').strip()
+        if not pseudo or len(pseudo) > 20:
+            return render_template_string(LOGIN_HTML, erreur="Pseudo invalide.")
+        ajouter_joueur(pseudo)
+        session['pseudo'] = pseudo
+        return redirect('/')
+    return render_template_string(LOGIN_HTML, erreur=None)
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
+# === MIDDLEWARE — vérifie pseudo + anticheat ===
+@app.before_request
+def verifier_acces():
+    routes_libres = ['/login', '/logout', '/static', '/images', '/sons', '/level0']    # La racine / doit vérifier le pseudo
+   
+    if request.path == '/':
+        if 'pseudo' not in session:
+            return redirect('/login')
+        return
+    
+    if any(request.path.startswith(r) for r in routes_libres):
+        return
+    
+    if 'pseudo' not in session:
+        return redirect('/login')
+    
+    pseudo = session['pseudo']
+    if not niveau_accessible(pseudo, request.path):
+        return redirect('/')
 
 @app.route('/')
 def accueil():
     return redirect('/level0')
 
+@app.route('/verifier/<int:niveau>', methods=['POST'])
+def verifier(niveau):
+    pseudo = session.get('pseudo')
+    if not pseudo:
+        return jsonify({"succes": False, "message": "Non connecté."})
+    
+    data = request.get_json()
+    flag_soumis = data['flag'].strip()
+    
+    if niveau not in FLAGS:
+        return jsonify({"succes": False, "message": "Niveau inconnu"})
+    
+    if flag_soumis == FLAGS[niveau]["flag"]:
+        valider_niveau(pseudo, niveau, FLAGS[niveau]["points"])
+        return jsonify({"succes": True, "redirect": FLAGS[niveau]["redirect"]})
+    else:
+        return jsonify({"succes": False, "message": "❌ Mauvais flag."})
+
+@app.route('/leaderboard')
+def leaderboard():
+    scores = get_leaderboard()
+    return render_template_string(LEADERBOARD_HTML, scores=scores)
+
+# === TEMPLATES INLINE ===
+LOGIN_HTML = """
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Backrooms — Identification</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background: #080807;
+            font-family: 'Courier New', monospace;
+            display: flex; align-items: center; justify-content: center;
+            height: 100vh; color: #a89e72;
+        }
+        .box {
+            border-left: 2px solid #c8a84a;
+            padding: 2.5rem 2rem;
+            background: rgba(0,0,0,0.82);
+            max-width: 420px; width: 90%;
+        }
+        .titre { font-size: 0.6rem; letter-spacing: 0.4rem; color: #c8a84a; margin-bottom: 2rem; }
+        input {
+            width: 100%; background: transparent; border: 1px solid #2a2a1a;
+            color: #e8dc9e; font-family: 'Courier New', monospace;
+            font-size: 1rem; padding: 0.8rem 1rem; margin-bottom: 1rem; outline: none;
+        }
+        input:focus { border-color: rgba(232,220,158,0.3); }
+        button {
+            background: transparent; border: 1px solid #3a3a2a; color: #e8dc9e;
+            font-family: 'Courier New', monospace; font-size: 0.78rem;
+            padding: 0.8rem 2rem; cursor: pointer; text-transform: uppercase;
+            letter-spacing: 0.2rem; transition: all 0.4s;
+        }
+        button:hover { border-color: #c8a84a; color: #c8a84a; }
+        .erreur { color: #cc5555; font-size: 0.75rem; margin-top: 1rem; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="titre">BACKROOMS // IDENTIFICATION</div>
+        <p style="margin-bottom:1.5rem; font-size:0.85rem;">Entrez votre pseudo pour commencer ou reprendre votre progression.</p>
+        <form method="POST">
+            <input type="text" name="pseudo" placeholder="PSEUDO" maxlength="20" autofocus>
+            <button type="submit">ENTRER</button>
+        </form>
+        {% if erreur %}<p class="erreur">{{ erreur }}</p>{% endif %}
+    </div>
+</body>
+</html>
+"""
+
+LEADERBOARD_HTML = """
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Backrooms — Leaderboard</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { background:#080807; font-family:'Courier New',monospace; color:#a89e72; padding:3rem 2rem; }
+        h1 { font-size:0.6rem; letter-spacing:0.4rem; color:#c8a84a; margin-bottom:2rem; }
+        table { width:100%; max-width:500px; border-collapse:collapse; }
+        td, th { padding:0.6rem 1rem; font-size:0.85rem; border-bottom:1px solid #1a1a0e; }
+        th { color:#c8a84a; font-size:0.6rem; letter-spacing:0.2rem; }
+        .rang { color:#3a3a2a; width:40px; }
+        a { color:#3a3a2a; font-size:0.7rem; text-decoration:none; display:block; margin-top:2rem; }
+        a:hover { color:#c8a84a; }
+    </style>
+</head>
+<body>
+    <h1>BACKROOMS // LEADERBOARD</h1>
+    <table>
+        <tr><th>#</th><th>PSEUDO</th><th>POINTS</th></tr>
+        {% for i, (pseudo, points) in enumerate(scores) %}
+        <tr>
+            <td class="rang">{{ i+1 }}</td>
+            <td>{{ pseudo }}</td>
+            <td>{{ points }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <a href="/">← RETOUR</a>
+</body>
+</html>
+"""
+
+# ... (garde toutes tes routes /level0, /level1, etc. inchangées)
 @app.route('/level0')
 def level0():
     return send_from_directory('level0', 'level0.html')
@@ -75,17 +257,6 @@ def images(fichier):
 @app.route('/sons/<path:fichier>')
 def sons(fichier):
     return send_from_directory('sons', fichier)
-
-@app.route('/verifier/<int:niveau>', methods=['POST'])
-def verifier(niveau):
-    data = request.get_json()
-    flag_soumis = data['flag'].strip()
-    if niveau not in FLAGS:
-        return jsonify({"succes": False, "message": "Niveau inconnu"})
-    if flag_soumis == FLAGS[niveau]["flag"]:
-        return jsonify({"succes": True, "redirect": FLAGS[niveau]["redirect"]})
-    else:
-        return jsonify({"succes": False, "message": "❌ Mauvais flag."})
 
 if __name__ == '__main__':
     app.run(debug=True)
