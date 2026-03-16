@@ -68,7 +68,7 @@
 
         async function verifierCode() {
             const code = document.getElementById('code-input').value.trim();
-            const reponse = await fetch('/verifier/3', {
+            const reponse = await fetch('/verifier/5', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({flag: code})

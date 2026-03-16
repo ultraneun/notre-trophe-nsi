@@ -4,10 +4,14 @@ app = Flask(__name__)
 app.secret_key = "backrooms_secret"
  
 FLAGS = {
-    1: {"flag": "BCKRM{bon_début}", "points": 100, "redirect": "/level2"},
-    2: {"flag": "06:10",            "points": 100, "redirect": "/level2"},
-    3: {"flag": "5130003",          "points": 150, "redirect": "/level1"},
-    4: {"flag": "007365",           "points": 150, "redirect": "/level1"},
+    # Level 0
+    1: {"flag": "391",              "points": 100, "redirect": "/level1"},
+    # Level 1
+    2: {"flag": "06:10",            "points": 50,  "redirect": "/level2"},
+    3: {"flag": "5130003",          "points": 25,  "redirect": "/level1"},
+    4: {"flag": "007365",           "points": 25,  "redirect": "/level1"},
+    # Level 3
+    5: {"flag": "6515",             "points": 150, "redirect": "/level4"},
     # Level 4 sous-énigmes
     41: {"flag": "4301",            "points": 100, "redirect": "/level4"},
     42: {"flag": "19",              "points": 100, "redirect": "/level4"},
