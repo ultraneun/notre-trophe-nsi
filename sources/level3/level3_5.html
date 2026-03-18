@@ -25,15 +25,16 @@
         </div>
 
     <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+        sfxLettre.volume = 0.3;
+
         const lignes = [
             "Une porte.",
-            "Elle est verrouillée.",
-            "...",
+            "Elle est verrouillée...",
             "Un clavier à 4 chiffres.",
             "Le premier : le nombre de paires du memory.",
             "Le second : le nombre de flèches de la séquence.",
-            "Le troisième : le nombre de cibles éliminées.",
-            "...",
+            "Le troisième : le nombre de cibles éliminées...",
             "Tu t'en souviens ?",
         ];
 
@@ -52,15 +53,22 @@
             if (charIndex < ligne.length) {
                 texteComplet += ligne[charIndex];
                 el.textContent = texteComplet;
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.2;
+                    clone.play().catch(() => {});
+                }
                 charIndex++;
-                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                const char = ligne[charIndex - 1];
+                const lastThree = ligne.slice(charIndex - 3, charIndex);
+                const delay =
+                    lastThree === '...' ? 1000 :
+                    (char === '.' || char === '?') ? 1000 : 80;
                 setTimeout(typeChar, delay);
             } else {
-                texteComplet += '\n';
-                el.textContent = texteComplet;
-                ligneIndex++;
-                charIndex = 0;
-                setTimeout(typeChar, 420);
+                texteComplet += '\n'; el.textContent = texteComplet;
+                ligneIndex++; charIndex = 0;
+                setTimeout(typeChar, 500);
             }
         }
 
@@ -83,14 +91,11 @@
                 // Nouveau texte qui s'écrit
                 const lignesFin = [
                     "...",
-                    "La porte s'ouvre.",
-                    "...",
+                    "La porte s'ouvre...",
                     "De l'autre côté.",
                     "Un couloir.",
-                    "Encore.",
-                    "...",
-                    "Tu croyais rentrer chez toi ?",
-                    "...",
+                    "Encore...",
+                    "Tu croyais rentrer chez toi ?..",
                     "Les Backrooms ne te libèrent jamais.",
                     "Continue.",
                 ];
@@ -110,15 +115,22 @@
                     if (charIndex < ligne.length) {
                         texteComplet += ligne[charIndex];
                         el.textContent = texteComplet;
+                        if (ligne[charIndex] !== ' ') {
+                            const clone = sfxLettre.cloneNode();
+                            clone.volume = 0.2;
+                            clone.play().catch(() => {});
+                        }
                         charIndex++;
-                        const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                        const char = ligne[charIndex - 1];
+                        const lastThree = ligne.slice(charIndex - 3, charIndex);
+                        const delay =
+                            lastThree === '...' ? 1000 :
+                            (char === '.' || char === '?') ? 1000 : 90;
                         setTimeout(typeFinale, delay);
                     } else {
-                        texteComplet += '\n';
-                        el.textContent = texteComplet;
-                        ligneIndex++;
-                        charIndex = 0;
-                        setTimeout(typeFinale, 420);
+                        texteComplet += '\n'; el.textContent = texteComplet;
+                        ligneIndex++; charIndex = 0;
+                        setTimeout(typeFinale, 500);
                     }
                 }
 
