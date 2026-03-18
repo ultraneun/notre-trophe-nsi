@@ -98,5 +98,18 @@
             }
         }
     </script>
+<audio id="amb" loop src="/sons/AmbianceLevel1.mp3"></audio>
+<script>
+    const amb = document.getElementById('amb');
+    amb.volume = 0;
+    amb.play().catch(()=>{});
+    document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+        vol = Math.min(0.1, vol + 0.001);
+        amb.volume = vol;
+        if (vol >= 0.1) clearInterval(fadeIn);
+    }, 25);
+</script>
 </body>
 </html>
