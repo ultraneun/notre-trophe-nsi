@@ -13,6 +13,7 @@
             <div class="terminal-header">NIVEAU_00 // BACKROOMS</div>
             <div class="terminal-body">
                 <span id="terminal-text"></span><span class="cursor">█</span>
+                <div id="skip-hint">[ ESPACE ]</div> 
             </div>
             <div class="terminal-footer" id="terminal-footer">
                 <button class="bouton" id="btn-yeux">Ne pas fermer les yeux</button>
@@ -30,14 +31,18 @@
     </div>
  
     <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+        sfxLettre.volume = 0.3; // On baisse un peu le volume pour que ce ne soit pas agressif
         const lignes = [
             "Vous n'auriez pas dû être ici.",
             "Personne ne choisit d'entrer. Vous avez glissé.",
-            "Les murs sont humides. Le bourdonnement ne s'arrête jamais.",
+            "Les murs sont humides. Le bourdonnement est constant.",
             "L'odeur de moquette mouillée vous suit partout.",
             "Vous marchez depuis combien de temps déjà ?",
             "Quelque chose marche aussi.",
         ];
+
+        let skipAnimation = false;
  
         const el = document.getElementById('terminal-text');
         const footer = document.getElementById('terminal-footer');
@@ -47,18 +52,37 @@
  
         function typeChar() {
             if (ligneIndex >= lignes.length) {
+                document.getElementById('skip-hint').style.opacity = "0";
                 setTimeout(() => footer.classList.add('visible'), 600);
                 return;
             }
- 
+
             const ligne = lignes[ligneIndex];
- 
+
+            if (skipAnimation) {
+                texteComplet += ligne.substring(charIndex) + '\n';
+                el.textContent = texteComplet;
+                ligneIndex++;
+                charIndex = 0;
+                skipAnimation = false;
+                setTimeout(typeChar, 420);
+                return;
+    }
+
             if (charIndex < ligne.length) {
                 texteComplet += ligne[charIndex];
                 el.textContent = texteComplet;
+        
+                // Son
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.2;
+                    clone.play().catch(() => {});
+                }
+                //
+
                 charIndex++;
-                // Légère variation de vitesse pour effet naturel
-                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                const delay = ligne[charIndex - 1] === '.' ? 1000 : 60;
                 setTimeout(typeChar, delay);
             } else {
                 texteComplet += '\n';
@@ -68,7 +92,19 @@
                 setTimeout(typeChar, 420);
             }
         }
- 
+
+        setTimeout(() => {
+            if (ligneIndex < lignes.length) {
+                const hint = document.getElementById('skip-hint');
+                if(hint) hint.style.opacity = "1";
+            }
+        }, 4000);
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && ligneIndex < lignes.length) {
+            e.preventDefault(); 
+            skipAnimation = true;
+        }
+    });
         // Démarrer après un court délai
         setTimeout(typeChar, 800);
  
@@ -84,5 +120,6 @@
             });
         });
     </script>
+    <div id="skip-hint">[ ESPACE ]</div> </body>
 </body>
 </html>
