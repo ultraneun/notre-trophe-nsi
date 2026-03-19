@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2.2 - The Backrooms</title>
+    <link rel="stylesheet" href="/level2/style2.css">
+    <style>
+        body {
+            background-image: url('/images/toboggan.png');
+            background-size: cover;
+            background-position: center;
+            overflow-y: auto;
+            min-height: 100vh;
+            height: auto;
+        }
+        body::before {
+            content: '';
+            position: fixed; inset: 0;
+            background: rgba(0, 5, 10, 0.45);
+            pointer-events: none; z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed; inset: 0;
+            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,180,200,0.012) 3px, rgba(0,180,200,0.012) 4px);
+            pointer-events: none; z-index: 1;
+        }
+        .container {
+            position: relative; z-index: 2;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+            padding: 5rem 2rem 2rem !important;
+            gap: 2rem;
+            min-height: 100vh;
+            height: auto !important;
+            width: 100%;
+        }
+        #btn-retour-lien {
+            position: fixed; top: 1rem; left: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.58rem; color: #0a3540;
+            text-decoration: none; letter-spacing: 0.18rem; text-transform: uppercase;
+            border: 1px solid #0a2030; padding: 0.4rem 0.9rem;
+            transition: all 0.3s; z-index: 100; background: rgba(0,4,8,0.7);
+        }
+        #btn-retour-lien:hover { color: #6ab5c8; border-color: #1a6a8a; }
+
+        #col-left { flex: 1; max-width: 300px; padding-top: 3rem; }
+        .msg p { font-size: 0.86rem; line-height: 2.1; color: #a8d8e8; margin-bottom: 0.1rem; }
+        .msg p em { color: #6ab5c8; font-style: normal; }
+        .msg p.warn { color: #d4a040; }
+        .msg { margin-bottom: 1.6rem; }
+
+        #journal { background: rgba(1,6,10,0.88); border-left: 2px solid #1a4a5a; padding: 0.8rem 1rem; margin-bottom: 1.4rem; }
+        #journal-label { font-size: 0.46rem; letter-spacing: 0.2rem; color: #3a7a8a; text-transform: uppercase; margin-bottom: 0.4rem; }
+        #journal-text { font-size: 0.62rem; color: #4a8090; line-height: 1.9; font-style: italic; min-height: 2.5rem; transition: color 0.4s; }
+        #journal-text.active { color: #6ab5c8; }
+        #journal-text.error  { color: #cc5535; }
+        #journal-text.ok     { color: #50c870; }
+
+        #code-reveal { background: rgba(0,4,8,0.9); border: 1px solid #0a3820; padding: 0.7rem 1rem; margin-bottom: 1rem; display: none; align-items: center; gap: 1rem; }
+        #code-reveal.visible { display: flex; animation: glow-green 2s ease infinite; }
+        @keyframes glow-green { 0%,100% { box-shadow: 0 0 8px rgba(0,200,100,0.15); } 50% { box-shadow: 0 0 20px rgba(0,200,100,0.35); } }
+        #code-label { font-size: 0.44rem; color: #0a4030; letter-spacing: 0.14rem; text-transform: uppercase; }
+        #code-val { font-size: 1.4rem; color: #00d4a0; letter-spacing: 0.3rem; }
+
+        #flag-input {
+            background: #020a0e; color: #6ab5c8; border: 3px solid #0a2030;
+            padding: 0.7rem 1.4rem; font-family: 'Courier New', monospace;
+            font-size: 1.3rem; letter-spacing: 0.3rem; outline: none;
+            width: 210px; text-align: center; display: block; margin-bottom: 1rem;
+        }
+        #flag-input:focus { border-color: #00d4f0; }
+        #msg-final { margin-top: 0.8rem; font-size: 0.72rem; font-family: 'Courier New', monospace; min-height: 1rem; color: #6ab5c8; }
+
+        #col-right { flex-shrink: 0; padding-top: 2rem; }
+        #panel { background: rgba(1,6,10,0.92); border: 1px solid #1a3a4a; padding: 1.2rem 1.4rem; width: 420px; box-shadow: 0 0 40px rgba(0,0,0,0.7), inset 0 0 30px rgba(0,30,50,0.2); }
+        #panel-label { font-size: 0.5rem; letter-spacing: 0.22rem; color: #3a7a8a; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid #0d2030; padding-bottom: 0.6rem; }
+
+        #info-row { display: flex; gap: 1.4rem; align-items: center; margin-bottom: 1rem; }
+        .info-block { display: flex; flex-direction: column; gap: 2px; }
+        .info-label { font-size: 0.44rem; letter-spacing: 0.16rem; color: #3a6a7a; text-transform: uppercase; }
+        .info-val { font-size: 1rem; color: #5a9ab0; letter-spacing: 0.1rem; }
+        .info-val.hi { color: #00d4f0; }
+
+        #lives-row { display: flex; gap: 5px; }
+        .life { width: 10px; height: 10px; background: #3a1010; border: 1px solid #2a0808; transition: all 0.3s; }
+        .life.active { background: #cc3030; box-shadow: 0 0 6px rgba(200,40,40,0.4); }
+        .life.lost   { background: #0a0808; border-color: #100808; transform: scale(0.7); }
+
+        #grid-wrap { background: #010810; border: 1px solid #0d2030; padding: 0.8rem; margin-bottom: 0.8rem; position: relative; }
+        #grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+
+        .cell { aspect-ratio: 1; background: #040e1a; border: 1px solid #102030; position: relative; cursor: pointer; transition: background 0.08s, border-color 0.08s, box-shadow 0.08s; overflow: hidden; }
+        .cell::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(135deg, transparent, transparent 5px, rgba(0,100,140,0.06) 5px, rgba(0,100,140,0.06) 6px); }
+        .cell-inner { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+        .cell-num { font-size: 0.52rem; letter-spacing: 0.1rem; color: #2a5a70; text-transform: uppercase; font-family: 'Courier New', monospace; transition: color 0.12s; }
+
+        .cell.lit { background: #062030; border-color: #00c8e8; box-shadow: inset 0 0 16px rgba(0,200,240,0.25), 0 0 14px rgba(0,200,240,0.2); }
+        .cell.lit .cell-num { color: #00e8ff; }
+        .cell.lit::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,220,255,0.22) 0%, transparent 70%); }
+
+        .cell.pressed { background: #101a08; border-color: #50a830; }
+        .cell.pressed .cell-num { color: #80e850; }
+        .cell.pressed::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(100,220,60,0.15) 0%, transparent 70%); }
+
+        .cell.wrong { background: #200808; border-color: #dd2020; animation: flicker-red 0.15s 4; }
+        .cell.wrong .cell-num { color: #ff5050; }
+        @keyframes flicker-red { 0%,100% { box-shadow: inset 0 0 10px rgba(220,30,30,0.4); } 50% { box-shadow: none; } }
+
+        .cell.correct-flash { background: #061408; border-color: #00c870; box-shadow: inset 0 0 12px rgba(0,200,100,0.25); }
+        .cell.correct-flash .cell-num { color: #00ff90; }
+        .cell.readonly { cursor: default; pointer-events: none; }
+
+        #start-overlay { position: absolute; inset: 0; background: rgba(0,5,10,0.88); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; z-index: 10; transition: opacity 0.5s; }
+        #start-overlay.hidden { opacity: 0; pointer-events: none; }
+        #start-title { font-size: 0.72rem; color: #3a8a9a; letter-spacing: 0.3rem; text-align: center; text-transform: uppercase; }
+        #start-sub { font-size: 0.5rem; color: #2a5a6a; letter-spacing: 0.12rem; text-align: center; line-height: 2; text-transform: uppercase; }
+
+        #status-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 0.7rem; }
+        #status-track { flex: 1; height: 2px; background: #061016; border-radius: 2px; overflow: hidden; }
+        #status-fill { height: 100%; width: 0%; background: #00b4d8; transition: width 0.15s linear, background 0.3s; }
+        #status-text { font-size: 0.48rem; color: #3a7a8a; letter-spacing: 0.12rem; text-transform: uppercase; min-width: 9rem; text-align: right; }
+
+        #ctrl-row { display: flex; gap: 8px; }
+        .ctrl-btn { background: transparent; color: #3a7a8a; border: 1px solid #1a3a4a; padding: 5px 14px; font-family: 'Courier New', monospace; font-size: 0.6rem; cursor: pointer; letter-spacing: 0.1rem; text-transform: uppercase; transition: all 0.25s; }
+        .ctrl-btn:hover:not(:disabled) { color: #00d4f0; border-color: #1a7a9a; }
+        .ctrl-btn:disabled { opacity: 0.3; cursor: default; }
+
+        @keyframes shake-body { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
+    </style>
+</head>
+<body>
+    <a id="btn-retour-lien" href="/level2.1">← Retour</a>
+
+    <div class="container">
+        <div id="col-left">
+            <div class="msg">
+                <p>Les toboggans ne fonctionnent plus.</p>
+                <p><em>Mais les néons, eux, s'allument encore.</em></p>
+                <p>&nbsp;</p>
+                <p class="warn">Dans un ordre précis.</p>
+                <p><em>Mémorisez. Reproduisez.</em></p>
+                <p><em>Trois erreurs, et l'eau monte.</em></p>
+            </div>
+            <div id="journal">
+                <p id="journal-label">// ANALYSE — SALLE DES TOBOGGANS</p>
+                <div id="journal-text">Signal en attente d'activation.</div>
+            </div>
+            <div id="code-reveal">
+                <div>
+                    <p id="code-label">code d'accès</p>
+                    <p id="code-val">——</p>
+                </div>
+            </div>
+            <input type="text" id="flag-input" placeholder="· · · ·" maxlength="6" readonly>
+            <button class="bouton" id="valider" disabled>Valider</button>
+            <p id="msg-final"></p>
+        </div>
+
+        <div id="col-right">
+            <div id="panel">
+                <p id="panel-label">NÉONS — SALLE DES TOBOGGANS — SECTEUR B</p>
+                <div id="info-row">
+                    <div class="info-block">
+                        <span class="info-label">Séquence</span>
+                        <span class="info-val hi" id="val-round">—</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Longueur</span>
+                        <span class="info-val" id="val-len">—</span>
+                    </div>
+                    <div class="info-block">
+                        <span class="info-label">Erreurs</span>
+                        <div id="lives-row">
+                            <div class="life" id="life-0"></div>
+                            <div class="life" id="life-1"></div>
+                            <div class="life" id="life-2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="grid-wrap">
+                    <div id="start-overlay">
+                        <p id="start-title">NÉONS HORS LIGNE</p>
+                        <p id="start-sub">activez le système<br>pour observer le signal</p>
+                    </div>
+                    <div id="grid"></div>
+                </div>
+                <div id="status-bar">
+                    <div id="status-track"><div id="status-fill"></div></div>
+                    <span id="status-text">en veille</span>
+                </div>
+                <div id="ctrl-row">
+                    <button class="ctrl-btn" id="btn-play">▶ Activer</button>
+                    <button class="ctrl-btn" id="btn-reset" disabled>↺ Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+const TOTAL_ROUNDS=5, BASE_LEN=3, MAX_ERRORS=3, SHOW_DELAY=540, FLASH_DURATION=360, PLAYER_GAP=150;
+const FINAL_CODE='2847';
+const seqLen=r=>BASE_LEN+Math.floor(r/2);
+let state='idle', sequence=[], inputSeq=[], round=0, errors=0, lastPress=0, inputLocked=false;
+
+const LABELS=['N-01','N-02','N-03','N-04','N-05','N-06','N-07','N-08','N-09'];
+const gridEl=document.getElementById('grid'), cells=[];
+for(let i=0;i<9;i++){
+    const d=document.createElement('div');
+    d.className='cell readonly';
+    d.innerHTML=`<div class="cell-inner"><span class="cell-num">${LABELS[i]}</span></div>`;
+    d.addEventListener('click',()=>onCellClick(i));
+    gridEl.appendChild(d); cells.push(d);
+}
+
+function setStatus(t,p,c){document.getElementById('status-text').textContent=t;const f=document.getElementById('status-fill');f.style.width=p+'%';if(c)f.style.background=c;}
+function setJournal(t,c){const el=document.getElementById('journal-text');el.className=c||'';el.textContent=t;}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function setRO(yes){cells.forEach(c=>yes?c.classList.add('readonly'):c.classList.remove('readonly'));}
+function clearCC(){cells.forEach(c=>c.classList.remove('lit','pressed','wrong','correct-flash','readonly'));}
+function updateLives(){for(let i=0;i<MAX_ERRORS;i++){const el=document.getElementById(`life-${i}`);el.className='life';el.classList.add(i<MAX_ERRORS-errors?'active':'lost');}}
+function updateInfo(){document.getElementById('val-round').textContent=state==='idle'?'—':`${round+1} / ${TOTAL_ROUNDS}`;document.getElementById('val-len').textContent=state==='idle'?'—':seqLen(round);}
+
+function genSeq(len){const s=[];let last=-1;for(let i=0;i<len;i++){let n;do{n=Math.floor(Math.random()*9);}while(n===last);s.push(n);last=n;}return s;}
+
+async function showSeq(seq){
+    setRO(true);setStatus('mémorisation…',0,'#00b4d8');setJournal("Signal en cours d'émission.",'active');
+    for(let i=0;i<seq.length;i++){
+        await sleep(SHOW_DELAY-i*10);
+        cells[seq[i]].classList.add('lit');
+        await sleep(FLASH_DURATION);
+        cells[seq[i]].classList.remove('lit');
+        setStatus('mémorisation…',Math.round((i+1)/seq.length*100),'#00b4d8');
+    }
+    await sleep(320);startInput(seq);
+}
+
+function startInput(seq){state='input';inputSeq=[];setRO(false);setStatus('reproduire…',0,'#0a5a20');setJournal(`Reproduisez les ${seq.length} zones dans l'ordre.`,'active');}
+
+async function onCellClick(idx){
+    if(state!=='input'||inputLocked)return;
+    const now=Date.now();if(now-lastPress<PLAYER_GAP)return;lastPress=now;
+    const pos=inputSeq.length;inputSeq.push(idx);
+    cells[idx].classList.add('pressed');setTimeout(()=>cells[idx].classList.remove('pressed'),200);
+    setStatus('reproduire…',Math.round(inputSeq.length/sequence.length*100),'#0a5a20');
+    if(idx!==sequence[pos]){await handleError(idx);return;}
+    if(inputSeq.length===sequence.length)await handleSuccess();
+}
+
+async function handleError(idx){
+    inputLocked=true;state='error';errors++;updateLives();
+    cells[idx].classList.remove('pressed');cells[idx].classList.add('wrong');
+    await sleep(420);cells[idx].classList.remove('wrong');
+    if(errors>=MAX_ERRORS){await dead();}
+    else{setJournal(`Erreur. ${MAX_ERRORS-errors} chance${MAX_ERRORS-errors>1?'s':''} restante${MAX_ERRORS-errors>1?'s':''}.`,'error');setStatus('erreur — signal rejoué',0,'#6a1010');await sleep(700);inputLocked=false;await showSeq(sequence);}
+}
+
+async function handleSuccess(){
+    inputLocked=true;setRO(true);setJournal('Séquence correcte.','ok');setStatus('validé',100,'#00b060');
+    sequence.forEach(i=>cells[i].classList.add('correct-flash'));
+    await sleep(500);sequence.forEach(i=>cells[i].classList.remove('correct-flash'));await sleep(280);
+    round++;updateInfo();
+    if(round>=TOTAL_ROUNDS){await finish();}
+    else{setJournal(`Niveau ${round+1} / ${TOTAL_ROUNDS}. La séquence s'allonge.`,'active');await sleep(800);inputLocked=false;launchRound();}
+}
+
+async function dead(){
+    state='dead';setRO(true);cells.forEach(c=>c.classList.add('wrong'));await sleep(420);cells.forEach(c=>c.classList.remove('wrong'));
+    setJournal("L'eau monte. Signal perdu. Réinitialisation.",'error');setStatus('réinitialisation…',0,'#6a1010');
+    document.querySelector('.container').style.animation='shake-body 0.5s';setTimeout(()=>{document.querySelector('.container').style.animation='';},500);
+    await sleep(1100);resetGame();
+}
+
+async function finish(){
+    state='done';
+    for(let i=0;i<3;i++){cells.forEach(c=>c.classList.add('lit'));await sleep(160);cells.forEach(c=>c.classList.remove('lit'));await sleep(110);}
+    setJournal('Signal intégral décodé. Accès autorisé.','ok');setStatus('déverrouillé',100,'#00b060');
+    document.getElementById('btn-reset').disabled=true;
+    document.getElementById('code-reveal').classList.add('visible');
+    document.getElementById('code-val').textContent=FINAL_CODE;
+    document.getElementById('flag-input').value=FINAL_CODE;
+    document.getElementById('valider').disabled=false;
+}
+
+function launchRound(){sequence=genSeq(seqLen(round));state='showing';updateInfo();showSeq(sequence);}
+
+function startGame(){
+    document.getElementById('start-overlay').classList.add('hidden');
+    document.getElementById('btn-play').disabled=true;document.getElementById('btn-reset').disabled=false;
+    round=0;errors=0;updateLives();updateInfo();clearCC();launchRound();
+}
+
+function resetGame(){
+    state='idle';round=0;errors=0;inputSeq=[];sequence=[];inputLocked=false;
+    updateLives();updateInfo();clearCC();setRO(true);
+    setStatus('en veille',0,'#00b4d8');setJournal("Signal en attente d'activation.",'');
+    document.getElementById('btn-play').disabled=false;document.getElementById('btn-reset').disabled=true;
+    document.getElementById('code-reveal').classList.remove('visible');
+    document.getElementById('flag-input').value='';document.getElementById('valider').disabled=true;
+    document.getElementById('msg-final').textContent='';
+    const ov=document.getElementById('start-overlay');ov.classList.remove('hidden');ov.style.opacity='1';ov.style.pointerEvents='';
+}
+
+document.getElementById('btn-play').addEventListener('click',startGame);
+document.getElementById('btn-reset').addEventListener('click',()=>{if(state!=='done')resetGame();});
+
+document.getElementById('valider').addEventListener('click',async()=>{
+    const val=document.getElementById('flag-input').value.trim();
+    const msg=document.getElementById('msg-final');
+    try{
+        const rep=await fetch('/verifier/22',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+        const data=await rep.json();
+        if(data.succes){msg.style.color='#00d4f0';msg.textContent='Signal enregistré. Passage déverrouillé.';document.getElementById('valider').disabled=true;setTimeout(()=>{window.location.href=data.redirect||'/level2.1';},2000);}
+        else{msg.style.color='#cc3030';msg.textContent='Code incorrect.';}
+    }catch{msg.style.color='#cc3030';msg.textContent='Erreur serveur.';}
+});
+
+updateLives();updateInfo();setRO(true);
+</script>
+
+<audio id="amb" loop src="/sons/water-drip-ambiance.mp3"></audio>
+<script>
+    const amb=document.getElementById('amb');amb.volume=0;amb.play().catch(()=>{});
+    document.addEventListener('click',()=>amb.play().catch(()=>{}),{once:true});
+    let vol=0;const fi=setInterval(()=>{vol=Math.min(0.04,vol+0.001);amb.volume=vol;if(vol>=0.04)clearInterval(fi);},30);
+</script>
+</body>
+</html>
