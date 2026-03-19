@@ -19,7 +19,7 @@
     <div id="jeu" style="display:none">
         <div id="hud">
             <span>🎯 <span id="score">0</span>/15</span>
-            <span>⏱️ <span id="timer">20</span>s</span>
+            <span>⏱️ <span id="timer">25</span>s</span>
         </div>
         <div id="zone-jeu"></div>
     </div>
@@ -34,7 +34,7 @@
         const lignes = [
             "Tu l'entends.",
             "Il se rapproche...",
-            "20 secondes.",
+            "25 secondes.",
             "Élimine les cibles.",
             "Ne rate pas.",
         ];
@@ -76,7 +76,7 @@
 
         // ── Jeu ─────────────────────────────────────────────────────────
         let score = 0;
-        let temps = 20;
+        let temps = 25;
         let cibleActive = null;
         let jeuTermine = false;
         let timerInterval = null;
