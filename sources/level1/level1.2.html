@@ -315,7 +315,7 @@ function update(){
         won=true;
         clearInterval(timerInterval); timerStarted=false;
         st.style.color='#38b048';st.textContent='sortie. le code apparaît.';
-        cd.textContent='5130003';
+        cd.textContent='5130003'; sessionStorage.setItem('code_1.2','5130003');
         fi.value='5130003';btn.disabled=false;
         return;
     }

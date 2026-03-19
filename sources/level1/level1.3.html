@@ -316,7 +316,7 @@ function render(){
 
     if(allOk){
         const flag=COLOR_ORDER.map(c=>DIGS[c]).join('')+BONUS_DIGIT;
-        fi.value=flag;btn.disabled=false;
+        fi.value=flag;btn.disabled=false; sessionStorage.setItem('code_1.3',flag);
         clearInterval(timerInterval); timerStarted=false;
         st.style.color='#38b048';st.textContent='tous les circuits sont reliés';
     } else {

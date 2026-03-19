@@ -245,6 +245,13 @@ body.zoom-out { transform: scale(3); }
     box-shadow: -4px 0 30px rgba(0,180,216,0.08), 0 0 60px rgba(0,0,0,0.8);
     margin-bottom: 2rem;
 }
+.message .hint {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.3);
+    margin-top: 0.4rem;
+    font-style: italic;
+    line-height: 1.3;
+}
 .message p { line-height: 1.8; margin-bottom: 1rem; }
 .alert { color: #00b4d8; font-weight: bold; animation: blink 1.5s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }

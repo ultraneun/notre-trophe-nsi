@@ -24,6 +24,25 @@
         }
         .heure-wrap { cursor: text; }
         .heure-wrap:focus-within .heure-display { border-color: #00b4d8; }
+
+        .coords-recap-bloc {
+            background: rgba(4,8,12,0.85);
+            border: 1px solid #1a3a48;
+            padding: 0.8rem 1.4rem;
+            margin-bottom: 1.8rem;
+            max-width: 500px;
+            text-align: center;
+        }
+        .coords-recap-label {
+            font-size: 0.55rem; letter-spacing: 0.2rem;
+            color: #1a4a5a; text-transform: uppercase; margin-bottom: 0.5rem;
+        }
+        .coords-recap-val {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95rem; color: #3a7a8a;
+            letter-spacing: 0.1rem; line-height: 1.8;
+        }
+        .coords-recap-val.found { color: #00b4d8; }
     </style>
 </head>
 <body>
@@ -35,6 +54,14 @@
             <p>Vous devez rejoindre les coordonnées</p>
             <p>Il semble que vous soyez en <span class="alert">Juillet 2024.</span></p>
             <p><em>Mais quelle heure est-t-il ?</em></p>
+            <p class="hint">Google Maps peut s'avérer utile pour cette situation.</p>
+
+        </div>
+
+        <div class="coords-recap-bloc" id="coords-recap">
+            <div class="coords-recap-label">coordonnées</div>
+            <div class="coords-recap-val" id="recap-lat">latitude —</div>
+            <div class="coords-recap-val" id="recap-lon">longitude —</div>
         </div>
 
         <div class="heure-wrap" onclick="document.getElementById('heure-raw').focus()">
@@ -67,6 +94,33 @@
 
         // Focus auto au chargement
         setTimeout(()=>raw.focus(), 600);
+
+        // Affiche les coordonnées depuis sessionStorage
+        (function() {
+            const v12 = sessionStorage.getItem('code_1.2'); // latitude : 5130003
+            const v13 = sessionStorage.getItem('code_1.3'); // longitude : 003765x
+
+            const rLat = document.getElementById('recap-lat');
+            const rLon = document.getElementById('recap-lon');
+
+            if (v12) {
+                // Formate 5130003 → 51°30'00.3"N
+                const s = v12.padStart(7,'0');
+                rLat.textContent = s[0]+s[1]+'°'+s[2]+s[3]+"'"+s[4]+s[5]+'.'+s[6]+'"N';
+                rLat.classList.add('found');
+            } else {
+                rLat.textContent = 'latitude — non trouvée';
+            }
+
+            if (v13) {
+                // Formate 003765 → 0°07'36.5"W  (6 chiffres)
+                const raw13 = v13.replace(/\D/g,'').slice(0,6).padStart(6,'0');
+                rLon.textContent = raw13[0]+'°'+raw13[1]+raw13[2]+"'"+raw13[3]+raw13[4]+'.'+raw13[5]+'"W';
+                rLon.classList.add('found');
+            } else {
+                rLon.textContent = 'longitude — non trouvée';
+            }
+        })();
 
         async function verifier(){
             const val = raw.value.trim();

@@ -5,6 +5,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 1 - The Backrooms</title>
     <link rel="stylesheet" href="/level1/style1.css">
+    <style>
+        .code-hint {
+            background: #0a1520;
+            border: 1px solid #1a3a48;
+            padding: 0.5rem 1rem;
+            text-align: center;
+            min-width: 80px;
+        }
+        .code-hint-label {
+            font-size: 0.55rem; letter-spacing: 0.2rem;
+            color: #1a4a5a; text-transform: uppercase; margin-bottom: 0.3rem;
+        }
+        .code-hint-val {
+            font-family: 'Courier New', monospace;
+            font-size: 1rem; font-weight: bold; color: #4a8a9a;
+            letter-spacing: 0.15rem;
+        }
+        .code-hint-val.found { color: #00b4d8; }
+        .code-hint-sep {
+            color: #0a2030; font-size: 1.2rem;
+            display: flex; align-items: center;
+        }
+    </style>
 </head>
 <body>
 
@@ -56,6 +79,19 @@
         <div id="popup-coords-contenu">
             <p class="popup-label">ACCÈS NIVEAU SUIVANT</p>
             <p class="popup-sub">Entrez les coordonnées</p>
+
+            <!-- Indices codes trouvés -->
+            <div id="coords-indices" style="display:flex;gap:12px;justify-content:center;margin-bottom:1.4rem;">
+                <div class="code-hint" id="hint-12">
+                    <div class="code-hint-label">1.2</div>
+                    <div class="code-hint-val" id="hint-12-val">—</div>
+                </div>
+                <div class="code-hint-sep">·</div>
+                <div class="code-hint" id="hint-13">
+                    <div class="code-hint-label">1.3</div>
+                    <div class="code-hint-val" id="hint-13-val">—</div>
+                </div>
+            </div>
             <div class="coord-ligne">
                 <div class="coord-display" id="lat-display" onclick="document.getElementById('lat-raw').focus()">__°__'__._"N</div>
                 <input type="tel" id="lat-raw" class="coord-hidden-input" maxlength="7" placeholder="">
@@ -80,8 +116,8 @@
             "Un parking souterrain?",
             "Les tuyaux au plafond fuient. Évitez l'eau.",
             "Vous pouvez peut-être trouver de la nourriture.",
-            "peut-être même une issue",
-            "Un conseil, NOTEZ ce que vous apprenez.",
+            "Peut-être même une issue.",
+            "À vous d'observer le parking...",
         ];
 
         const el     = document.getElementById('terminal-text');
@@ -227,6 +263,15 @@
         function ouvrirPopupCoords() {
             document.getElementById('popup-coords').classList.add('active');
             resetCoordsInput();
+            // Affiche les codes trouvés
+            const v12 = sessionStorage.getItem('code_1.2');
+            const v13 = sessionStorage.getItem('code_1.3');
+            const h12 = document.getElementById('hint-12-val');
+            const h13 = document.getElementById('hint-13-val');
+            if (v12) { h12.textContent = v12; h12.classList.add('found'); }
+            else     { h12.textContent = '—'; h12.classList.remove('found'); }
+            if (v13) { h13.textContent = v13; h13.classList.add('found'); }
+            else     { h13.textContent = '—'; h13.classList.remove('found'); }
             document.getElementById('lat-raw').focus();
         }
         function fermerPopupCoords() {
