@@ -181,11 +181,14 @@ document.addEventListener('keydown', ()=>{ if(intro.style.display!=='none') exit
 function estDebloque(id){ return sessionStorage.getItem('lvl4_'+id)==='1'; }
 
 function majHUD(){
-    ['41','42','43'].forEach(id=>{
-        const ok = estDebloque('4.'+id.slice(-1));
-        document.getElementById('prog-'+id).classList.toggle('done', ok);
-        // Le hotspot correspondant change d'aspect si résolu
-        document.getElementById('hs-'+id).classList.toggle('resolved', ok);
+    // hs-41 → dest /level4.3 (morse)    → s'allume quand 4.3 validé
+    // hs-42 → dest /level4.2 (maison)   → s'allume quand 4.2 validé
+    // hs-43 → dest /level4.1 (cassette) → s'allume quand 4.1 validé
+    const MAP = { '41':'4.3', '42':'4.2', '43':'4.1' };
+    Object.entries(MAP).forEach(([hsId, niveau])=>{
+        const ok = estDebloque(niveau);
+        document.getElementById('prog-'+hsId).classList.toggle('done', ok);
+        document.getElementById('hs-'+hsId).classList.toggle('resolved', ok);
     });
     const all = estDebloque('4.1') && estDebloque('4.2') && estDebloque('4.3');
     document.getElementById('hs-finale').classList.toggle('ready', all);
