@@ -33,6 +33,7 @@
                 <span id="vol-icon">▶</span>
                 <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.2">
                 <span id="vol-label">20%</span>
+                <button id="btn-skip-video">passer →</button>
             </div>
         </div>
     </div>
@@ -129,6 +130,20 @@
                     video.volume = v; slider.value = v;
                     label.textContent = Math.round(v * 100) + '%'; icon.textContent = '▶';
                 }
+            });
+
+            // Bouton skip
+            document.getElementById('btn-skip-video').addEventListener('click', () => {
+                video.pause();
+                const fade = document.createElement('div');
+                fade.style.cssText = `
+                    position: fixed; inset: 0; z-index: 99999;
+                    background: #0f0e08; opacity: 0;
+                    transition: opacity 1.8s ease; pointer-events: none;
+                `;
+                document.body.appendChild(fade);
+                setTimeout(() => { fade.style.opacity = '1'; }, 50);
+                setTimeout(() => { window.location.href = '/level0/level0.1.html'; }, 2000);
             });
         });
     </script>
