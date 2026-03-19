@@ -11,13 +11,13 @@
             background-image: url('/images/level4_6.jpg');
             background-size: cover; background-position: center;
         }
-        #layout { display:flex; align-items:flex-start; gap:2rem; max-width:880px; width:100%; }
-        #col-left { flex:1; min-width:0; }
+        #layout { display:flex; align-items:flex-start; gap:2rem; max-width:900px; width:100%; }
+        #col-left  { flex:1; min-width:0; }
         #col-right { flex-shrink:0; }
 
         #morse-panel {
             background:rgba(4,6,8,0.96); border:1px solid #1a2830;
-            padding:1.2rem 1.4rem; width:380px;
+            padding:1.2rem 1.4rem; width:420px;
         }
         #morse-label {
             font-size:0.54rem; letter-spacing:0.2rem;
@@ -26,81 +26,68 @@
 
         /* Vue lampadaire */
         #lamp-view {
-            width:100%; height:130px; background:#010305;
+            width:100%; height:140px; background:#010305;
             border:1px solid #0a1820; position:relative;
             overflow:hidden; margin-bottom:0.8rem;
         }
-        #lamp-img { width:100%; height:100%; object-fit:cover; filter:brightness(0.45) saturate(0.3); }
+        #lamp-img { width:100%; height:100%; object-fit:cover; filter:brightness(0.4) saturate(0.25); display:block; }
         #lamp-glow {
             position:absolute; inset:0; pointer-events:none;
-            background:radial-gradient(ellipse 50% 35% at 32% 18%, rgba(200,140,20,0), transparent);
-            transition:background 0.08s;
+            opacity:0; transition:opacity 0.07s;
+            background:radial-gradient(ellipse 70% 55% at 38% 22%, rgba(210,150,20,0.95), rgba(200,130,10,0.4) 45%, transparent 70%);
         }
-        #lamp-glow.on   { background:radial-gradient(ellipse 55% 40% at 32% 18%, rgba(200,140,20,0.55), transparent); }
-        #lamp-glow.dash { background:radial-gradient(ellipse 65% 50% at 32% 18%, rgba(200,140,20,0.85), transparent); }
+        #lamp-glow.on   { opacity:0.65; }
+        #lamp-glow.dash { opacity:1; }
         #lamp-scan {
             position:absolute; inset:0; pointer-events:none;
-            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);
         }
 
         /* Contrôles */
-        #ctrl { display:flex; gap:8px; align-items:center; margin-bottom:0.7rem; }
+        #ctrl { display:flex; gap:8px; align-items:center; margin-bottom:0.8rem; }
         .ctrl-btn {
             background:#030608; color:#4a6a72; border:1px solid #0a1820;
-            padding:5px 14px; font-family:'Courier New',monospace; font-size:0.62rem;
+            padding:6px 16px; font-family:'Courier New',monospace; font-size:0.64rem;
             cursor:pointer; letter-spacing:0.08rem; transition:all 0.25s;
         }
         .ctrl-btn:hover:not(:disabled) { color:#c8a96e; border-color:#c8a96e44; }
         .ctrl-btn:disabled { opacity:0.3; cursor:default; }
 
-        /* Visualiseur de signal */
-        #signal-view {
+        /* Visualiseur morse — TOUS les carrés toujours visibles */
+        #signal-wrap {
             background:#010305; border:1px solid #0a1820;
-            padding:0.6rem; margin-bottom:0.7rem; min-height:36px;
-            display:flex; align-items:center; gap:2px; flex-wrap:wrap;
+            padding:10px 10px; margin-bottom:0.8rem;
+        }
+        #signal-label {
+            font-size:0.46rem; color:#1a3040; letter-spacing:0.14rem;
+            text-transform:uppercase; margin-bottom:6px;
+        }
+        #signal-view {
+            display:flex; align-items:flex-end;
+            gap:3px; flex-wrap:wrap;
+            min-height:32px; gap:5px; height:auto;
         }
         .pulse {
-            height:22px; background:#c8a96e; border-radius:1px;
-            opacity:0.3; transition:opacity 0.1s;
+            height:34px; border-radius:1px;
+            background:#1a2830;       /* gris foncé = éteint */
+            flex-shrink:0;
+            transition:background 0.06s, box-shadow 0.06s;
         }
-        .pulse.active { opacity:1; }
-        .gap-letter { width:12px; flex-shrink:0; }
-
-        /* Décodeur */
-        #decoder {
-            background:#020508; border:1px solid #0a1820;
-            padding:0.7rem; margin-bottom:0.7rem;
+        .pulse.active {
+            background:#c8a96e;
+            box-shadow:0 0 8px rgba(200,169,110,0.7);
         }
-        #dec-label {
-            font-size:0.5rem; letter-spacing:0.15rem;
-            color:#1a3040; text-transform:uppercase; margin-bottom:0.5rem;
-        }
-        #dec-symbols {
-            font-family:'Courier New',monospace; font-size:0.9rem;
-            color:#c8a96e; letter-spacing:0.2rem; min-height:1.2rem;
-            margin-bottom:0.3rem;
-        }
-        #dec-letters {
-            font-family:'Courier New',monospace; font-size:1.2rem;
-            color:#8abaae; letter-spacing:0.4rem; min-height:1.4rem;
-        }
-        #dec-hint {
-            font-size:0.5rem; color:#1a3040; margin-top:0.3rem;
-            letter-spacing:0.07rem;
+        .letter-sep {
+            width:2px; height:34px; background:#0a1820;
+            flex-shrink:0;
         }
 
-        /* Référence morse */
-        #morse-ref {
-            display:grid; grid-template-columns:repeat(5,1fr);
-            gap:2px; margin-bottom:0.7rem;
-        }
-        .ref-cell {
-            background:#010305; border:1px solid #060e14;
-            padding:3px 4px;
+        /* Compteur */
+        #rep-info {
+            font-size:0.52rem; color:#1a3040;
             font-family:'Courier New',monospace;
+            letter-spacing:0.1rem; margin-bottom:0.6rem; min-height:1rem;
         }
-        .ref-ch { font-size:0.5rem; color:#3a5a5e; }
-        .ref-co { font-size:0.44rem; color:#1a3040; display:block; }
 
         #morse-status {
             font-size:0.62rem; color:#4a6a72;
@@ -112,27 +99,77 @@
             background:#080c0e; color:#a0a0a0;
             border:3px solid #1a2830; padding:0.7rem 1.4rem;
             font-family:'Courier New',monospace;
-            font-size:1.2rem; letter-spacing:0.2rem;
+            font-size:1.2rem; letter-spacing:0.25rem;
             margin-bottom:1rem; outline:none; width:200px; text-align:center;
         }
         #flag-input:focus { border-color:#c8a96e; }
+
+        /* Table morse — bien visible */
+        #morse-table {
+            background:rgba(4,6,8,0.92);
+            border-left:2px solid #c8a96e55;
+            padding:1rem 1.2rem;
+            margin-bottom:1.2rem;
+            max-width:340px;
+        }
+        .mt-label {
+            font-size:0.5rem; letter-spacing:0.18rem;
+            color:#c8a96e77; text-transform:uppercase; margin-bottom:0.7rem;
+        }
+        .mt-grid {
+            display:grid; grid-template-columns:1fr 1fr;
+            gap:3px 1.5rem;
+        }
+        .mt-row {
+            display:flex; align-items:center; gap:0.8rem;
+            padding:4px 0; border-bottom:1px solid #0a1820;
+        }
+        .mt-ch {
+            font-size:1rem; color:#c8a96e;
+            font-family:'Courier New',monospace;
+            font-weight:bold; width:16px;
+        }
+        .mt-code {
+            font-size:0.78rem; color:#6a9a7a;
+            font-family:'Courier New',monospace;
+            letter-spacing:0.15rem;
+        }
     </style>
 </head>
 <body>
     <a class="retour-lien" href="/level4?back=1">⊟ Retour</a>
     <div class="container">
         <div id="layout">
+
             <div id="col-left">
-                <div class="message" style="max-width:320px;">
-                    <p>Le lampadaire ne fonctionne pas normalement.</p>
-                    <p>Il clignote de façon irrégulière.</p>
+                <div class="message" style="max-width:340px;">
+                    <p>Le lampadaire clignote de façon irrégulière.</p>
                     <p><em>Trop irrégulière pour être un hasard.</em></p>
-                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.4rem;">
-                        Observez le signal lumineux.<br>
-                        Décodez le message en morse.
+                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.5rem;line-height:2;">
+                        · &nbsp;= flash court<br>
+                        — = flash long<br>
+                        pause = nouvelle lettre
                     </p>
                 </div>
-                <input type="text" id="flag-input" placeholder="· ·" maxlength="6">
+
+                <!-- Table morse -->
+                <div id="morse-table">
+                    <p class="mt-label">// TABLE MORSE — CHIFFRES</p>
+                    <div class="mt-grid">
+                        <div class="mt-row"><span class="mt-ch">0</span><span class="mt-code">— — — — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">1</span><span class="mt-code">· — — — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">2</span><span class="mt-code">· · — — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">3</span><span class="mt-code">· · · — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">4</span><span class="mt-code">· · · · —</span></div>
+                        <div class="mt-row"><span class="mt-ch">5</span><span class="mt-code">· · · · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">6</span><span class="mt-code">— · · · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">7</span><span class="mt-code">— — · · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">8</span><span class="mt-code">— — — · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">9</span><span class="mt-code">— — — — ·</span></div>
+                    </div>
+                </div>
+
+                <input type="text" id="flag-input" placeholder="_ _ _ _" maxlength="4">
                 <br><br>
                 <button class="bouton" id="valider" disabled>Valider</button>
                 <p id="message" style="margin-top:1rem; font-family:'Courier New',monospace; font-size:0.8rem;"></p>
@@ -149,94 +186,76 @@
                     </div>
 
                     <div id="ctrl">
-                        <button class="ctrl-btn" id="btn-play">▶ Lire</button>
+                        <button class="ctrl-btn" id="btn-play">▶ Analyser</button>
                         <button class="ctrl-btn" id="btn-stop" disabled>■ Stop</button>
-                        <span style="font-size:0.52rem;color:#1a3040;letter-spacing:0.08rem;">× 3 répétitions</span>
                     </div>
 
-                    <div id="signal-view"></div>
-
-                    <div id="decoder">
-                        <p id="dec-label">décodeur en direct</p>
-                        <div id="dec-symbols"></div>
-                        <div id="dec-letters"></div>
-                        <p id="dec-hint">— = tiret (long) &nbsp;·&nbsp; = point (court)</p>
+                    <div id="signal-wrap">
+                        <p id="signal-label">visualisation du signal</p>
+                        <div id="signal-view"></div>
                     </div>
 
-                    <div id="morse-ref"></div>
-
-                    <p id="morse-status">appuyez sur ▶ pour analyser le signal</p>
+                    <div id="rep-info"></div>
+                    <p id="morse-status">appuyez sur ▶ pour observer le signal</p>
                 </div>
             </div>
+
         </div>
     </div>
 
 <script>
-// Message : "07"
-// 0 = -----   (5 tirets)
-// 7 = --...   (2 tirets + 3 points)
-// Séquence complète avec timings
+// Message : "1974"
+// 1 = .----
+// 9 = ----.
+// 7 = --...
+// 4 = ....-
 
-const DOT  = 150;  // durée point
-const DASH = 450;  // durée tiret
-const IGAP = 150;  // gap intra-lettre
-const LGAP = 450;  // gap inter-lettre
+const DOT  = 160;
+const DASH = 480;
+const IGAP = 160;   // entre symboles
+const LGAP = 520;   // entre lettres
+const MAX_LOOPS = 3;
 
-// Séquence : [type, durée]
-// type: 'on-dot', 'on-dash', 'off-gap', 'off-letter'
-function buildMorse(chars){
-    const MORSE = {'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
-                   '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'}; 
-    const seq = [];
-    chars.split('').forEach((ch, ci)=>{
-        const code = MORSE[ch] || '';
-        code.split('').forEach((sym, si)=>{
-            seq.push({ on:true, dur: sym==='.'?DOT:DASH, sym });
-            if(si < code.length-1) seq.push({ on:false, dur:IGAP, type:'gap' });
+function buildMorse(str){
+    const T = {'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
+               '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'};
+    const seq=[];
+    str.split('').forEach((ch,ci)=>{
+        const code=T[ch]||'';
+        code.split('').forEach((sym,si)=>{
+            seq.push({on:true, dur:sym==='.'?DOT:DASH, sym});
+            if(si<code.length-1) seq.push({on:false,dur:IGAP,type:'gap'});
         });
-        if(ci < chars.length-1) seq.push({ on:false, dur:LGAP, type:'letter' });
+        if(ci<str.length-1) seq.push({on:false,dur:LGAP,type:'letter'});
     });
     return seq;
 }
 
-const SEQUENCE = buildMorse('07');
+const SEQUENCE = buildMorse('1974');
 
-// Build visualiseur statique
-const signalView = document.getElementById('signal-view');
-SEQUENCE.forEach((step, i)=>{
+// Build visualiseur — TOUS les éléments créés une seule fois, toujours visibles
+const sv = document.getElementById('signal-view');
+SEQUENCE.forEach(step=>{
     if(step.on){
-        const el = document.createElement('div');
+        const el=document.createElement('div');
         el.className='pulse';
-        el.style.width = (step.dur / 10) + 'px';
-        el.dataset.idx = i;
-        signalView.appendChild(el);
+        // Point = 18px, tiret = 44px
+        el.style.width = (step.sym==='.'?22:52)+'px';
+        sv.appendChild(el);
     } else if(step.type==='letter'){
-        const el = document.createElement('div');
-        el.className='gap-letter';
-        signalView.appendChild(el);
+        const el=document.createElement('div');
+        el.className='letter-sep';
+        sv.appendChild(el);
     }
+    // les gap intra-lettre n'ont pas de div, c'est le gap CSS entre pulses
 });
 
-// Build référence morse (chiffres seulement)
-const refEl = document.getElementById('morse-ref');
-for(let i=0;i<=9;i++){
-    const MORSE = {'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
-                   '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'};
-    const cell = document.createElement('div');
-    cell.className='ref-cell';
-    cell.innerHTML=`<span class="ref-ch">${i}</span><span class="ref-co">${MORSE[i]}</span>`;
-    refEl.appendChild(cell);
-}
-
-// Lecture animée
-const lamp    = document.getElementById('lamp-glow');
-const decSym  = document.getElementById('dec-symbols');
-const decLet  = document.getElementById('dec-letters');
-const status  = document.getElementById('morse-status');
+const pulses = Array.from(sv.querySelectorAll('.pulse'));
+const lamp   = document.getElementById('lamp-glow');
+const status = document.getElementById('morse-status');
+const repInfo= document.getElementById('rep-info');
 
 let playing=false, loopCount=0, timer=null;
-const REVERSE = {'-----':'0','.----':'1','..---':'2','...--':'3','.....-':'4',
-                 '.....':'5','-....':'6','--...':'7','---..':'8','----.':'9'};
 
 document.getElementById('btn-play').addEventListener('click', startPlay);
 document.getElementById('btn-stop').addEventListener('click', stopPlay);
@@ -246,86 +265,66 @@ function startPlay(){
     playing=true; loopCount=0;
     document.getElementById('btn-play').disabled=true;
     document.getElementById('btn-stop').disabled=false;
-    decSym.textContent=''; decLet.textContent='';
     status.className=''; status.textContent='signal en cours...';
     playLoop();
 }
 
 function playLoop(){
     if(!playing) return;
-    if(loopCount >= 1){ endPlay(); return; }
-    decSym.textContent=''; decLet.textContent='';
-    // Reset pulses
-    document.querySelectorAll('.pulse').forEach(p=>p.classList.remove('active'));
-    let idx=0, buf='', decoded='';
-    let pulseIdx=0;
+    if(loopCount>=MAX_LOOPS){ endPlay(); return; }
+    repInfo.textContent=`répétition ${loopCount+1} / ${MAX_LOOPS}`;
+    pulses.forEach(p=>p.classList.remove('active'));
+    let idx=0, pulseIdx=0;
 
     function step(){
-        if(!playing || idx >= SEQUENCE.length){
-            loopCount++;
-            timer = setTimeout(playLoop, 600);
-            return;
-        }
-        const s = SEQUENCE[idx++];
+        if(!playing||idx>=SEQUENCE.length){ loopCount++; timer=setTimeout(playLoop,800); return; }
+        const s=SEQUENCE[idx++];
         if(s.on){
-            lamp.className = s.sym==='.'?'on':'dash';
-            // Allumer le bon pulse dans le visualiseur
-            const pulses = document.querySelectorAll('.pulse');
-            if(pulseIdx < pulses.length) pulses[pulseIdx++].classList.add('active');
-            buf += s.sym;
-            decSym.textContent = decoded + buf.replace(/\./g,'·').replace(/-/g,'—');
+            lamp.className=s.sym==='.'?'on':'dash';
+            if(pulseIdx<pulses.length) pulses[pulseIdx++].classList.add('active');
         } else {
             lamp.className='';
-            if(s.type==='letter'){
-                const ch = REVERSE[buf] || '?';
-                decoded += ch + ' ';
-                buf='';
-                decLet.textContent = decoded;
-                decSym.textContent = decoded + ' ';
-            }
         }
-        timer = setTimeout(step, s.dur);
+        timer=setTimeout(step,s.dur);
     }
     step();
 }
 
 function endPlay(){
-    status.className='ok'; status.textContent='signal terminé — à vous de décoder';
-    playing=false;
-    lamp.className='';
+    playing=false; lamp.className='';
     document.getElementById('btn-play').disabled=false;
     document.getElementById('btn-stop').disabled=true;
-    
-    
-    
+    repInfo.textContent='';
+    status.className='ok'; status.textContent='signal terminé — décodez et entrez le code';
 }
 
 function stopPlay(){
-    playing=false;
-    if(timer) clearTimeout(timer);
-    lamp.className='';
+    playing=false; if(timer)clearTimeout(timer); lamp.className='';
     document.getElementById('btn-play').disabled=false;
     document.getElementById('btn-stop').disabled=true;
+    repInfo.textContent='';
+    pulses.forEach(p=>p.classList.remove('active'));
     status.className=''; status.textContent='signal interrompu — relancez';
-    document.querySelectorAll('.pulse').forEach(p=>p.classList.remove('active'));
 }
 
-// Activer valider si saisie manuelle
-document.getElementById('flag-input').addEventListener('input', function(){
-    document.getElementById('valider').disabled = this.value.trim() === '';
+document.getElementById('flag-input').addEventListener('input',function(){
+    this.value=this.value.replace(/\D/g,'').slice(0,4);
+    document.getElementById('valider').disabled=this.value.length===0;
 });
 
-document.getElementById('valider').addEventListener('click', async ()=>{
-    const val = document.getElementById('flag-input').value.trim();
-    const msg = document.getElementById('message');
-    const rep = await fetch('/verifier/43',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
-    const data = await rep.json();
+document.getElementById('valider').addEventListener('click',async()=>{
+    const val=document.getElementById('flag-input').value.trim();
+    const msg=document.getElementById('message');
+    const rep=await fetch('/verifier/43',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+    const data=await rep.json();
     if(data.succes){
-        msg.style.color='#5a9a6a'; msg.textContent='Signal capté. Fréquence notée.';
+        msg.style.color='#5a9a6a'; msg.textContent='Signal décodé. Code noté.';
         document.getElementById('valider').disabled=true;
-        setTimeout(()=>{ window.location.href='/level4?done=4.3'; },1800);
+        setTimeout(()=>{window.location.href='/level4?done=4.3';},1800);
     } else {
         msg.style.color='#cc5555'; msg.textContent='Incorrect.';
+        document.getElementById('flag-input').value='';
+        document.getElementById('valider').disabled=true;
     }
 });
 </script>
