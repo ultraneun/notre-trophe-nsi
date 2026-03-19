@@ -17,6 +17,8 @@ ORDRE_NIVEAUX = {
     '/level1.3': 1,
     '/level2':   4,
     '/level2.1': 4,
+    '/level2.2': 4,
+    '/level2.3': 4,
     '/level3':   5,
     '/level3.5': 5,
     '/level4':   5,
@@ -43,7 +45,9 @@ FLAGS = {
     2:  {"flag": "06:10",   "points": 50,  "redirect": "/level2"},
     3:  {"flag": "5130003", "points": 25,  "redirect": "/level2"},
     4:  {"flag": "007365",  "points": 25,  "redirect": "/level2"},
-    # Level 3
+    # Level 2 sous-jeux
+    22: {"flag": "2847",    "points": 75,  "redirect": "/level2.1"},
+    23: {"flag": "3619",    "points": 75,  "redirect": "/level2.1"},
     5:  {"flag": "6515",    "points": 150, "redirect": "/level4"},
     # Level 4 sous-énigmes
     41: {"flag": "4301",    "points": 100, "redirect": "/level4"},
@@ -236,6 +240,14 @@ def level2():
 @app.route('/level2.1')
 def level2_1():
     return send_from_directory('level2', 'level2.1.html')
+
+@app.route('/level2.2')
+def level2_2():
+    return send_from_directory('level2', 'level2.2.html')
+
+@app.route('/level2.3')
+def level2_3():
+    return send_from_directory('level2', 'level2.3.html')
 
 @app.route('/level3')
 def level3():
