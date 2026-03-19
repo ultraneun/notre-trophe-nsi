@@ -54,7 +54,7 @@ body.zoom-out { transform: scale(3); }
     font-size: 0.55rem; color: #1a3040;
     letter-spacing: 0.15rem; margin-top: 0.6rem;
     text-transform: uppercase; opacity: 0;
-    transition: opacity 1s ease; cursor: pointer;
+    transition: opacity 1s ease; cursor: default;
 }
 .cursor {
     display: inline-block; color: #00b4d8;
@@ -162,9 +162,9 @@ body.zoom-out { transform: scale(3); }
 }
 .zone:hover { background: rgba(255,255,255,0.10); }
 
-#zone-secrete  { top:37.75%; left:56.5%; width:7%; height:20%; transform:rotate(-1deg); clip-path:polygon(0.5% 3.75%,100% 0%,100% 100%,0% 95%); }
-#zone-secrete2 { top:7.5%; left:10.5%; width:18.5%; height:30%; clip-path:polygon(2% 19%,100% 63%,58% 75%,57% 87%,12% 65%,12% 80%,0% 77.5%); }
-#zone-secrete3 { top:24%; left:83.25%; width:9.35%; height:50%; clip-path:polygon(68% 2.5%,86% 0,99.5% 96.5%,9% 93.5%,1% 5.5%); }
+#zone-secrete  { top:37.75%; left:56.5%; width:7%; height:20%; transform:rotate(-1deg); clip-path:polygon(0.5% 3.75%, 100% 0%, 100% 100%, 0% 95%); }
+#zone-secrete2 { top:7.5%; left:10.5%; width:18.5%; height:30%; clip-path:polygon(2% 19%, 100% 63%, 58% 75%, 57% 87%, 12% 65%, 12% 80%, 0% 77.5%); }
+#zone-secrete3 { top:24%; left:83.25%; width:9.50%; height:57%; clip-path:polygon(68% 2%, 85% 0, 100% 96.5%, 9.5% 81%, 0.5% 5%); }
 
 /* ── POPUP VERROU ─────────────────────────── */
 #popup-verrou {

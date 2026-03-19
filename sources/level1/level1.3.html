@@ -66,6 +66,26 @@
         }
         .digit-slot.revealed { color: #a0a0a0; }
 
+
+        #timer-bar {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+        #timer-track {
+            flex: 1; height: 4px; background: #050c12;
+            border-radius: 2px; overflow: hidden;
+        }
+        #timer-fill {
+            height: 100%; width: 100%;
+            background: #1a4a6a;
+            transition: width 0.1s linear, background 0.3s;
+            border-radius: 2px;
+        }
+        #timer-label {
+            font-family: 'Courier New', monospace;
+            font-size: 0.72rem; color: #8a9a9e;
+            min-width: 3.5rem; text-align: right;
+        }
         #puzzle-hint { font-size: 0.68rem; color: #4a6a72; letter-spacing: 0.06rem; }
         #status {
             font-size: 0.72rem; color: #8a9a9e;
@@ -107,6 +127,10 @@
                     <p id="puzzle-label">ventilation — niveau sous-sol</p>
                     <div id="grid"></div>
                     <div id="digits-row"></div>
+                    <div id="timer-bar">
+                        <div id="timer-track"><div id="timer-fill"></div></div>
+                        <span id="timer-label">8.0 s</span>
+                    </div>
                     <p id="status"></p>
                     <p id="puzzle-hint">cliquez sur un tuyau pour le faire pivoter</p>
                 </div>
@@ -177,7 +201,7 @@ const divs=[];
 DATA.forEach((cell,i)=>{
     const div=document.createElement('div');
     div.className='cell'+(cell.t==='e'||cell.t==='s'||cell.t==='d'?' fixed':'');
-    if(cell.t==='p')div.addEventListener('click',()=>{rots[i]=(rots[i]+1)%4;render();});
+    if(cell.t==='p')div.addEventListener('click',()=>{startTimer();rots[i]=(rots[i]+1)%4;render();});
     grid.appendChild(div);divs.push(div);
 });
 
@@ -293,6 +317,7 @@ function render(){
     if(allOk){
         const flag=COLOR_ORDER.map(c=>DIGS[c]).join('')+BONUS_DIGIT;
         fi.value=flag;btn.disabled=false;
+        clearInterval(timerInterval); timerStarted=false;
         st.style.color='#38b048';st.textContent='tous les circuits sont reliés';
     } else {
         fi.value='';btn.disabled=true;
@@ -301,6 +326,49 @@ function render(){
         st.textContent=done.length?done.length+'/'+COLOR_ORDER.length+' circuits reliés':'';
     }
 }
+
+// ── Timer ─────────────────────────────────────────
+const TIMER_MAX = 7;
+let timerStarted = false, timerInterval = null, timerLeft = TIMER_MAX;
+
+function startTimer() {
+    if (timerStarted) return;
+    timerStarted = true;
+    timerLeft = TIMER_MAX;
+    updateTimerUI();
+    timerInterval = setInterval(() => {
+        timerLeft = Math.max(0, timerLeft - 0.1);
+        updateTimerUI();
+        if (timerLeft <= 0) {
+            clearInterval(timerInterval);
+            setTimeout(() => resetPuzzle(), 400);
+        }
+    }, 100);
+}
+
+function resetPuzzle() {
+    clearInterval(timerInterval);
+    timerStarted = false; timerLeft = TIMER_MAX;
+    DATA.forEach((cell, i) => { if (cell.t === 'p') rots[i] = INITR[i]; });
+    updateTimerUI();
+    document.getElementById('flag-input').value = '';
+    document.getElementById('valider').disabled = true;
+    document.getElementById('status').style.color = '#8a9a9e';
+    document.getElementById('status').textContent = '';
+    render();
+}
+
+function updateTimerUI() {
+    const pct = timerLeft / TIMER_MAX * 100;
+    document.getElementById('timer-fill').style.width = pct + '%';
+    document.getElementById('timer-fill').style.background =
+        timerLeft > 4 ? '#1a4a6a' : timerLeft > 2 ? '#5a4a08' : '#6a1a10';
+    document.getElementById('timer-label').textContent = timerLeft.toFixed(1) + ' s';
+    document.getElementById('timer-label').style.color =
+        timerLeft > 4 ? '#8a9a9e' : timerLeft > 2 ? '#c0a020' : '#cc3030';
+}
+updateTimerUI();
+
 render();
 
 document.getElementById('valider').addEventListener('click',async()=>{
@@ -316,6 +384,19 @@ document.getElementById('valider').addEventListener('click',async()=>{
         msg.style.color='#ff6b6b';msg.textContent='Ce chemin ne mène nulle part.';
     }
 });
+</script>
+<audio id="amb" loop src="/sons/AmbianceLevel1.mp3"></audio>
+<script>
+    const amb = document.getElementById('amb');
+    amb.volume = 0;
+    amb.play().catch(()=>{});
+    document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+        vol = Math.min(0.1, vol + 0.001);
+        amb.volume = vol;
+        if (vol >= 0.1) clearInterval(fadeIn);
+    }, 25);
 </script>
 </body>
 </html>

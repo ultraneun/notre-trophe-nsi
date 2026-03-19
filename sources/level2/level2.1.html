@@ -3,27 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level 2 - Les Piscines</title>
+    <title>Level 2 - Protocole</title>
     <link rel="stylesheet" href="/level2/style2.css">
 </head>
 <body>
 
-<!-- SCENE -->
-<div id="scene">
-    <img id="scene-img" src="/images/level2.jpg" alt="">
-</div>
-
+<div id="scene"><img id="scene-img" src="/images/level2.jpg" alt=""></div>
 <canvas id="drip-canvas"></canvas>
 <div id="water-level"></div>
+<div id="room-indicator">— bassin principal —</div>
+<button id="btn-retour">← Retour</button>
+<div id="nav-hint">Lisez tout.</div>
 
-<div class="hotspot"        id="hs-vannes"    style="left: 28%; top: 55%;" data-target="vannes"></div>
-<div class="hotspot"        id="hs-tuyau"     style="left: 62%; top: 42%;" data-target="tuyau"></div>
-<div class="hotspot"        id="hs-toboggans" style="left: 74%; top: 63%;" data-target="toboggans"></div>
-<div class="hotspot"        id="hs-piscine"   style="left: 18%; top: 72%;" data-target="piscine"></div>
-<div class="hotspot danger" id="hs-monstre"   style="left: 46%; top: 27%;" data-target="monstre"></div>
-<div class="hotspot secret" id="hs-ombre"     style="left: 90%; top: 20%;" data-target="ombre"></div>
 
-<div id="nav-hint">Les couleurs ont un ordre.</div>
+<div class="zone-group" id="zones-principal">
+    <div class="zone" id="z-col-gauche"
+         style="left:0%; top:26%; width:4%; height:15%;"
+         data-action="popup" data-target="sol-principal"></div>
+    <div class="zone" id="z-porte-tob"
+         style="left:45%; top:42%; width:8%; height:15%;"
+         data-action="salle" data-target="toboggans"></div>
+    <div class="zone" id="z-porte-tuyau"
+         style="left:69%; top:43%; width:9%; height:15%;"
+         data-action="salle" data-target="tuyau"></div>
+    <div class="zone" id="z-panneau"
+         style="left:83%; top:28%; width:9%; height:11%;"
+         data-action="panneau"></div>
+</div>
+
+
+<div class="zone-group" id="zones-toboggans" style="display:none;">
+    <div class="zone" id="z-nuage-g"
+         style="left:11%; top:46%; width:11%; height:10%;"
+         data-action="popup" data-target="note-tob1"></div>
+    <div class="zone" id="z-fenetre"
+         style="left:44%; top:34%; width:14%; height:17%;"
+         data-action="popup" data-target="note-tob2"></div>
+    <div class="zone" id="z-mur-droit"
+         style="left:61%; top:34%; width:11%; height:15%;"
+         data-action="popup" data-target="tob-bleu"></div>
+    <div class="zone danger" id="z-tob-monstre"
+         style="left:44%; top:64%; width:8%; height:11%;"
+         data-action="salle" data-target="monstre"></div>
+</div>
+
+<div class="zone-group" id="zones-tuyau" style="display:none;">
+    <div class="zone" id="z-vannes-tuyau"
+         style="left:1%; top:48%; width:10%; height:15%;"
+         data-action="popup" data-target="vannes-tuyau"></div>
+    <div class="zone" id="z-plaque-sol"
+         style="left:86%; top:39%; width:10%; height:14%;"
+         data-action="popup" data-target="plaque-sol"></div>
+    <div class="zone danger" id="z-tuyau-monstre"
+         style="left:47%; top:64%; width:6%; height:11%;"
+         data-action="salle" data-target="monstre"></div>
+</div>
+
+
+<div class="zone-group" id="zones-monstre" style="display:none;">
+    <div class="zone danger" id="z-monstre"
+         style="left:38%; top:12%; width:22%; height:68%;"
+         data-action="popup" data-target="monstre"></div>
+    <div class="zone" id="z-mur-inverse"
+         style="left:18%; top:15%; width:12%; height:55%;"
+         data-action="popup" data-target="mur-inverse"></div>
+    <div class="zone" id="z-sol-monstre"
+         style="left:30%; top:78%; width:38%; height:14%;"
+         data-action="popup" data-target="sol-monstre"></div>
+    <div class="zone" id="z-colonne"
+         style="left:70%; top:15%; width:12%; height:55%;"
+         data-action="popup" data-target="colonne"></div>
+</div>
+
+<!-- PANNEAU INTERRUPTEURS -->
+<div id="panneau">
+    <div id="panneau-label">protocole d'évacuation</div>
+    <div id="interrupteurs">
+        <button class="switch-btn" data-lettre="A">A</button>
+        <button class="switch-btn" data-lettre="B">B</button>
+        <button class="switch-btn" data-lettre="C">C</button>
+        <button class="switch-btn" data-lettre="D">D</button>
+    </div>
+    <div id="sequence-display">—</div>
+</div>
 
 <!-- POPUP -->
 <div id="popup">
@@ -40,16 +102,6 @@
     <div id="jumpscare-text"></div>
 </div>
 
-<!-- CODE PANEL -->
-<div id="code-panel">
-    <label>_ _ _</label>
-    <div id="code-input-row">
-        <input type="text" id="reponse" maxlength="3" placeholder="???">
-        <button id="btn-valider">↵</button>
-    </div>
-    <div id="code-error"></div>
-</div>
-
 <!-- TRANSITION -->
 <div id="transition-overlay">
     <video id="transition-video" src="/level2/Transition_niveau.mp4"></video>
@@ -59,148 +111,246 @@
 <audio id="amb"          loop src="/sons/water-drip-ambiance.mp3"></audio>
 <audio id="sfx-found"         src="/sons/found.mp3"></audio>
 <audio id="sfx-splash"        src="/sons/splash.mp3"></audio>
-<audio id="sfx-jumpscare"     src="/sons/nsasr-jumpscare-sound-effect.mp3"></audio>
+<audio id="sfx-error"         src="/sons/nsasr-jumpscare-sound-effect.mp3"></audio>
 
 <script>
+const ORDRE_CORRECT = ['B', 'D', 'A', 'C'];
 const state = {
-    codeCorrect: '341',
+    salleActive: 'principal',
+    sequence: [],
     bloque: false
 };
 
-const messagesJumpscare = {
-    '314': "L'ordre des vannes n'est pas respecté. Regardez l'image.",
-    '134': "Vous avez commencé par le rouge. Ce n'est pas lui qui ouvre.",
-    '143': "Le rouge ne vient pas en deuxième.",
-    '413': "Le vert d'abord ? Regardez à nouveau quelle vanne porte le 3.",
-    '431': "Presque. Mais le rouge ferme la séquence.",
-    '333': "Vous n'avez pas encore trouvé les toboggans."
+const salles = {
+    principal:  { img: '/images/level2.jpg',      zones: 'zones-principal', label: '— bassin principal —' },
+    toboggans:  { img: '/images/toboggan.png',     zones: 'zones-toboggans', label: '— salle des toboggans —' },
+    tuyau:      { img: '/images/level2tuyau.jpg',  zones: 'zones-tuyau',     label: '— salle des machines —' },
+    monstre:    { img: '/images/monstre2.png',     zones: 'zones-monstre',   label: '— ??? —' }
 };
+
+function allerSalle(nom) {
+    const salle = salles[nom];
+    if (!salle) return;
+    const img = document.getElementById('scene-img');
+    img.style.opacity = 0;
+    document.querySelectorAll('.zone-group').forEach(g => g.style.display = 'none');
+    if (nom !== 'principal') {
+        document.getElementById('panneau').classList.remove('visible');
+    }
+    setTimeout(() => {
+        img.src = salle.img;
+        img.style.opacity = 1;
+        document.getElementById(salle.zones).style.display = 'block';
+        document.getElementById('room-indicator').textContent = salle.label;
+        state.salleActive = nom;
+        document.getElementById('btn-retour').classList.toggle('visible', nom !== 'principal');
+    }, 700);
+}
+
+document.getElementById('btn-retour').addEventListener('click', () => allerSalle('principal'));
 
 const amb = document.getElementById('amb');
 amb.volume = 0.04;
-document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
-
+document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
 function playSfx(id) {
     const el = document.getElementById(id);
-    if (el) { el.currentTime = 0; el.volume = 0.9; el.play().catch(() => {}); }
+    if (el) { el.currentTime = 0; el.volume = 0.9; el.play().catch(()=>{}); }
 }
 
-const hotspotData = {
-    vannes: {
-        title: 'Le tuyau central',
-        imgChange: '/images/symbole2.jpg',
+const popupData = {
+    'sol-principal': {
+        title: 'Le sol du bassin',
         content: `
-            <p class="popup-text">Un long tuyau traverse le mur de bout en bout. Trois vannes y sont fixées. Chacune d'une couleur.</p>
-            <p class="popup-text italic">
-                Vanne <span class="highlight blue">BLEUE</span> — chiffre gravé dans le métal : <span class="highlight blue">3</span><br>
-                Vanne <span class="highlight green">VERTE</span> — chiffre effacé. Illisible.<br>
-                Vanne <span class="highlight red">ROUGE</span> — chiffre effacé. Illisible.
-            </p>
-            <p class="popup-text">En dessous, une plaque rouillée :</p>
-            <p class="popup-text italic"><em>"Les chiffres manquants sont gravés sur les toboggans.<br>Remettez-les dans l'ordre des vannes pour ouvrir le passage."</em></p>
-            <p class="popup-text faded">— Trouvez les chiffres manquants.</p>
+            <p class="popup-text">L'eau monte. Pas vite. Mais elle monte.</p>
+            <p class="popup-text italic">Il y a un panneau d'urgence sur le mur. Des interrupteurs. Quatre lettres gravées dessus : A, B, C, D.</p>
+            <p class="popup-text">En dessous, une plaque :</p>
+            <p class="popup-text note">"PROTOCOLE D'ÉVACUATION
+Activer les circuits dans le bon ordre.
+Mauvais ordre = réinitialisation du système.
+L'ordre correct est documenté dans les salles."</p>
+            <p class="popup-text faded">— Explorez. Lisez tout. Déduisez.</p>
         `
     },
-    tuyau: {
-        title: 'La salle des machines',
-        imgChange: '/images/level2tuyau.jpg',
+    'note-tob1': {
+        title: 'Note — coincée sous le toboggan bleu',
         content: `
-            <p class="popup-text">Des tuyaux partout. L'eau ruisselle le long des murs. Le sol est glissant.</p>
-            <p class="popup-text">Dans le fond de la salle, un toboggan descend du plafond.</p>
-            <p class="popup-text italic">Il est <span class="highlight red">rouge</span>. Entièrement rouge.</p>
-            <p class="popup-text">Vous vous approchez. Sur sa surface, gravé à même le plastique :</p>
-            <p class="popup-text italic"><span class="highlight red">1</span></p>
-            <p class="popup-text">Un seul chiffre. Tracé profondément.</p>
-            <p class="popup-text faded">— Un chiffre. Notez-le.</p>
+            <span class="fragment-tag">fragment 1 — partiellement lisible</span>
+            <p class="popup-text note">"...vérification des circuits de drainage.
+Rappel procédure standard :
+<span class="highlight">B précède toujours D</span> dans tout protocole
+d'évacuation aquatique. Sans exception.
+Cette règle date du manuel de 19[illisible]..."</p>
+            <p class="popup-text faded">— Un fragment. Il en manque d'autres.</p>
         `
     },
-    toboggans: {
-        title: 'La salle des toboggans',
-        imgChange: '/images/toboggan.png',
+    'note-tob2': {
+        title: 'Affichette — haut de la salle',
         content: `
-            <p class="popup-text">Trois toboggans tombent du plafond. Ils plongent tous vers le même bassin.</p>
-            <p class="popup-text">Vous cherchez un chiffre. Vous le trouvez sur le toboggan <span class="highlight green">vert</span>.</p>
-            <p class="popup-text">Gravé dans le plastique, à mi-hauteur :</p>
-            <p class="popup-text italic"><span class="highlight green">4</span></p>
-            <p class="popup-text faded">— Un chiffre de plus. Notez-le.</p>
+            <span class="fragment-tag">fragment 2 — écrit à la main</span>
+            <p class="popup-text note">"règle absolue du protocole eau :
+<span class="highlight">jamais C avant A.</span>
+Immuable. Sans exception.
+Peu importe ce que disent les autres notes."</p>
+            <p class="popup-text faded">— "Peu importe ce que disent les autres notes."</p>
         `
     },
-    piscine: {
-        title: 'Le bassin principal',
-        imgChange: '/images/level2.jpg',
+    'tob-bleu': {
+        title: 'Le mur du fond',
         content: `
-            <p class="popup-text">L'eau est immobile. Trop immobile. Elle ne réfléchit rien correctement.</p>
-            <p class="popup-text">Vous regardez le fond. Des carreaux. Des fissures. Rien d'autre.</p>
-            <p class="popup-text italic">Juste l'eau. Et le silence.</p>
-            <p class="popup-text">Quelque chose bouge sous la surface. Vous préférez ne pas regarder.</p>
-            <p class="popup-text faded">— Ce n'est pas ici.</p>
+            <p class="popup-text">Une zone humide sur le mur. Le carrelage est décollé.</p>
+            <p class="popup-text">Derrière, rien. Juste du béton.</p>
+            <p class="popup-text faded">— Rien ici.</p>
         `
     },
-    monstre: {
+    'vannes-tuyau': {
+        title: 'Les carreaux — inscription',
+        content: `
+            <span class="fragment-tag">fragment 3 — gravé au couteau</span>
+            <p class="popup-text note">"quelqu'un a menti dans les notes officielles.
+voilà ce que j'ai vérifié moi-même :
+<span class="highlight">après B, activer D. Ensuite seulement.</span>
+pas avant. jamais avant.
+j'ai essayé l'autre sens. ça réinitialise tout."</p>
+            <p class="popup-text italic">Gravé profondément. Quelqu'un était là avant vous.</p>
+            <p class="popup-text faded">— Il a appris à la dure.</p>
+        `
+    },
+    'plaque-sol': {
+        title: 'Plaque — gravée dans le sol inondé',
+        content: `
+            <span class="fragment-tag">fragment 4 — feutre noir sur carrelage</span>
+            <p class="popup-text note">"si tu lis ça t'as pas encore trouvé
+alors retiens bien :
+<span class="highlight">A ne s'active jamais en premier.
+A ne s'active jamais en dernier.</span>
+c'est tout ce que je peux te dire."</p>
+            <p class="popup-text faded">— Quelqu'un vous a laissé ça intentionnellement.</p>
+        `
+    },
+    'monstre': {
         title: '—',
-        imgChange: '/images/monstre2.png',
         content: `
-            <p class="popup-text danger-text">Il était dans l'eau.</p>
-            <p class="popup-text danger-text">Il est toujours dans l'eau.</p>
-            <p class="popup-text italic" style="margin-top:1rem;">Vous avez vu <span class="highlight">son reflet</span> avant de le voir lui. Il ne bouge pas. Il regarde.</p>
-            <p class="popup-text faded">— Ne revenez pas ici.</p>
+            <p class="popup-text danger-text">Il est là. Debout dans l'eau.</p>
+            <p class="popup-text danger-text">Il ne bouge pas. Il vous regarde.</p>
+            <p class="popup-text italic" style="margin-top:1rem;">Des inscriptions sur les murs. Des notes sur les colonnes.</p>
+            <p class="popup-text">Il ne réagit pas quand vous lisez.</p>
+            <p class="popup-text faded">— Lisez vite quand même.</p>
         `
     },
-    ombre: {
-        title: '— sous la surface —',
-        imgChange: null,
+    'mur-inverse': {
+        title: 'Colonne gauche — texte étrange',
         content: `
-            <p class="popup-text" style="font-size:0.76rem; color:#0a2830;">une trace sur le mur. presque rien.</p>
-            <p class="popup-text italic" style="font-size:0.8rem; letter-spacing:0.25rem;"><span class="highlight">les couleurs ont un ordre.</span></p>
-            <p class="popup-text faded">— dans cet ordre.</p>
+            <span class="fragment-tag">fragment 5 — écrit à l'envers</span>
+            <p class="popup-text">Le texte est écrit en miroir. Vous inclinez la tête.</p>
+            <p class="popup-text note"><span class="reversed">"C vient après A. Toujours.
+Et C est toujours le dernier.
+Aucune exception n'a jamais survécu."</span></p>
+            <p class="popup-text italic">Une fois retourné mentalement :</p>
+            <p class="popup-text note" style="color:#2a5060; font-size:0.75rem;"><span class="highlight">C vient après A. Toujours. Et C est toujours le dernier.</span></p>
+            <p class="popup-text faded">— Pourquoi écrire ça à l'envers ?</p>
+        `
+    },
+    'sol-monstre': {
+        title: 'Sol — inscription au pied du monstre',
+        content: `
+            <span class="fragment-tag">fragment 6 — gravé dans le carrelage</span>
+            <p class="popup-text">Juste à ses pieds. Gravé en chiffres.</p>
+            <p class="popup-text note" style="font-size:1rem; letter-spacing:0.3rem; text-align:center;"><span class="highlight">1=B &nbsp; 2=D &nbsp; 3=A &nbsp; 4=C</span></p>
+            <p class="popup-text italic">Quelqu'un a résolu l'énigme avant vous et l'a laissé ici.</p>
+            <p class="popup-text faded">— Croisez avec les autres fragments pour vérifier.</p>
+        `
+    },
+    'colonne': {
+        title: 'Colonne droite — note déchirée',
+        content: `
+            <span class="fragment-tag">fragment 7 — papier collé sur la colonne</span>
+            <p class="popup-text note">"...confirme donc que A se place
+obligatoirement <span class="highlight">après D</span> dans la séquence.
+Le reste de la page est [déchiré]
+...jamais en [déchiré]
+...C ferme toujours [déchiré]..."</p>
+            <p class="popup-text faded">— "A après D." Un lien de plus.</p>
         `
     }
 };
 
-document.querySelectorAll('.hotspot').forEach(hs => {
-    hs.addEventListener('click', () => {
-        const key = hs.dataset.target;
-        const data = hotspotData[key];
-        if (!data) return;
-        if (data.imgChange) {
-            const img = document.getElementById('scene-img');
-            img.style.opacity = 0;
-            setTimeout(() => { img.src = data.imgChange; img.style.opacity = 1; }, 700);
+function bindZone(zone) {
+    zone.addEventListener('click', () => {
+        if (state.bloque) return;
+        const action = zone.dataset.action;
+        const target = zone.dataset.target;
+        if (action === 'salle') {
+            allerSalle(target);
+        } else if (action === 'panneau') {
+            ouvrirPanneau();
+        } else if (action === 'popup') {
+            const data = popupData[target];
+            if (!data) return;
+            playSfx(target === 'monstre' ? 'sfx-splash' : 'sfx-found');
+            showPopup(data.title, data.content);
         }
-        playSfx(key === 'monstre' ? 'sfx-splash' : 'sfx-found');
-        showPopup(data.title, data.content);
+    });
+}
+
+document.querySelectorAll('.zone').forEach(bindZone);
+
+function ouvrirPanneau() {
+    showPopup('Panneau d\'urgence', `
+        <p class="popup-text">Un panneau métallique fixé au mur. Quatre interrupteurs. Quatre lettres.</p>
+        <p class="popup-text italic">En dessous : <span class="highlight">ACTIVER DANS LE BON ORDRE</span></p>
+        <p class="popup-text">Le panneau attend. Vous devez avoir trouvé l'ordre dans les salles.</p>
+        <p class="popup-text faded">— Utilisez les interrupteurs en bas de l'écran.</p>
+    `, () => {
+        document.getElementById('panneau').classList.add('visible');
+    });
+}
+
+document.querySelectorAll('.switch-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (state.bloque) return;
+        if (state.salleActive !== 'principal') return;
+        const lettre = btn.dataset.lettre;
+        if (state.sequence.includes(lettre)) return;
+        state.sequence.push(lettre);
+        btn.classList.add('active');
+        document.getElementById('sequence-display').textContent = state.sequence.join(' → ');
+        const pos = state.sequence.length - 1;
+        if (state.sequence[pos] !== ORDRE_CORRECT[pos]) {
+            btn.classList.remove('active');
+            btn.classList.add('wrong');
+            setTimeout(() => {
+                state.sequence = [];
+                state.bloque = true;
+                document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active', 'wrong'));
+                document.getElementById('sequence-display').textContent = '—';
+                declencherJumpscare("Mauvais ordre. Le système s'est réinitialisé.");
+            }, 600);
+            return;
+        }
+        if (state.sequence.length === 4) {
+            setTimeout(lancerTransition, 800);
+        }
     });
 });
 
-function showPopup(title, content) {
+let pendingApres = null;
+function showPopup(title, content, apres) {
     document.getElementById('popup-title').textContent = title;
     document.getElementById('popup-content').innerHTML = content;
     document.getElementById('popup').classList.add('active');
+    pendingApres = apres || null;
 }
+
 document.getElementById('popup-close').addEventListener('click', () => {
     document.getElementById('popup').classList.remove('active');
+    if (pendingApres) { pendingApres(); pendingApres = null; }
 });
-
-document.getElementById('btn-valider').addEventListener('click', validerCode);
-document.getElementById('reponse').addEventListener('keydown', e => {
-    if (e.key === 'Enter') validerCode();
-});
-
-function validerCode() {
-    if (state.bloque) return;
-    const val = document.getElementById('reponse').value.trim();
-    document.getElementById('reponse').value = '';
-    if (val === state.codeCorrect) { lancerTransition(); return; }
-    const msg = messagesJumpscare[val] || "Ce n'est pas le bon ordre. Relisez les vannes.";
-    declencherJumpscare(msg);
-}
 
 function declencherJumpscare(message) {
-    state.bloque = true;
     amb.pause();
     const js = document.getElementById('jumpscare');
     const jsText = document.getElementById('jumpscare-text');
-    playSfx('sfx-jumpscare');
+    playSfx('sfx-error');
     js.classList.add('active');
     setTimeout(() => { jsText.innerHTML = 'IL VOUS A VU.'; jsText.classList.add('visible'); }, 380);
     setTimeout(() => { jsText.innerHTML = `IL VOUS A VU.<br><span class="js-reason">${message}</span>`; }, 1050);
@@ -209,7 +359,7 @@ function declencherJumpscare(message) {
         jsText.classList.remove('visible');
         jsText.innerHTML = '';
         state.bloque = false;
-        amb.play().catch(() => {});
+        amb.play().catch(()=>{});
     }, 3500);
 }
 
@@ -222,52 +372,41 @@ function lancerTransition() {
     video.addEventListener('ended', () => { window.location.href = '/level3'; });
 }
 
-(function initDrips() {
+(function() {
     const canvas = document.getElementById('drip-canvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     const drips = [];
-
     function createDrip() {
-        drips.push({
-            x: Math.random() * canvas.width,
-            y: -10,
-            radius: Math.random() * 1.8 + 0.8,
-            speed: Math.random() * 1.4 + 0.4,
-            opacity: Math.random() * 0.25 + 0.04,
-            trail: []
-        });
+        drips.push({ x: Math.random()*canvas.width, y:-10,
+            radius: Math.random()*1.8+0.8, speed: Math.random()*1.4+0.4,
+            opacity: Math.random()*0.25+0.04, trail:[] });
     }
-
-    function animateDrips() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (Math.random() < 0.012) createDrip();
-        for (let i = drips.length - 1; i >= 0; i--) {
-            const d = drips[i];
-            d.trail.push({ x: d.x, y: d.y });
-            if (d.trail.length > 20) d.trail.shift();
-            d.y += d.speed;
-            d.trail.forEach((pt, idx) => {
+    function animate() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        if (Math.random()<0.012) createDrip();
+        for (let i=drips.length-1;i>=0;i--) {
+            const d=drips[i];
+            d.trail.push({x:d.x,y:d.y});
+            if(d.trail.length>20) d.trail.shift();
+            d.y+=d.speed;
+            d.trail.forEach((pt,idx)=>{
                 ctx.beginPath();
-                ctx.arc(pt.x, pt.y, d.radius * 0.45, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(0, 180, 210, ${(idx / d.trail.length) * d.opacity * 0.45})`;
+                ctx.arc(pt.x,pt.y,d.radius*0.45,0,Math.PI*2);
+                ctx.fillStyle=`rgba(0,180,210,${(idx/d.trail.length)*d.opacity*0.45})`;
                 ctx.fill();
             });
             ctx.beginPath();
-            ctx.arc(d.x, d.y, d.radius, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(0, 200, 230, ${d.opacity})`;
+            ctx.arc(d.x,d.y,d.radius,0,Math.PI*2);
+            ctx.fillStyle=`rgba(0,200,230,${d.opacity})`;
             ctx.fill();
-            if (d.y > canvas.height + 20) drips.splice(i, 1);
+            if(d.y>canvas.height+20) drips.splice(i,1);
         }
-        requestAnimationFrame(animateDrips);
+        requestAnimationFrame(animate);
     }
-
-    animateDrips();
-    window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    });
+    animate();
+    window.addEventListener('resize',()=>{ canvas.width=window.innerWidth; canvas.height=window.innerHeight; });
 })();
 </script>
 </body>

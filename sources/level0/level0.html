@@ -22,65 +22,113 @@
  
     <!-- Overlay vidéo -->
     <div id="video-overlay">
-        <div class="tv">
-            <div class="tv-screen">
-                <video id="intro-video" src="/level0/Backroom_intro.mp4"></video>
+        <div id="video-inner">
+            <div class="tv">
+                <div class="tv-screen">
+                    <video id="intro-video" src="/level0/Backroom_intro.mp4"></video>
+                </div>
+            </div>
+            <!-- Contrôle volume sous la TV -->
+            <div id="volume-ctrl">
+                <span id="vol-icon">▶</span>
+                <input type="range" id="vol-slider" min="0" max="1" step="0.01" value="0.2">
+                <span id="vol-label">20%</span>
             </div>
         </div>
     </div>
  
     <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+        sfxLettre.volume = 0.3;
+
         const lignes = [
             "Vous n'auriez pas dû être ici.",
             "Personne ne choisit d'entrer. Vous avez glissé.",
-            "Les murs sont humides. Le bourdonnement ne s'arrête jamais.",
+            "Les murs sont humides... Le bourdonnement est constant.",
             "L'odeur de moquette mouillée vous suit partout.",
             "Vous marchez depuis combien de temps déjà ?",
             "Quelque chose marche aussi.",
         ];
- 
+
         const el = document.getElementById('terminal-text');
         const footer = document.getElementById('terminal-footer');
-        let ligneIndex = 0;
-        let charIndex = 0;
-        let texteComplet = '';
- 
+        let ligneIndex = 0, charIndex = 0, texteComplet = '';
+
         function typeChar() {
             if (ligneIndex >= lignes.length) {
                 setTimeout(() => footer.classList.add('visible'), 600);
                 return;
             }
- 
             const ligne = lignes[ligneIndex];
- 
             if (charIndex < ligne.length) {
                 texteComplet += ligne[charIndex];
                 el.textContent = texteComplet;
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.2;
+                    clone.play().catch(() => {});
+                }
                 charIndex++;
-                // Légère variation de vitesse pour effet naturel
-                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                const char = ligne[charIndex - 1];
+                const lastThree = ligne.slice(charIndex - 3, charIndex);
+                const delay =
+                    lastThree === '...' ? 1000 :
+                    (char === '.' || char === '?') ? 500 : 50;
                 setTimeout(typeChar, delay);
             } else {
-                texteComplet += '\n';
-                el.textContent = texteComplet;
-                ligneIndex++;
-                charIndex = 0;
-                setTimeout(typeChar, 420);
+                texteComplet += '\n'; el.textContent = texteComplet;
+                ligneIndex++; charIndex = 0;
+                setTimeout(typeChar, 500);
             }
         }
- 
-        // Démarrer après un court délai
+
         setTimeout(typeChar, 800);
- 
-        // Bouton
+
+        // Bouton → lance la vidéo
         document.getElementById('btn-yeux').addEventListener('click', function () {
             document.getElementById('accueil').style.display = 'none';
             const overlay = document.getElementById('video-overlay');
-            const video = document.getElementById('intro-video');
+            const video   = document.getElementById('intro-video');
+            const slider  = document.getElementById('vol-slider');
+            const label   = document.getElementById('vol-label');
+            const icon    = document.getElementById('vol-icon');
+
             overlay.classList.add('active');
             video.play();
+            video.volume = 0.2;
+
             video.addEventListener('ended', () => {
-                window.location.href = '/level0/level0.1.html';
+                const fade = document.createElement('div');
+                fade.style.cssText = `
+                    position: fixed; inset: 0; z-index: 99999;
+                    background: #0f0e08;
+                    opacity: 0;
+                    transition: opacity 1.8s ease;
+                    pointer-events: none;
+                `;
+                document.body.appendChild(fade);
+                setTimeout(() => { fade.style.opacity = '1'; }, 50);
+                setTimeout(() => { window.location.href = '/level0/level0.1.html'; }, 2000);
+            });
+
+            // Slider volume
+            slider.addEventListener('input', () => {
+                video.volume = slider.value;
+                label.textContent = Math.round(slider.value * 100) + '%';
+                icon.textContent = slider.value == 0 ? '✕' : '▶';
+            });
+
+            // Clic icône = mute/unmute
+            icon.addEventListener('click', () => {
+                if (video.volume > 0) {
+                    slider._prev = slider.value;
+                    video.volume = 0; slider.value = 0;
+                    label.textContent = '0%'; icon.textContent = '✕';
+                } else {
+                    const v = slider._prev || 1;
+                    video.volume = v; slider.value = v;
+                    label.textContent = Math.round(v * 100) + '%'; icon.textContent = '▶';
+                }
             });
         });
     </script>
