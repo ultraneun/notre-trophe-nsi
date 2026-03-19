@@ -55,16 +55,27 @@
             border: 1px solid #0c1820;
         }
         #exit-zone {
-            position: absolute; right: -10px; top: 111px;
-            width: 10px; height: 55px;
-            background: #3a0000;
+            position: absolute; right: -20px; top: 111px;
+            width: 20px; height: 55px;
+            background: #15242e;
             border-radius: 0 2px 2px 0;
+
+            animation: blinkExit 2s infinite;
+
         }
-        #exit-arrow {
-            position: absolute; right: -26px; top: 118px;
-            font-size: 16px; color: #6a1010;
-            font-family: monospace;
+
+        @keyframes blinkExit {
+            0% {
+                background: #182c3a;
+            }
+            50% {
+                background: #0c1820
+            }
+            100% {
+                background: #182c3a;
+            }
         }
+
         .car {
             position: absolute; border-radius: 3px;
             cursor: grab; user-select: none; z-index: 10;
@@ -160,7 +171,6 @@
                     <div id="board-wrap">
                         <div id="board"></div>
                         <div id="exit-zone"></div>
-                        <div id="exit-arrow">→</div>
                     </div>
                     <div id="timer-bar">
                         <div id="timer-track"><div id="timer-fill"></div></div>
@@ -409,9 +419,9 @@ render();
     document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
     let vol = 0;
     const fadeIn = setInterval(() => {
-        vol = Math.min(0.1, vol + 0.001);
+        vol = Math.min(0.3, vol + 0.01);
         amb.volume = vol;
-        if (vol >= 0.1) clearInterval(fadeIn);
+        if (vol >= 0.3) clearInterval(fadeIn);
     }, 25);
 </script>
 </body>

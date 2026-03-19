@@ -11,7 +11,7 @@
     <div class="container">
         <h1 class="bug">NE PAS OUBLIER</h1>
         <div class="infos">
-            <span>⏱️ <span id="timer">30</span>s</span>
+            <span>⏱️ <span id="timer">20</span>s</span>
             <span>✅ <span id="paires">0</span>/6</span>
         </div>
         <div class="grille" id="grille"></div>
@@ -28,7 +28,7 @@
             '/images/level3/monster.jpg',
         ];
         let cartes = [...emojis, ...emojis];
-        let temps = 30;
+        let temps = 20;
         let pairesFound = 0;
         let carteRetournee = null;
         let lock = false;
@@ -105,18 +105,21 @@
                 window.location.href = '/level3';
             }, 2000);
         }
-            </script>
-            <audio id="musique" loop>
-            <source src="/sons/Skip_to_my_Lou.mp3" type="audio/mpeg">
-        </audio>
+    </script>
+    <audio id="musique" loop>
+        <source src="/sons/Skip_to_my_Lou.mp3"" type="audio/mpeg">
+    </audio>
 
-<script>
+    <script>
     const musique = document.getElementById('musique');
-    musique.volume = 0.3;
-    document.addEventListener('click', function lancer() {
-        musique.play().catch(() => {});
-        document.removeEventListener('click', lancer);
-    }, { once: true });
-</script>
-</body>
-</html>
+
+    musique.volume = 0;
+    musique.play().catch(()=>{});
+
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+        vol = Math.min(0.3, vol + 0.01);
+        musique.volume = vol;
+        if (vol >= 0.3) clearInterval(fadeIn);
+    }, 50);
+    </script>

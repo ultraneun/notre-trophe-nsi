@@ -38,6 +38,7 @@
         let sequence = [];
         let saisie = [];
         let affichageEnCours = true;
+        let bloque = false;
 
         function genererSequence() {
             // 5 flèches aléatoires
@@ -67,7 +68,7 @@
         }
 
         function jouer(fleche) {
-            if (affichageEnCours) return;
+            if (affichageEnCours || bloque) return;
 
             saisie.push(fleche);
             document.getElementById('sequence-affichee').textContent = saisie.join(' ');
@@ -75,7 +76,8 @@
             const index = saisie.length - 1;
 
             if (saisie[index] !== sequence[index]) {
-                // Mauvaise touche
+                bloque = true; 
+
                 tentatives--;
                 document.getElementById('tentatives').textContent = tentatives;
 
@@ -91,6 +93,7 @@
                     setTimeout(() => {
                         document.getElementById('message').textContent = '';
                         afficherSequence();
+                        bloque = false;
                     }, 1500);
                 }
                 return;
@@ -118,22 +121,34 @@
                 }
             }
         }
+        document.addEventListener('keydown', (e) => {
+            if (affichageEnCours || bloque) return;
 
+            if (e.key === 'ArrowUp') jouer('⬆️');
+            if (e.key === 'ArrowDown') jouer('⬇️');
+            if (e.key === 'ArrowLeft') jouer('⬅️');
+            if (e.key === 'ArrowRight') jouer('➡️');
+        });
         // Démarrer
         genererSequence();
         afficherSequence();
     </script>
-
     <audio id="musique" loop>
-        <source src="/sons/Level_Fun.mp3" type="audio/mpeg">
+        <source src="/sons/Skip_to_my_Lou.mp3" type="audio/mpeg">
     </audio>
+
     <script>
-        const musique = document.getElementById('musique');
-        musique.volume = 0.3;
-        document.addEventListener('click', function lancer() {
-            musique.play().catch(() => {});
-            document.removeEventListener('click', lancer);
-        }, { once: true });
+    const musique = document.getElementById('musique');
+
+    musique.volume = 0;
+    musique.play().catch(()=>{});
+
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+        vol = Math.min(0.3, vol + 0.01);
+        musique.volume = vol;
+        if (vol >= 0.3) clearInterval(fadeIn);
+    }, 50);
     </script>
 
 </body>

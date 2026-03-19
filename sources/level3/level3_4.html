@@ -155,17 +155,23 @@
             }, 2000);
         }
     </script>
-
     <audio id="musique" loop>
         <source src="/sons/Level_Fun.mp3" type="audio/mpeg">
     </audio>
+
     <script>
-        const musique = document.getElementById('musique');
-        musique.volume = 0.3;
-        document.addEventListener('click', function lancer() {
-            musique.play().catch(() => {});
-            document.removeEventListener('click', lancer);
-        }, { once: true });
+    const musique = document.getElementById('musique');
+
+    musique.volume = 0;
+    musique.play().catch(()=>{});
+
+    let vol = 0;
+    musique.currentTime = 5;
+    const fadeIn = setInterval(() => {
+        vol = Math.min(0.3, vol + 0.01);
+        musique.volume = vol;
+        if (vol >= 0.3) clearInterval(fadeIn);
+    }, 50);
     </script>
 
 </body>
