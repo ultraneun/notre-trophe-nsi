@@ -12,12 +12,12 @@
             background-size: cover; background-position: center;
         }
         #layout { display:flex; align-items:flex-start; gap:2rem; max-width:880px; width:100%; }
-        #col-left { flex:1; min-width:0; }
+        #col-left  { flex:1; min-width:0; }
         #col-right { flex-shrink:0; }
 
         #morse-panel {
             background:rgba(4,6,8,0.96); border:1px solid #1a2830;
-            padding:1.2rem 1.4rem; width:380px;
+            padding:1.2rem 1.4rem; width:360px;
         }
         #morse-label {
             font-size:0.54rem; letter-spacing:0.2rem;
@@ -26,81 +26,61 @@
 
         /* Vue lampadaire */
         #lamp-view {
-            width:100%; height:130px; background:#010305;
+            width:100%; height:160px; background:#010305;
             border:1px solid #0a1820; position:relative;
             overflow:hidden; margin-bottom:0.8rem;
         }
-        #lamp-img { width:100%; height:100%; object-fit:cover; filter:brightness(0.45) saturate(0.3); }
+        #lamp-img { width:100%; height:100%; object-fit:cover; filter:brightness(0.4) saturate(0.25); }
         #lamp-glow {
             position:absolute; inset:0; pointer-events:none;
-            background:radial-gradient(ellipse 50% 35% at 32% 18%, rgba(200,140,20,0), transparent);
-            transition:background 0.08s;
+            transition:opacity 0.06s;
+            opacity:0;
+            background:radial-gradient(ellipse 70% 55% at 38% 22%, rgba(210,150,20,0.9), rgba(200,140,10,0.3) 40%, transparent 70%);
         }
-        #lamp-glow.on   { background:radial-gradient(ellipse 55% 40% at 32% 18%, rgba(200,140,20,0.55), transparent); }
-        #lamp-glow.dash { background:radial-gradient(ellipse 65% 50% at 32% 18%, rgba(200,140,20,0.85), transparent); }
+        #lamp-glow.on   { opacity:0.6; }
+        #lamp-glow.dash { opacity:1; }
         #lamp-scan {
             position:absolute; inset:0; pointer-events:none;
-            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.12) 2px,rgba(0,0,0,0.12) 4px);
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.1) 2px,rgba(0,0,0,0.1) 4px);
         }
 
         /* Contrôles */
-        #ctrl { display:flex; gap:8px; align-items:center; margin-bottom:0.7rem; }
+        #ctrl { display:flex; gap:8px; align-items:center; margin-bottom:0.8rem; }
         .ctrl-btn {
             background:#030608; color:#4a6a72; border:1px solid #0a1820;
-            padding:5px 14px; font-family:'Courier New',monospace; font-size:0.62rem;
+            padding:6px 16px; font-family:'Courier New',monospace; font-size:0.64rem;
             cursor:pointer; letter-spacing:0.08rem; transition:all 0.25s;
         }
         .ctrl-btn:hover:not(:disabled) { color:#c8a96e; border-color:#c8a96e44; }
         .ctrl-btn:disabled { opacity:0.3; cursor:default; }
+        #loop-info { font-size:0.5rem; color:#1a3040; letter-spacing:0.1rem; }
 
-        /* Visualiseur de signal */
+        /* Visualiseur — barres qui s'allument */
         #signal-view {
             background:#010305; border:1px solid #0a1820;
-            padding:0.6rem; margin-bottom:0.7rem; min-height:36px;
-            display:flex; align-items:center; gap:2px; flex-wrap:wrap;
+            padding:8px 10px; margin-bottom:0.8rem;
+            display:flex; align-items:center; gap:3px; flex-wrap:nowrap;
+            min-height:38px; overflow:hidden;
         }
         .pulse {
-            height:22px; background:#c8a96e; border-radius:1px;
-            opacity:0.3; transition:opacity 0.1s;
+            height:24px; background:#c8a96e22;
+            border-radius:1px; flex-shrink:0;
+            transition:background 0.05s, box-shadow 0.05s;
         }
-        .pulse.active { opacity:1; }
-        .gap-letter { width:12px; flex-shrink:0; }
+        .pulse.active {
+            background:#c8a96e;
+            box-shadow:0 0 8px rgba(200,169,110,0.6);
+        }
+        .gap-sm { width:6px;  flex-shrink:0; }
+        .gap-lg { width:16px; flex-shrink:0; }
 
-        /* Décodeur */
-        #decoder {
-            background:#020508; border:1px solid #0a1820;
-            padding:0.7rem; margin-bottom:0.7rem;
-        }
-        #dec-label {
-            font-size:0.5rem; letter-spacing:0.15rem;
-            color:#1a3040; text-transform:uppercase; margin-bottom:0.5rem;
-        }
-        #dec-symbols {
-            font-family:'Courier New',monospace; font-size:0.9rem;
-            color:#c8a96e; letter-spacing:0.2rem; min-height:1.2rem;
-            margin-bottom:0.3rem;
-        }
-        #dec-letters {
-            font-family:'Courier New',monospace; font-size:1.2rem;
-            color:#8abaae; letter-spacing:0.4rem; min-height:1.4rem;
-        }
-        #dec-hint {
-            font-size:0.5rem; color:#1a3040; margin-top:0.3rem;
-            letter-spacing:0.07rem;
-        }
-
-        /* Référence morse */
-        #morse-ref {
-            display:grid; grid-template-columns:repeat(5,1fr);
-            gap:2px; margin-bottom:0.7rem;
-        }
-        .ref-cell {
-            background:#010305; border:1px solid #060e14;
-            padding:3px 4px;
+        /* Compteur répétitions */
+        #rep-counter {
+            font-size:0.52rem; color:#2a4050;
             font-family:'Courier New',monospace;
+            letter-spacing:0.1rem; margin-bottom:0.6rem;
+            min-height:1rem;
         }
-        .ref-ch { font-size:0.5rem; color:#3a5a5e; }
-        .ref-co { font-size:0.44rem; color:#1a3040; display:block; }
 
         #morse-status {
             font-size:0.62rem; color:#4a6a72;
@@ -112,27 +92,73 @@
             background:#080c0e; color:#a0a0a0;
             border:3px solid #1a2830; padding:0.7rem 1.4rem;
             font-family:'Courier New',monospace;
-            font-size:1.2rem; letter-spacing:0.2rem;
+            font-size:1.2rem; letter-spacing:0.25rem;
             margin-bottom:1rem; outline:none; width:200px; text-align:center;
         }
         #flag-input:focus { border-color:#c8a96e; }
+
+        #morse-table {
+            background:rgba(4,6,8,0.92);
+            border-left:2px solid #c8a96e66;
+            padding:0.9rem 1.1rem;
+            margin-bottom:1.2rem;
+            max-width:340px;
+        }
+        .mt-label {
+            font-size:0.5rem; letter-spacing:0.18rem;
+            color:#c8a96e88; text-transform:uppercase;
+            margin-bottom:0.6rem;
+        }
+        .mt-grid { display:flex; flex-direction:column; gap:4px; }
+        .mt-row {
+            display:flex; align-items:center; gap:1rem;
+            padding:3px 0; border-bottom:1px solid #0a1820;
+        }
+        .mt-row:last-child { border-bottom:none; }
+        .mt-ch {
+            font-size:0.9rem; color:#c8a96e;
+            font-family:"Courier New",monospace;
+            font-weight:bold; width:14px;
+        }
+        .mt-code {
+            font-size:0.82rem; color:#6a8a7a;
+            font-family:"Courier New",monospace;
+            letter-spacing:0.12rem;
+        }
     </style>
 </head>
 <body>
     <a class="retour-lien" href="/level4?back=1">⊟ Retour</a>
     <div class="container">
         <div id="layout">
+
             <div id="col-left">
-                <div class="message" style="max-width:320px;">
+                <div class="message" style="max-width:340px;">
                     <p>Le lampadaire ne fonctionne pas normalement.</p>
                     <p>Il clignote de façon irrégulière.</p>
                     <p><em>Trop irrégulière pour être un hasard.</em></p>
-                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.4rem;">
-                        Observez le signal lumineux.<br>
-                        Décodez le message en morse.
+                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.5rem;line-height:1.9;">
+                        Court = point &nbsp;·<br>
+                        Long &nbsp;= tiret —<br>
+                        Pause = séparation
                     </p>
                 </div>
-                <input type="text" id="flag-input" placeholder="· ·" maxlength="6">
+                <div id="morse-table">
+                    <p class="mt-label">// TABLE MORSE — CHIFFRES</p>
+                    <div class="mt-grid">
+                        <div class="mt-row"><span class="mt-ch">0</span><span class="mt-code">— — — — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">1</span><span class="mt-code">· — — — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">2</span><span class="mt-code">· · — — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">3</span><span class="mt-code">· · · — —</span></div>
+                        <div class="mt-row"><span class="mt-ch">4</span><span class="mt-code">· · · · —</span></div>
+                        <div class="mt-row"><span class="mt-ch">5</span><span class="mt-code">· · · · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">6</span><span class="mt-code">— · · · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">7</span><span class="mt-code">— — · · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">8</span><span class="mt-code">— — — · ·</span></div>
+                        <div class="mt-row"><span class="mt-ch">9</span><span class="mt-code">— — — — ·</span></div>
+                    </div>
+                </div>
+                <input type="text" id="flag-input" placeholder="_ _ _ _" maxlength="4">
                 <br><br>
                 <button class="bouton" id="valider" disabled>Valider</button>
                 <p id="message" style="margin-top:1rem; font-family:'Courier New',monospace; font-size:0.8rem;"></p>
@@ -149,140 +175,113 @@
                     </div>
 
                     <div id="ctrl">
-                        <button class="ctrl-btn" id="btn-play">▶ Lire</button>
+                        <button class="ctrl-btn" id="btn-play">▶ Analyser</button>
                         <button class="ctrl-btn" id="btn-stop" disabled>■ Stop</button>
-                        <span style="font-size:0.52rem;color:#1a3040;letter-spacing:0.08rem;">× 3 répétitions</span>
+                        <span id="loop-info"></span>
                     </div>
 
                     <div id="signal-view"></div>
-
-                    <div id="decoder">
-                        <p id="dec-label">décodeur en direct</p>
-                        <div id="dec-symbols"></div>
-                        <div id="dec-letters"></div>
-                        <p id="dec-hint">— = tiret (long) &nbsp;·&nbsp; = point (court)</p>
-                    </div>
-
-                    <div id="morse-ref"></div>
-
-                    <p id="morse-status">appuyez sur ▶ pour analyser le signal</p>
+                    <div id="rep-counter"></div>
+                    <p id="morse-status">appuyez sur ▶ pour observer le signal</p>
                 </div>
             </div>
+
         </div>
     </div>
 
 <script>
-// Message : "07"
-// 0 = -----   (5 tirets)
-// 7 = --...   (2 tirets + 3 points)
-// Séquence complète avec timings
+// Message morse : "1974"
+// 1 = .----
+// 9 = ----.
+// 7 = --...
+// 4 = ....-
+// Flag attendu : "1974" (mis à jour dans main.py aussi)
 
-const DOT  = 150;  // durée point
-const DASH = 450;  // durée tiret
-const IGAP = 150;  // gap intra-lettre
-const LGAP = 450;  // gap inter-lettre
+const DOT  = 160;
+const DASH = 480;
+const IGAP = 160;  // entre symboles d'une même lettre
+const LGAP = 500;  // entre lettres
 
-// Séquence : [type, durée]
-// type: 'on-dot', 'on-dash', 'off-gap', 'off-letter'
-function buildMorse(chars){
-    const MORSE = {'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
-                   '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'}; 
+function buildMorse(str){
+    const TABLE = {
+        '0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
+        '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'
+    };
     const seq = [];
-    chars.split('').forEach((ch, ci)=>{
-        const code = MORSE[ch] || '';
+    str.split('').forEach((ch, ci)=>{
+        const code = TABLE[ch] || '';
         code.split('').forEach((sym, si)=>{
-            seq.push({ on:true, dur: sym==='.'?DOT:DASH, sym });
+            seq.push({ on:true, dur:sym==='.'?DOT:DASH, sym });
             if(si < code.length-1) seq.push({ on:false, dur:IGAP, type:'gap' });
         });
-        if(ci < chars.length-1) seq.push({ on:false, dur:LGAP, type:'letter' });
+        if(ci < str.length-1) seq.push({ on:false, dur:LGAP, type:'letter' });
     });
     return seq;
 }
 
-const SEQUENCE = buildMorse('07');
+const MESSAGE  = '1974';
+const SEQUENCE = buildMorse(MESSAGE);
+const MAX_LOOPS = 3;
 
-// Build visualiseur statique
+// Build visualiseur statique (barres grises au départ)
 const signalView = document.getElementById('signal-view');
-SEQUENCE.forEach((step, i)=>{
+SEQUENCE.forEach(step=>{
     if(step.on){
         const el = document.createElement('div');
-        el.className='pulse';
-        el.style.width = (step.dur / 10) + 'px';
-        el.dataset.idx = i;
+        el.className = 'pulse';
+        el.style.width = (step.dur / 14) + 'px';
         signalView.appendChild(el);
-    } else if(step.type==='letter'){
+    } else if(step.type === 'letter'){
         const el = document.createElement('div');
-        el.className='gap-letter';
+        el.className = 'gap-lg';
+        signalView.appendChild(el);
+    } else {
+        const el = document.createElement('div');
+        el.className = 'gap-sm';
         signalView.appendChild(el);
     }
 });
 
-// Build référence morse (chiffres seulement)
-const refEl = document.getElementById('morse-ref');
-for(let i=0;i<=9;i++){
-    const MORSE = {'0':'-----','1':'.----','2':'..---','3':'...--','4':'....-',
-                   '5':'.....','6':'-....','7':'--...','8':'---..','9':'----.'};
-    const cell = document.createElement('div');
-    cell.className='ref-cell';
-    cell.innerHTML=`<span class="ref-ch">${i}</span><span class="ref-co">${MORSE[i]}</span>`;
-    refEl.appendChild(cell);
-}
-
-// Lecture animée
 const lamp    = document.getElementById('lamp-glow');
-const decSym  = document.getElementById('dec-symbols');
-const decLet  = document.getElementById('dec-letters');
 const status  = document.getElementById('morse-status');
+const repCnt  = document.getElementById('rep-counter');
 
-let playing=false, loopCount=0, timer=null;
-const REVERSE = {'-----':'0','.----':'1','..---':'2','...--':'3','.....-':'4',
-                 '.....':'5','-....':'6','--...':'7','---..':'8','----.':'9'};
+let playing = false, loopCount = 0, timer = null;
 
 document.getElementById('btn-play').addEventListener('click', startPlay);
 document.getElementById('btn-stop').addEventListener('click', stopPlay);
 
 function startPlay(){
     if(playing) return;
-    playing=true; loopCount=0;
-    document.getElementById('btn-play').disabled=true;
-    document.getElementById('btn-stop').disabled=false;
-    decSym.textContent=''; decLet.textContent='';
-    status.className=''; status.textContent='signal en cours...';
+    playing = true; loopCount = 0;
+    document.getElementById('btn-play').disabled = true;
+    document.getElementById('btn-stop').disabled = false;
+    status.className = ''; status.textContent = 'signal en cours d\'analyse...';
     playLoop();
 }
 
 function playLoop(){
     if(!playing) return;
-    if(loopCount >= 1){ endPlay(); return; }
-    decSym.textContent=''; decLet.textContent='';
+    if(loopCount >= MAX_LOOPS){ endPlay(); return; }
+    repCnt.textContent = `répétition ${loopCount+1} / ${MAX_LOOPS}`;
     // Reset pulses
-    document.querySelectorAll('.pulse').forEach(p=>p.classList.remove('active'));
-    let idx=0, buf='', decoded='';
-    let pulseIdx=0;
+    document.querySelectorAll('.pulse').forEach(p => p.classList.remove('active'));
+    let idx = 0;
+    const pulses = Array.from(document.querySelectorAll('.pulse'));
+    let pulseIdx = 0;
 
     function step(){
         if(!playing || idx >= SEQUENCE.length){
             loopCount++;
-            timer = setTimeout(playLoop, 600);
+            timer = setTimeout(playLoop, 900);
             return;
         }
         const s = SEQUENCE[idx++];
         if(s.on){
-            lamp.className = s.sym==='.'?'on':'dash';
-            // Allumer le bon pulse dans le visualiseur
-            const pulses = document.querySelectorAll('.pulse');
+            lamp.className = s.sym === '.' ? 'on' : 'dash';
             if(pulseIdx < pulses.length) pulses[pulseIdx++].classList.add('active');
-            buf += s.sym;
-            decSym.textContent = decoded + buf.replace(/\./g,'·').replace(/-/g,'—');
         } else {
-            lamp.className='';
-            if(s.type==='letter'){
-                const ch = REVERSE[buf] || '?';
-                decoded += ch + ' ';
-                buf='';
-                decLet.textContent = decoded;
-                decSym.textContent = decoded + ' ';
-            }
+            lamp.className = '';
         }
         timer = setTimeout(step, s.dur);
     }
@@ -290,42 +289,47 @@ function playLoop(){
 }
 
 function endPlay(){
-    status.className='ok'; status.textContent='signal terminé — à vous de décoder';
-    playing=false;
-    lamp.className='';
-    document.getElementById('btn-play').disabled=false;
-    document.getElementById('btn-stop').disabled=true;
-    
-    
-    
+    playing = false;
+    lamp.className = '';
+    document.getElementById('btn-play').disabled = false;
+    document.getElementById('btn-stop').disabled = true;
+    repCnt.textContent = '';
+    status.className = 'ok';
+    status.textContent = 'signal terminé — décodez et entrez le code';
 }
 
 function stopPlay(){
-    playing=false;
+    playing = false;
     if(timer) clearTimeout(timer);
-    lamp.className='';
-    document.getElementById('btn-play').disabled=false;
-    document.getElementById('btn-stop').disabled=true;
-    status.className=''; status.textContent='signal interrompu — relancez';
-    document.querySelectorAll('.pulse').forEach(p=>p.classList.remove('active'));
+    lamp.className = '';
+    document.getElementById('btn-play').disabled = false;
+    document.getElementById('btn-stop').disabled = true;
+    repCnt.textContent = '';
+    document.querySelectorAll('.pulse').forEach(p => p.classList.remove('active'));
+    status.className = ''; status.textContent = 'signal interrompu — relancez';
 }
 
-// Activer valider si saisie manuelle
 document.getElementById('flag-input').addEventListener('input', function(){
-    document.getElementById('valider').disabled = this.value.trim() === '';
+    this.value = this.value.replace(/\D/g,'').slice(0,4);
+    document.getElementById('valider').disabled = this.value.length === 0;
 });
 
 document.getElementById('valider').addEventListener('click', async ()=>{
     const val = document.getElementById('flag-input').value.trim();
     const msg = document.getElementById('message');
-    const rep = await fetch('/verifier/43',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+    const rep = await fetch('/verifier/43',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({flag:val})
+    });
     const data = await rep.json();
     if(data.succes){
-        msg.style.color='#5a9a6a'; msg.textContent='Signal capté. Fréquence notée.';
-        document.getElementById('valider').disabled=true;
-        setTimeout(()=>{ window.location.href='/level4?done=4.3'; },1800);
+        msg.style.color='#5a9a6a'; msg.textContent='Signal décodé. Code noté.';
+        document.getElementById('valider').disabled = true;
+        setTimeout(()=>{ window.location.href='/level4?done=4.3'; }, 1800);
     } else {
         msg.style.color='#cc5555'; msg.textContent='Incorrect.';
+        document.getElementById('flag-input').value = '';
+        document.getElementById('valider').disabled = true;
     }
 });
 </script>
