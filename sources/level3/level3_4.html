@@ -166,7 +166,6 @@
     musique.play().catch(()=>{});
 
     let vol = 0;
-    musique.currentTime = 5;
     const fadeIn = setInterval(() => {
         vol = Math.min(0.3, vol + 0.01);
         musique.volume = vol;

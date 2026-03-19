@@ -419,9 +419,9 @@ render();
     document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
     let vol = 0;
     const fadeIn = setInterval(() => {
-        vol = Math.min(0.3, vol + 0.01);
+        vol = Math.min(0.1, vol + 0.01);
         amb.volume = vol;
-        if (vol >= 0.3) clearInterval(fadeIn);
+        if (vol >= 0.1) clearInterval(fadeIn);
     }, 25);
 </script>
 </body>
