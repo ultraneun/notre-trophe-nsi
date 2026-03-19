@@ -233,7 +233,7 @@ const SCENES = {
     'A': {
         color: '#1a2a3a',        // bleu nuit intérieur
         icon:  '🏠',
-        label: 'SCÈNE A — INTÉRIEUR',
+        label: 'INTÉRIEUR',
         analyse: [
             '— Intérieur d\'une maison.',
             '— Les lumières sont allumées.',
@@ -245,7 +245,7 @@ const SCENES = {
     'B': {
         color: '#0e1e2a',        // nuit fraîche, pas encore de brume
         icon:  '🌙',
-        label: 'SCÈNE B — DEHORS',
+        label: 'EXTÉRIEUR',
         analyse: [
             '— Dehors. Route déserte.',
             '— La lune est encore très haute dans le ciel.',
@@ -257,7 +257,7 @@ const SCENES = {
     'C': {
         color: '#1a1808',        // lumière orange lampadaire
         icon:  '🔦',
-        label: 'SCÈNE C — CARREFOUR',
+        label: 'CARREFOUR',
         analyse: [
             '— Un carrefour. Lampadaire allumé.',
             '— Une légère brume commence à apparaître.',
@@ -269,7 +269,7 @@ const SCENES = {
     'D': {
         color: '#0e0e16',        // brume dense, très sombre
         icon:  '🌲',
-        label: 'SCÈNE D — PARC',
+        label: 'PARC',
         analyse: [
             '— Un parc. Brume très dense.',
             '— La personne utilise une lampe torche.',
@@ -298,7 +298,7 @@ SHUFFLED.forEach((sid, i) => {
         <div class="frame-color" style="background:${sc.color}"></div>
         <div class="frame-scan"></div>
         <div class="frame-icon">${sc.icon}</div>
-        <div class="frame-id">SCÈNE ${['A','B','C','D'][i]}</div>
+
     `;
     el.addEventListener('click', () => clickFrame(sid));
     stripEl.appendChild(el);

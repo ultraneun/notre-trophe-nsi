@@ -53,34 +53,7 @@
         .ctrl-btn:hover:not(:disabled) { color:#c8a96e; border-color:#c8a96e44; }
         .ctrl-btn:disabled { opacity:0.3; cursor:default; }
 
-        /* Visualiseur morse — TOUS les carrés toujours visibles */
-        #signal-wrap {
-            background:#010305; border:1px solid #0a1820;
-            padding:10px 10px; margin-bottom:0.8rem;
-        }
-        #signal-label {
-            font-size:0.46rem; color:#1a3040; letter-spacing:0.14rem;
-            text-transform:uppercase; margin-bottom:6px;
-        }
-        #signal-view {
-            display:flex; align-items:flex-end;
-            gap:3px; flex-wrap:wrap;
-            min-height:32px; gap:5px; height:auto;
-        }
-        .pulse {
-            height:34px; border-radius:1px;
-            background:#1a2830;       /* gris foncé = éteint */
-            flex-shrink:0;
-            transition:background 0.06s, box-shadow 0.06s;
-        }
-        .pulse.active {
-            background:#c8a96e;
-            box-shadow:0 0 8px rgba(200,169,110,0.7);
-        }
-        .letter-sep {
-            width:2px; height:34px; background:#0a1820;
-            flex-shrink:0;
-        }
+        
 
         /* Compteur */
         #rep-info {
@@ -189,11 +162,7 @@
                         <button class="ctrl-btn" id="btn-play">▶ Analyser</button>
                         <button class="ctrl-btn" id="btn-stop" disabled>■ Stop</button>
                     </div>
-
-                    <div id="signal-wrap">
-                        <p id="signal-label">visualisation du signal</p>
-                        <div id="signal-view"></div>
-                    </div>
+</div>
 
                     <div id="rep-info"></div>
                     <p id="morse-status">appuyez sur ▶ pour observer le signal</p>
@@ -233,24 +202,7 @@ function buildMorse(str){
 
 const SEQUENCE = buildMorse('1974');
 
-// Build visualiseur — TOUS les éléments créés une seule fois, toujours visibles
-const sv = document.getElementById('signal-view');
-SEQUENCE.forEach(step=>{
-    if(step.on){
-        const el=document.createElement('div');
-        el.className='pulse';
-        // Point = 18px, tiret = 44px
-        el.style.width = (step.sym==='.'?22:52)+'px';
-        sv.appendChild(el);
-    } else if(step.type==='letter'){
-        const el=document.createElement('div');
-        el.className='letter-sep';
-        sv.appendChild(el);
-    }
-    // les gap intra-lettre n'ont pas de div, c'est le gap CSS entre pulses
-});
-
-const pulses = Array.from(sv.querySelectorAll('.pulse'));
+const pulses = [];
 const lamp   = document.getElementById('lamp-glow');
 const status = document.getElementById('morse-status');
 const repInfo= document.getElementById('rep-info');
