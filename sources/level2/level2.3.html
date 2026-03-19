@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 2.3 - The Backrooms</title>
+    <link rel="stylesheet" href="/level2/style2.css">
+    <style>
+        body {
+            background-image: url('/images/level2tuyau.jpg');
+            background-size: cover; background-position: center;
+            overflow-y: auto; min-height: 100vh; height: auto;
+        }
+        body::before { content:''; position:fixed; inset:0; background:rgba(0,5,10,0.45); pointer-events:none; z-index:0; }
+        body::after {
+            content:''; position:fixed; inset:0;
+            background:repeating-linear-gradient(90deg,transparent,transparent 6px,rgba(0,80,100,0.015) 6px,rgba(0,80,100,0.015) 7px);
+            pointer-events:none; z-index:1;
+        }
+        .container {
+            position:relative; z-index:2;
+            display:flex !important; flex-direction:row !important;
+            align-items:flex-start !important; justify-content:center !important;
+            padding:5rem 2rem 2rem !important; gap:2rem;
+            min-height:100vh; height:auto !important; width:100%;
+        }
+
+        #btn-retour-lien { position:fixed; top:1rem; left:1rem; font-family:'Courier New',monospace; font-size:0.58rem; color:#3a8090; text-decoration:none; letter-spacing:0.18rem; text-transform:uppercase; border:1px solid #1a4050; padding:0.4rem 0.9rem; transition:all 0.3s; z-index:100; background:rgba(0,4,8,0.7); }
+        #btn-retour-lien:hover { color:#6ab5c8; border-color:#1a6a8a; }
+
+        /* ── Col gauche ─── */
+        #col-left { flex:1; max-width:300px; padding-top:3rem; }
+        .msg p { font-size:0.86rem; line-height:2.1; color:#a8d8e8; margin-bottom:0.1rem; }
+        .msg p em { color:#6ab5c8; font-style:normal; }
+        .msg p.warn { color:#d47030; }
+        .msg { margin-bottom:1.6rem; }
+
+        #journal { background:rgba(1,6,10,0.88); border-left:2px solid #1a4050; padding:0.8rem 1rem; margin-bottom:1.4rem; }
+        #journal-label { font-size:0.46rem; letter-spacing:0.2rem; color:#3a7a8a; text-transform:uppercase; margin-bottom:0.4rem; }
+        #journal-text { font-size:0.62rem; color:#4a8090; line-height:1.9; font-style:italic; min-height:2.5rem; transition:color 0.4s; }
+        #journal-text.active { color:#6ab5c8; }
+        #journal-text.error  { color:#cc5030; }
+        #journal-text.ok     { color:#50c870; }
+
+        #code-reveal { background:rgba(0,4,8,0.9); border:1px solid #0a3820; padding:0.7rem 1rem; margin-bottom:1rem; display:none; align-items:center; gap:1rem; }
+        #code-reveal.visible { display:flex; animation:glow-green 2s ease infinite; }
+        @keyframes glow-green { 0%,100%{box-shadow:0 0 8px rgba(0,200,100,0.15);}50%{box-shadow:0 0 20px rgba(0,200,100,0.35);} }
+        #code-label { font-size:0.44rem; color:#0a4030; letter-spacing:0.14rem; text-transform:uppercase; }
+        #code-val { font-size:1.4rem; color:#00d4a0; letter-spacing:0.3rem; }
+
+        #flag-input { background:#020a0e; color:#6ab5c8; border:3px solid #0a2030; padding:0.7rem 1.4rem; font-family:'Courier New',monospace; font-size:1.3rem; letter-spacing:0.3rem; outline:none; width:210px; text-align:center; display:block; margin-bottom:1rem; }
+        #flag-input:focus { border-color:#00d4f0; }
+        #msg-final { margin-top:0.8rem; font-size:0.72rem; font-family:'Courier New',monospace; min-height:1rem; color:#6ab5c8; }
+
+        /* ── Col droite ─── */
+        #col-right { flex-shrink:0; padding-top:2rem; }
+        #panel { background:rgba(1,5,8,0.97); border:1px solid #1a3a4a; padding:1.2rem 1.4rem; width:440px; box-shadow:0 0 50px rgba(0,0,0,0.95), inset 0 0 30px rgba(0,20,40,0.4); }
+        #panel-label { font-size:0.5rem; letter-spacing:0.22rem; color:#3a7a8a; text-transform:uppercase; margin-bottom:1rem; border-bottom:1px solid #0d2030; padding-bottom:0.6rem; }
+
+        /* Pression globale */
+        #pressure-wrap { margin-bottom:1rem; }
+        #pressure-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+        #pressure-label { font-size:0.46rem; letter-spacing:0.16rem; color:#3a7a8a; text-transform:uppercase; }
+        #pressure-num { font-size:0.9rem; color:#e05520; letter-spacing:0.1rem; transition:color 0.3s; }
+        #pressure-num.safe { color:#50c870; }
+        #pressure-track { width:100%; height:5px; background:#030a10; border-radius:2px; overflow:hidden; }
+        #pressure-fill { height:100%; width:0%; background:#cc3010; border-radius:2px; transition:width 0.3s, background 0.4s; }
+        #pressure-fill.safe { background:#1a8a30; }
+
+        /* Tuyaux SVG */
+        #pipe-system { width:100%; margin-bottom:1rem; background:#010408; border:1px solid #050e14; padding:0.6rem; position:relative; }
+        #pipe-svg { display:block; width:100%; }
+
+        /* Vannes — cliquables */
+        .vanne-zone { cursor:pointer; }
+        .vanne-zone:hover .vanne-body { opacity:0.85; }
+        .vanne-body { transition:fill 0.25s; }
+        .vanne-label { font-family:'Courier New',monospace; font-size:9px; fill:#3a8090; transition:fill 0.25s; pointer-events:none; }
+        .vanne-zone.fermee .vanne-body { fill:#0a3a50 !important; }
+        .vanne-zone.fermee .vanne-label { fill:#00b4d8 !important; }
+        .vanne-zone.wrong-flash .vanne-body { fill:#4a1010 !important; }
+        .fuite { transition:opacity 0.4s; }
+        .fuite.cachee { opacity:0; }
+
+        /* Timer */
+        #timer-bar { display:flex; align-items:center; gap:10px; margin-bottom:0.8rem; }
+        #timer-track { flex:1; height:3px; background:#030a10; border-radius:2px; overflow:hidden; }
+        #timer-fill { height:100%; width:100%; background:#0a3a5a; transition:width 0.1s linear, background 0.3s; }
+        #timer-label { font-family:'Courier New',monospace; font-size:0.62rem; color:#3a7a8a; min-width:3.5rem; text-align:right; }
+
+        /* Score / rounds */
+        #score-row { display:flex; gap:1.4rem; align-items:center; margin-bottom:0.9rem; }
+        .sc-block { display:flex; flex-direction:column; gap:2px; }
+        .sc-label { font-size:0.44rem; letter-spacing:0.14rem; color:#3a6070; text-transform:uppercase; }
+        .sc-val { font-size:1rem; color:#4a9ab0; letter-spacing:0.1rem; }
+        .sc-val.hi { color:#00d4f0; }
+
+        /* Fuites visuelles */
+        #fuite-indicators { display:flex; gap:6px; margin-bottom:0.8rem; }
+        .fuite-dot { width:8px; height:8px; background:#1a3040; border:1px solid #0a2030; transition:all 0.3s; }
+        .fuite-dot.active { background:#cc4410; box-shadow:0 0 6px rgba(200,60,10,0.5); animation:drip-pulse 0.6s ease infinite; }
+        .fuite-dot.fixed  { background:#1a6a2a; box-shadow:none; }
+        @keyframes drip-pulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.3);} }
+
+        #status-text { font-size:0.48rem; color:#3a7a8a; letter-spacing:0.12rem; text-transform:uppercase; margin-bottom:0.6rem; min-height:0.8rem; }
+
+        #ctrl-row { display:flex; gap:8px; }
+        .ctrl-btn { background:transparent; color:#3a7a8a; border:1px solid #1a3a4a; padding:5px 14px; font-family:'Courier New',monospace; font-size:0.6rem; cursor:pointer; letter-spacing:0.1rem; text-transform:uppercase; transition:all 0.25s; }
+        .ctrl-btn:hover:not(:disabled) { color:#00d4f0; border-color:#0a5a70; }
+        .ctrl-btn:disabled { opacity:0.2; cursor:default; }
+
+        @keyframes shake-body { 0%,100%{transform:translateX(0);}20%{transform:translateX(-8px);}40%{transform:translateX(8px);}60%{transform:translateX(-5px);}80%{transform:translateX(5px);} }
+        @keyframes explode-flash { 0%,100%{opacity:0;}10%,30%,50%{opacity:1;}20%,40%{opacity:0;} }
+        #explode-overlay { position:fixed; inset:0; background:rgba(180,40,0,0.55); z-index:999; pointer-events:none; opacity:0; display:none; }
+        #explode-overlay.active { display:block; animation:explode-flash 0.6s ease forwards; }
+    </style>
+</head>
+<body>
+    <a id="btn-retour-lien" href="/level2.1">← Retour</a>
+    <div id="explode-overlay"></div>
+
+    <div class="container">
+        <div id="col-left">
+            <div class="msg">
+                <p>Les tuyaux sont sous pression.</p>
+                <p><em>Des fuites apparaissent.</em></p>
+                <p>&nbsp;</p>
+                <p class="warn">Fermez les vannes dans le bon ordre.</p>
+                <p><em>Un mauvais geste augmente la pression.</em></p>
+                <p><em>Si elle atteint 100%, tout lâche.</em></p>
+            </div>
+            <div id="journal">
+                <p id="journal-label">// RAPPORT — SALLE DES MACHINES</p>
+                <div id="journal-text">Système de tuyauterie instable.</div>
+            </div>
+            <div id="code-reveal">
+                <div>
+                    <p id="code-label">code d'accès</p>
+                    <p id="code-val">——</p>
+                </div>
+            </div>
+            <input type="text" id="flag-input" placeholder="· · · ·" maxlength="6" readonly>
+            <button class="bouton" id="valider" disabled>Valider</button>
+            <p id="msg-final"></p>
+        </div>
+
+        <div id="col-right">
+            <div id="panel">
+                <p id="panel-label">SYSTÈME HYDRAULIQUE — SALLE DES MACHINES — SECTEUR C</p>
+
+                <!-- Pression -->
+                <div id="pressure-wrap">
+                    <div id="pressure-header">
+                        <span id="pressure-label">Pression globale</span>
+                        <span id="pressure-num">0%</span>
+                    </div>
+                    <div id="pressure-track"><div id="pressure-fill"></div></div>
+                </div>
+
+                <!-- Indicateurs fuites -->
+                <div id="fuite-indicators"></div>
+
+                <!-- Schéma tuyaux SVG -->
+                <div id="pipe-system">
+                    <svg id="pipe-svg" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Tuyaux horizontaux -->
+                        <rect x="20"  y="42"  width="360" height="16" rx="3" fill="#081828" stroke="#1a3a4a" stroke-width="1"/>
+                        <rect x="20"  y="92"  width="360" height="16" rx="3" fill="#081828" stroke="#1a3a4a" stroke-width="1"/>
+                        <rect x="20"  y="142" width="360" height="16" rx="3" fill="#081828" stroke="#1a3a4a" stroke-width="1"/>
+                        <!-- Tuyaux verticaux -->
+                        <rect x="95"  y="20" width="16" height="160" rx="3" fill="#081828" stroke="#1a3a4a" stroke-width="1"/>
+                        <rect x="195" y="20" width="16" height="160" rx="3" fill="#081828" stroke="#1a3a4a" stroke-width="1"/>
+                        <rect x="295" y="20" width="16" height="160" rx="3" fill="#081828" stroke="#1a3a4a" stroke-width="1"/>
+
+                        <!-- Fuites (gouttes) — cachées au départ -->
+                        <!-- Fuite 1 : tuyau horizontal haut, gauche -->
+                        <g class="fuite cachee" id="fuite-0">
+                            <ellipse cx="55" cy="62" rx="3" ry="5" fill="#00a0c0" opacity="0.7"/>
+                            <ellipse cx="55" cy="70" rx="2" ry="3" fill="#00a0c0" opacity="0.4"/>
+                        </g>
+                        <!-- Fuite 2 : vertical gauche, bas -->
+                        <g class="fuite cachee" id="fuite-1">
+                            <ellipse cx="115" cy="155" rx="3" ry="5" fill="#00a0c0" opacity="0.7"/>
+                            <ellipse cx="118" cy="163" rx="2" ry="3" fill="#00a0c0" opacity="0.4"/>
+                        </g>
+                        <!-- Fuite 3 : tuyau milieu, centre -->
+                        <g class="fuite cachee" id="fuite-2">
+                            <ellipse cx="250" cy="112" rx="3" ry="5" fill="#00a0c0" opacity="0.7"/>
+                            <ellipse cx="247" cy="120" rx="2" ry="3" fill="#00a0c0" opacity="0.4"/>
+                        </g>
+                        <!-- Fuite 4 : vertical droit, haut -->
+                        <g class="fuite cachee" id="fuite-3">
+                            <ellipse cx="315" cy="38" rx="3" ry="5" fill="#00a0c0" opacity="0.7"/>
+                            <ellipse cx="312" cy="46" rx="2" ry="3" fill="#00a0c0" opacity="0.4"/>
+                        </g>
+                        <!-- Fuite 5 : tuyau bas, droite -->
+                        <g class="fuite cachee" id="fuite-4">
+                            <ellipse cx="350" cy="162" rx="3" ry="5" fill="#00a0c0" opacity="0.7"/>
+                            <ellipse cx="353" cy="170" rx="2" ry="3" fill="#00a0c0" opacity="0.4"/>
+                        </g>
+
+                        <!-- Vannes (cliquables) — cercles sur les intersections -->
+                        <!-- V1 : intersection haut-gauche (tuyau H1 + V1) -->
+                        <g class="vanne-zone" id="vz-0" data-idx="0">
+                            <circle class="vanne-body" cx="103" cy="50" r="11" fill="#080e18" stroke="#0a1e2a" stroke-width="1.5"/>
+                            <text class="vanne-label" x="103" y="54" text-anchor="middle">V1</text>
+                        </g>
+                        <!-- V2 : intersection milieu-gauche (H2 + V1) -->
+                        <g class="vanne-zone" id="vz-1" data-idx="1">
+                            <circle class="vanne-body" cx="103" cy="100" r="11" fill="#080e18" stroke="#0a1e2a" stroke-width="1.5"/>
+                            <text class="vanne-label" x="103" y="104" text-anchor="middle">V2</text>
+                        </g>
+                        <!-- V3 : intersection haut-centre (H1 + V2) -->
+                        <g class="vanne-zone" id="vz-2" data-idx="2">
+                            <circle class="vanne-body" cx="203" cy="50" r="11" fill="#080e18" stroke="#0a1e2a" stroke-width="1.5"/>
+                            <text class="vanne-label" x="203" y="54" text-anchor="middle">V3</text>
+                        </g>
+                        <!-- V4 : intersection bas-centre (H3 + V2) -->
+                        <g class="vanne-zone" id="vz-3" data-idx="3">
+                            <circle class="vanne-body" cx="203" cy="150" r="11" fill="#080e18" stroke="#0a1e2a" stroke-width="1.5"/>
+                            <text class="vanne-label" x="203" y="154" text-anchor="middle">V4</text>
+                        </g>
+                        <!-- V5 : intersection milieu-droit (H2 + V3) -->
+                        <g class="vanne-zone" id="vz-4" data-idx="4">
+                            <circle class="vanne-body" cx="303" cy="100" r="11" fill="#080e18" stroke="#0a1e2a" stroke-width="1.5"/>
+                            <text class="vanne-label" x="303" y="104" text-anchor="middle">V5</text>
+                        </g>
+                    </svg>
+                </div>
+
+                <!-- Score -->
+                <div id="score-row">
+                    <div class="sc-block"><span class="sc-label">Manche</span><span class="sc-val hi" id="sc-round">—</span></div>
+                    <div class="sc-block"><span class="sc-label">Fuites</span><span class="sc-val" id="sc-fuites">—</span></div>
+                    <div class="sc-block"><span class="sc-label">Pression</span><span class="sc-val" id="sc-pressure">—</span></div>
+                </div>
+
+                <!-- Timer -->
+                <div id="timer-bar">
+                    <div id="timer-track"><div id="timer-fill"></div></div>
+                    <span id="timer-label">—</span>
+                </div>
+
+                <div id="status-text">Système en veille.</div>
+
+                <div id="ctrl-row">
+                    <button class="ctrl-btn" id="btn-play">▶ Activer</button>
+                    <button class="ctrl-btn" id="btn-reset" disabled>↺ Réinitialiser</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   CONFIG
+══════════════════════════════════════════════════ */
+const TOTAL_ROUNDS   = 4;       // 4 manches à réussir
+const TIMER_PER_ROUND = 18;     // secondes par manche
+const PRESSURE_WRONG  = 25;     // % de pression ajouté sur erreur
+const FINAL_CODE      = '3619'; // ← à ajuster
+
+// Chaque manche = liste ordonnée de vannes à fermer
+// Les fuites correspondantes s'affichent, le joueur doit fermer dans cet ordre
+const ROUNDS = [
+    { fuites:[0,2],     ordre:[0,2]      },  // fuite 0→V1, fuite 2→V3
+    { fuites:[1,4],     ordre:[1,4]      },  // fuite 1→V2, fuite 4→V5
+    { fuites:[0,3,2],   ordre:[2,3,0]    },  // ordre différent de l'apparition
+    { fuites:[1,2,4,3], ordre:[1,3,4,2]  },  // 4 fuites
+];
+
+/* ══════════════════════════════════════════════════
+   ÉTAT
+══════════════════════════════════════════════════ */
+let round=0, pressure=0, timerLeft=0;
+let expectedIdx=0;       // index dans ordre[] de la manche courante
+let closed=[];           // vannes déjà fermées cette manche
+let timerInterval=null;
+let gameActive=false, won=false;
+
+/* ══════════════════════════════════════════════════
+   ÉLÉMENTS
+══════════════════════════════════════════════════ */
+const vanneEls = Array.from(document.querySelectorAll('.vanne-zone'));
+const fuiteEls = Array.from({length:5},(_,i)=>document.getElementById(`fuite-${i}`));
+const fuiteDotsWrap = document.getElementById('fuite-indicators');
+
+// Créer les dots d'indicateur
+const fuiteDots=[];
+for(let i=0;i<5;i++){
+    const d=document.createElement('div');d.className='fuite-dot';fuiteDotsWrap.appendChild(d);fuiteDots.push(d);
+}
+
+/* ══════════════════════════════════════════════════
+   PRESSION
+══════════════════════════════════════════════════ */
+function setPressure(p){
+    pressure=Math.min(100,Math.max(0,p));
+    const pf=document.getElementById('pressure-fill');
+    const pn=document.getElementById('pressure-num');
+    const sp=document.getElementById('sc-pressure');
+    pf.style.width=pressure+'%';
+    pn.textContent=pressure+'%';
+    sp.textContent=pressure+'%';
+    const safe=pressure<50;
+    pf.classList.toggle('safe',safe);
+    pn.classList.toggle('safe',safe);
+    if(pressure>=100){explosion();}
+}
+
+/* ══════════════════════════════════════════════════
+   TIMER
+══════════════════════════════════════════════════ */
+function startTimer(){
+    timerLeft=TIMER_PER_ROUND;updateTimerUI();
+    timerInterval=setInterval(()=>{
+        timerLeft=Math.max(0,timerLeft-0.1);updateTimerUI();
+        if(timerLeft<=0){clearInterval(timerInterval);timeOut();}
+    },100);
+}
+function stopTimer(){clearInterval(timerInterval);}
+function updateTimerUI(){
+    const pct=timerLeft/TIMER_PER_ROUND*100;
+    const f=document.getElementById('timer-fill');
+    f.style.width=pct+'%';
+    f.style.background=timerLeft>10?'#0a3a5a':timerLeft>5?'#5a3a08':'#6a1010';
+    document.getElementById('timer-label').textContent=timerLeft.toFixed(1)+' s';
+    document.getElementById('timer-label').style.color=timerLeft>10?'#0a3040':timerLeft>5?'#c0a020':'#cc3030';
+}
+function timeOut(){
+    // Temps écoulé = pression monte
+    setStatus("Temps écoulé. Pression critique.",'error');
+    setPressure(pressure+30);
+    if(pressure<100) setTimeout(()=>launchRound(),1000);
+}
+
+/* ══════════════════════════════════════════════════
+   MANCHE
+══════════════════════════════════════════════════ */
+function launchRound(){
+    stopTimer();
+    // Reset vannes
+    vanneEls.forEach(v=>{v.classList.remove('fermee','wrong-flash');});
+    // Reset fuites
+    fuiteEls.forEach(f=>f.classList.add('cachee'));
+    fuiteDots.forEach(d=>{d.className='fuite-dot';});
+    closed=[];expectedIdx=0;
+
+    const r=ROUNDS[round];
+    // Affiche les fuites de cette manche
+    r.fuites.forEach(fi=>{
+        fuiteEls[fi].classList.remove('cachee');
+        fuiteDots[fi].classList.add('active');
+    });
+
+    document.getElementById('sc-round').textContent=`${round+1} / ${TOTAL_ROUNDS}`;
+    document.getElementById('sc-fuites').textContent=r.fuites.length;
+    setStatus(`Fermez ${r.fuites.length} vanne${r.fuites.length>1?'s':''} dans le bon ordre.`,'active');
+    gameActive=true;
+    startTimer();
+}
+
+/* ══════════════════════════════════════════════════
+   CLIC VANNE
+══════════════════════════════════════════════════ */
+vanneEls.forEach(el=>{
+    el.addEventListener('click',()=>{
+        if(!gameActive||won)return;
+        const idx=parseInt(el.dataset.idx);
+        if(closed.includes(idx))return; // déjà fermée
+
+        const r=ROUNDS[round];
+        const expected=r.ordre[expectedIdx];
+
+        if(idx===expected){
+            // Correct
+            el.classList.add('fermee');
+            closed.push(idx);
+            // Cache la fuite correspondante
+            const fuiteIdx=r.fuites[r.fuites.indexOf(idx)!=-1?r.fuites.indexOf(idx):0];
+            fuiteEls[idx<r.fuites.length?r.fuites[expectedIdx]:r.fuites[0]].classList.add('cachee');
+            fuiteDots[r.fuites[expectedIdx]].className='fuite-dot fixed';
+            expectedIdx++;
+            setStatus(`${expectedIdx}/${r.ordre.length} vanne${expectedIdx>1?'s':''} fermée${expectedIdx>1?'s':''}.`,'active');
+            if(expectedIdx>=r.ordre.length){
+                // Manche réussie
+                stopTimer();
+                setTimeout(()=>roundSuccess(),600);
+            }
+        } else {
+            // Mauvaise vanne
+            el.classList.add('wrong-flash');
+            setTimeout(()=>el.classList.remove('wrong-flash'),500);
+            setPressure(pressure+PRESSURE_WRONG);
+            setStatus(`Mauvaise vanne ! Pression +${PRESSURE_WRONG}%.`,'error');
+            // Flash rouge overlay léger
+            document.getElementById('explode-overlay').style.background='rgba(150,30,0,0.25)';
+            document.getElementById('explode-overlay').classList.add('active');
+            setTimeout(()=>document.getElementById('explode-overlay').classList.remove('active'),400);
+        }
+    });
+});
+
+/* ══════════════════════════════════════════════════
+   SUCCÈS / ÉCHEC
+══════════════════════════════════════════════════ */
+function roundSuccess(){
+    round++;
+    if(round>=TOTAL_ROUNDS){
+        finish();
+    } else {
+        setStatus(`Manche ${round} réussie. Prochaine fuite...`,'ok');
+        setTimeout(()=>launchRound(),900);
+    }
+}
+
+async function explosion(){
+    gameActive=false; won=false;
+    stopTimer();
+    setStatus('RUPTURE DE CANALISATION. Réinitialisation.','error');
+    const ov=document.getElementById('explode-overlay');
+    ov.style.background='rgba(180,40,0,0.55)';
+    ov.classList.add('active');
+    document.querySelector('.container').style.animation='shake-body 0.6s';
+    setTimeout(()=>{document.querySelector('.container').style.animation='';},600);
+    await sleep(900);
+    ov.classList.remove('active');
+    await sleep(400);
+    resetGame();
+}
+
+async function finish(){
+    gameActive=false; won=true;
+    stopTimer();
+    // Flash vert
+    vanneEls.forEach(v=>v.classList.add('fermee'));
+    setStatus('Toutes les fuites colmatées. Accès autorisé.','ok');
+    setPressure(0);
+    document.getElementById('code-reveal').classList.add('visible');
+    document.getElementById('code-val').textContent=FINAL_CODE;
+    document.getElementById('flag-input').value=FINAL_CODE;
+    document.getElementById('valider').disabled=false;
+    document.getElementById('btn-reset').disabled=true;
+}
+
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+/* ══════════════════════════════════════════════════
+   STATUT
+══════════════════════════════════════════════════ */
+function setStatus(txt,cls){
+    const el=document.getElementById('status-text');
+    el.textContent=txt;
+    // journal aussi
+    const jt=document.getElementById('journal-text');
+    jt.className=cls||'';
+    jt.textContent=txt;
+}
+
+/* ══════════════════════════════════════════════════
+   RESET
+══════════════════════════════════════════════════ */
+function resetGame(){
+    stopTimer();
+    gameActive=false; won=false; round=0; pressure=0;
+    setPressure(0);
+    vanneEls.forEach(v=>v.classList.remove('fermee','wrong-flash'));
+    fuiteEls.forEach(f=>f.classList.add('cachee'));
+    fuiteDots.forEach(d=>d.className='fuite-dot');
+    closed=[]; expectedIdx=0;
+    document.getElementById('sc-round').textContent='—';
+    document.getElementById('sc-fuites').textContent='—';
+    document.getElementById('btn-play').disabled=false;
+    document.getElementById('btn-reset').disabled=true;
+    document.getElementById('code-reveal').classList.remove('visible');
+    document.getElementById('flag-input').value='';
+    document.getElementById('valider').disabled=true;
+    document.getElementById('msg-final').textContent='';
+    document.getElementById('timer-fill').style.width='100%';
+    document.getElementById('timer-fill').style.background='#0a3a5a';
+    document.getElementById('timer-label').textContent='—';
+    setStatus('Système de tuyauterie instable.','');
+}
+
+/* ══════════════════════════════════════════════════
+   BOUTONS
+══════════════════════════════════════════════════ */
+document.getElementById('btn-play').addEventListener('click',()=>{
+    document.getElementById('btn-play').disabled=true;
+    document.getElementById('btn-reset').disabled=false;
+    launchRound();
+});
+document.getElementById('btn-reset').addEventListener('click',()=>{if(!won)resetGame();});
+
+/* ══════════════════════════════════════════════════
+   VALIDATION
+══════════════════════════════════════════════════ */
+document.getElementById('valider').addEventListener('click',async()=>{
+    const val=document.getElementById('flag-input').value.trim();
+    const msg=document.getElementById('msg-final');
+    try{
+        const rep=await fetch('/verifier/23',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+        const data=await rep.json();
+        if(data.succes){
+            msg.style.color='#00d4f0';msg.textContent='Système stabilisé. Passage ouvert.';
+            document.getElementById('valider').disabled=true;
+            setTimeout(()=>{window.location.href=data.redirect||'/level2.1';},2000);
+        } else {
+            msg.style.color='#cc3030';msg.textContent='Code incorrect.';
+        }
+    }catch{msg.style.color='#cc3030';msg.textContent='Erreur serveur.';}
+});
+
+/* INIT */
+resetGame();
+</script>
+
+<audio id="amb" loop src="/sons/water-drip-ambiance.mp3"></audio>
+<script>
+    const amb=document.getElementById('amb');amb.volume=0;amb.play().catch(()=>{});
+    document.addEventListener('click',()=>amb.play().catch(()=>{}),{once:true});
+    let vol=0;const fi=setInterval(()=>{vol=Math.min(0.05,vol+0.001);amb.volume=vol;if(vol>=0.05)clearInterval(fi);},30);
+</script>
+</body>
+</html>

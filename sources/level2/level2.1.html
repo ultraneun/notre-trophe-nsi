@@ -5,6 +5,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 2 - Protocole</title>
     <link rel="stylesheet" href="/level2/style2.css">
+    <style>
+        #panneau-code {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 50;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        #panneau-code.visible { display: flex; opacity: 1; }
+        #panneau-code-label {
+            font-size: 0.5rem;
+            letter-spacing: 0.4rem;
+            color: #0a3040;
+            text-transform: uppercase;
+        }
+        #code-input {
+            background: rgba(0, 4, 8, 0.9);
+            border: 1px solid #0a3a50;
+            color: #00d4f0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.6rem;
+            letter-spacing: 0.5rem;
+            padding: 0.6rem 1.8rem;
+            width: 240px;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        #code-input:focus { border-color: #00d4f0; }
+        #code-input::placeholder { color: #0a3040; letter-spacing: 0.4rem; }
+        #btn-valider-code {
+            background: transparent;
+            color: #00d4f0;
+            border: 1px solid #0a5a70;
+            padding: 0.5rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            transition: all 0.3s;
+        }
+        #btn-valider-code:hover { background: rgba(0,180,220,0.08); border-color: #00d4f0; }
+        #code-message {
+            font-size: 0.65rem;
+            letter-spacing: 0.15rem;
+            font-family: 'Courier New', monospace;
+            min-height: 1rem;
+        }
+        @keyframes shake-wrong {
+            0%,100% { transform: translateX(-50%) translateX(0); }
+            20% { transform: translateX(-50%) translateX(-10px); }
+            40% { transform: translateX(-50%) translateX(10px); }
+            60% { transform: translateX(-50%) translateX(-6px); }
+            80% { transform: translateX(-50%) translateX(6px); }
+        }
+    </style>
 </head>
 <body>
 
@@ -12,9 +75,6 @@
 <canvas id="drip-canvas"></canvas>
 <div id="water-level"></div>
 <div id="room-indicator">— bassin principal —</div>
-<button id="btn-retour">← Retour</button>
-<div id="nav-hint">Lisez tout.</div>
-
 
 <div class="zone-group" id="zones-principal">
     <div class="zone" id="z-col-gauche"
@@ -22,69 +82,21 @@
          data-action="popup" data-target="sol-principal"></div>
     <div class="zone" id="z-porte-tob"
          style="left:45%; top:42%; width:8%; height:15%;"
-         data-action="salle" data-target="toboggans"></div>
+         data-action="redirect" data-target="/level2.2"></div>
     <div class="zone" id="z-porte-tuyau"
          style="left:69%; top:43%; width:9%; height:15%;"
-         data-action="salle" data-target="tuyau"></div>
+         data-action="redirect" data-target="/level2.3"></div>
     <div class="zone" id="z-panneau"
          style="left:83%; top:28%; width:9%; height:11%;"
          data-action="panneau"></div>
 </div>
 
-
-<div class="zone-group" id="zones-toboggans" style="display:none;">
-    <div class="zone" id="z-nuage-g"
-         style="left:11%; top:46%; width:11%; height:10%;"
-         data-action="popup" data-target="note-tob1"></div>
-    <div class="zone" id="z-fenetre"
-         style="left:44%; top:34%; width:14%; height:17%;"
-         data-action="popup" data-target="note-tob2"></div>
-    <div class="zone" id="z-mur-droit"
-         style="left:61%; top:34%; width:11%; height:15%;"
-         data-action="popup" data-target="tob-bleu"></div>
-    <div class="zone danger" id="z-tob-monstre"
-         style="left:44%; top:64%; width:8%; height:11%;"
-         data-action="salle" data-target="monstre"></div>
-</div>
-
-<div class="zone-group" id="zones-tuyau" style="display:none;">
-    <div class="zone" id="z-vannes-tuyau"
-         style="left:1%; top:48%; width:10%; height:15%;"
-         data-action="popup" data-target="vannes-tuyau"></div>
-    <div class="zone" id="z-plaque-sol"
-         style="left:86%; top:39%; width:10%; height:14%;"
-         data-action="popup" data-target="plaque-sol"></div>
-    <div class="zone danger" id="z-tuyau-monstre"
-         style="left:47%; top:64%; width:6%; height:11%;"
-         data-action="salle" data-target="monstre"></div>
-</div>
-
-
-<div class="zone-group" id="zones-monstre" style="display:none;">
-    <div class="zone danger" id="z-monstre"
-         style="left:38%; top:12%; width:22%; height:68%;"
-         data-action="popup" data-target="monstre"></div>
-    <div class="zone" id="z-mur-inverse"
-         style="left:18%; top:15%; width:12%; height:55%;"
-         data-action="popup" data-target="mur-inverse"></div>
-    <div class="zone" id="z-sol-monstre"
-         style="left:30%; top:78%; width:38%; height:14%;"
-         data-action="popup" data-target="sol-monstre"></div>
-    <div class="zone" id="z-colonne"
-         style="left:70%; top:15%; width:12%; height:55%;"
-         data-action="popup" data-target="colonne"></div>
-</div>
-
-<!-- PANNEAU INTERRUPTEURS -->
-<div id="panneau">
-    <div id="panneau-label">protocole d'évacuation</div>
-    <div id="interrupteurs">
-        <button class="switch-btn" data-lettre="A">A</button>
-        <button class="switch-btn" data-lettre="B">B</button>
-        <button class="switch-btn" data-lettre="C">C</button>
-        <button class="switch-btn" data-lettre="D">D</button>
-    </div>
-    <div id="sequence-display">—</div>
+<!-- PANNEAU CODE -->
+<div id="panneau-code">
+    <div id="panneau-code-label">protocole d'évacuation — code d'accès</div>
+    <input type="text" id="code-input" placeholder="· · · · · · · ·" maxlength="9" autocomplete="off">
+    <button id="btn-valider-code">Valider</button>
+    <div id="code-message"></div>
 </div>
 
 <!-- POPUP -->
@@ -102,56 +114,18 @@
     <div id="jumpscare-text"></div>
 </div>
 
-<!-- TRANSITION -->
-<div id="transition-overlay">
-    <video id="transition-video" src="/level2/Transition_niveau.mp4"></video>
-</div>
-
 <!-- AUDIO -->
-<audio id="amb"          loop src="/sons/water-drip-ambiance.mp3"></audio>
-<audio id="sfx-found"         src="/sons/found.mp3"></audio>
-<audio id="sfx-splash"        src="/sons/splash.mp3"></audio>
-<audio id="sfx-error"         src="/sons/nsasr-jumpscare-sound-effect.mp3"></audio>
+<audio id="amb"       loop src="/sons/water-drip-ambiance.mp3"></audio>
+<audio id="sfx-found"      src="/sons/found.mp3"></audio>
+<audio id="sfx-error"      src="/sons/nsasr-jumpscare-sound-effect.mp3"></audio>
 
 <script>
-const ORDRE_CORRECT = ['B', 'D', 'A', 'C'];
-const state = {
-    salleActive: 'principal',
-    sequence: [],
-    bloque: false
-};
-
-const salles = {
-    principal:  { img: '/images/level2.jpg',      zones: 'zones-principal', label: '— bassin principal —' },
-    toboggans:  { img: '/images/toboggan.png',     zones: 'zones-toboggans', label: '— salle des toboggans —' },
-    tuyau:      { img: '/images/level2tuyau.jpg',  zones: 'zones-tuyau',     label: '— salle des machines —' },
-    monstre:    { img: '/images/monstre2.png',     zones: 'zones-monstre',   label: '— ??? —' }
-};
-
-function allerSalle(nom) {
-    const salle = salles[nom];
-    if (!salle) return;
-    const img = document.getElementById('scene-img');
-    img.style.opacity = 0;
-    document.querySelectorAll('.zone-group').forEach(g => g.style.display = 'none');
-    if (nom !== 'principal') {
-        document.getElementById('panneau').classList.remove('visible');
-    }
-    setTimeout(() => {
-        img.src = salle.img;
-        img.style.opacity = 1;
-        document.getElementById(salle.zones).style.display = 'block';
-        document.getElementById('room-indicator').textContent = salle.label;
-        state.salleActive = nom;
-        document.getElementById('btn-retour').classList.toggle('visible', nom !== 'principal');
-    }, 700);
-}
-
-document.getElementById('btn-retour').addEventListener('click', () => allerSalle('principal'));
+const state = { bloque: false };
 
 const amb = document.getElementById('amb');
 amb.volume = 0.04;
 document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
+
 function playSfx(id) {
     const el = document.getElementById(id);
     if (el) { el.currentTime = 0; el.volume = 0.9; el.play().catch(()=>{}); }
@@ -162,114 +136,9 @@ const popupData = {
         title: 'Le sol du bassin',
         content: `
             <p class="popup-text">L'eau monte. Pas vite. Mais elle monte.</p>
-            <p class="popup-text italic">Il y a un panneau d'urgence sur le mur. Des interrupteurs. Quatre lettres gravées dessus : A, B, C, D.</p>
-            <p class="popup-text">En dessous, une plaque :</p>
-            <p class="popup-text note">"PROTOCOLE D'ÉVACUATION
-Activer les circuits dans le bon ordre.
-Mauvais ordre = réinitialisation du système.
-L'ordre correct est documenté dans les salles."</p>
-            <p class="popup-text faded">— Explorez. Lisez tout. Déduisez.</p>
-        `
-    },
-    'note-tob1': {
-        title: 'Note — coincée sous le toboggan bleu',
-        content: `
-            <span class="fragment-tag">fragment 1 — partiellement lisible</span>
-            <p class="popup-text note">"...vérification des circuits de drainage.
-Rappel procédure standard :
-<span class="highlight">B précède toujours D</span> dans tout protocole
-d'évacuation aquatique. Sans exception.
-Cette règle date du manuel de 19[illisible]..."</p>
-            <p class="popup-text faded">— Un fragment. Il en manque d'autres.</p>
-        `
-    },
-    'note-tob2': {
-        title: 'Affichette — haut de la salle',
-        content: `
-            <span class="fragment-tag">fragment 2 — écrit à la main</span>
-            <p class="popup-text note">"règle absolue du protocole eau :
-<span class="highlight">jamais C avant A.</span>
-Immuable. Sans exception.
-Peu importe ce que disent les autres notes."</p>
-            <p class="popup-text faded">— "Peu importe ce que disent les autres notes."</p>
-        `
-    },
-    'tob-bleu': {
-        title: 'Le mur du fond',
-        content: `
-            <p class="popup-text">Une zone humide sur le mur. Le carrelage est décollé.</p>
-            <p class="popup-text">Derrière, rien. Juste du béton.</p>
-            <p class="popup-text faded">— Rien ici.</p>
-        `
-    },
-    'vannes-tuyau': {
-        title: 'Les carreaux — inscription',
-        content: `
-            <span class="fragment-tag">fragment 3 — gravé au couteau</span>
-            <p class="popup-text note">"quelqu'un a menti dans les notes officielles.
-voilà ce que j'ai vérifié moi-même :
-<span class="highlight">après B, activer D. Ensuite seulement.</span>
-pas avant. jamais avant.
-j'ai essayé l'autre sens. ça réinitialise tout."</p>
-            <p class="popup-text italic">Gravé profondément. Quelqu'un était là avant vous.</p>
-            <p class="popup-text faded">— Il a appris à la dure.</p>
-        `
-    },
-    'plaque-sol': {
-        title: 'Plaque — gravée dans le sol inondé',
-        content: `
-            <span class="fragment-tag">fragment 4 — feutre noir sur carrelage</span>
-            <p class="popup-text note">"si tu lis ça t'as pas encore trouvé
-alors retiens bien :
-<span class="highlight">A ne s'active jamais en premier.
-A ne s'active jamais en dernier.</span>
-c'est tout ce que je peux te dire."</p>
-            <p class="popup-text faded">— Quelqu'un vous a laissé ça intentionnellement.</p>
-        `
-    },
-    'monstre': {
-        title: '—',
-        content: `
-            <p class="popup-text danger-text">Il est là. Debout dans l'eau.</p>
-            <p class="popup-text danger-text">Il ne bouge pas. Il vous regarde.</p>
-            <p class="popup-text italic" style="margin-top:1rem;">Des inscriptions sur les murs. Des notes sur les colonnes.</p>
-            <p class="popup-text">Il ne réagit pas quand vous lisez.</p>
-            <p class="popup-text faded">— Lisez vite quand même.</p>
-        `
-    },
-    'mur-inverse': {
-        title: 'Colonne gauche — texte étrange',
-        content: `
-            <span class="fragment-tag">fragment 5 — écrit à l'envers</span>
-            <p class="popup-text">Le texte est écrit en miroir. Vous inclinez la tête.</p>
-            <p class="popup-text note"><span class="reversed">"C vient après A. Toujours.
-Et C est toujours le dernier.
-Aucune exception n'a jamais survécu."</span></p>
-            <p class="popup-text italic">Une fois retourné mentalement :</p>
-            <p class="popup-text note" style="color:#2a5060; font-size:0.75rem;"><span class="highlight">C vient après A. Toujours. Et C est toujours le dernier.</span></p>
-            <p class="popup-text faded">— Pourquoi écrire ça à l'envers ?</p>
-        `
-    },
-    'sol-monstre': {
-        title: 'Sol — inscription au pied du monstre',
-        content: `
-            <span class="fragment-tag">fragment 6 — gravé dans le carrelage</span>
-            <p class="popup-text">Juste à ses pieds. Gravé en chiffres.</p>
-            <p class="popup-text note" style="font-size:1rem; letter-spacing:0.3rem; text-align:center;"><span class="highlight">1=B &nbsp; 2=D &nbsp; 3=A &nbsp; 4=C</span></p>
-            <p class="popup-text italic">Quelqu'un a résolu l'énigme avant vous et l'a laissé ici.</p>
-            <p class="popup-text faded">— Croisez avec les autres fragments pour vérifier.</p>
-        `
-    },
-    'colonne': {
-        title: 'Colonne droite — note déchirée',
-        content: `
-            <span class="fragment-tag">fragment 7 — papier collé sur la colonne</span>
-            <p class="popup-text note">"...confirme donc que A se place
-obligatoirement <span class="highlight">après D</span> dans la séquence.
-Le reste de la page est [déchiré]
-...jamais en [déchiré]
-...C ferme toujours [déchiré]..."</p>
-            <p class="popup-text faded">— "A après D." Un lien de plus.</p>
+            <p class="popup-text italic">Un panneau d'urgence est fixé au mur. Il attend un code.</p>
+            <p class="popup-text">Les deux salles ont peut-être révélé quelque chose.</p>
+            <p class="popup-text faded">— Combinez ce que vous avez trouvé.</p>
         `
     }
 };
@@ -279,59 +148,64 @@ function bindZone(zone) {
         if (state.bloque) return;
         const action = zone.dataset.action;
         const target = zone.dataset.target;
-        if (action === 'salle') {
-            allerSalle(target);
+        if (action === 'redirect') {
+            window.location.href = target;
         } else if (action === 'panneau') {
             ouvrirPanneau();
         } else if (action === 'popup') {
             const data = popupData[target];
             if (!data) return;
-            playSfx(target === 'monstre' ? 'sfx-splash' : 'sfx-found');
+            playSfx('sfx-found');
             showPopup(data.title, data.content);
         }
     });
 }
-
 document.querySelectorAll('.zone').forEach(bindZone);
 
 function ouvrirPanneau() {
-    showPopup('Panneau d\'urgence', `
-        <p class="popup-text">Un panneau métallique fixé au mur. Quatre interrupteurs. Quatre lettres.</p>
-        <p class="popup-text italic">En dessous : <span class="highlight">ACTIVER DANS LE BON ORDRE</span></p>
-        <p class="popup-text">Le panneau attend. Vous devez avoir trouvé l'ordre dans les salles.</p>
-        <p class="popup-text faded">— Utilisez les interrupteurs en bas de l'écran.</p>
-    `, () => {
-        document.getElementById('panneau').classList.add('visible');
-    });
+    const p = document.getElementById('panneau-code');
+    p.style.display = 'flex';
+    // petit délai pour que la transition CSS fonctionne
+    requestAnimationFrame(() => requestAnimationFrame(() => p.classList.add('visible')));
+    setTimeout(() => document.getElementById('code-input').focus(), 100);
 }
 
-document.querySelectorAll('.switch-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        if (state.bloque) return;
-        if (state.salleActive !== 'principal') return;
-        const lettre = btn.dataset.lettre;
-        if (state.sequence.includes(lettre)) return;
-        state.sequence.push(lettre);
-        btn.classList.add('active');
-        document.getElementById('sequence-display').textContent = state.sequence.join(' → ');
-        const pos = state.sequence.length - 1;
-        if (state.sequence[pos] !== ORDRE_CORRECT[pos]) {
-            btn.classList.remove('active');
-            btn.classList.add('wrong');
-            setTimeout(() => {
-                state.sequence = [];
-                state.bloque = true;
-                document.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active', 'wrong'));
-                document.getElementById('sequence-display').textContent = '—';
-                declencherJumpscare("Mauvais ordre. Le système s'est réinitialisé.");
-            }, 600);
-            return;
-        }
-        if (state.sequence.length === 4) {
-            setTimeout(lancerTransition, 800);
-        }
-    });
+document.getElementById('btn-valider-code').addEventListener('click', validerCode);
+document.getElementById('code-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') validerCode();
 });
+
+async function validerCode() {
+    if (state.bloque) return;
+    const val = document.getElementById('code-input').value.trim();
+    const msg = document.getElementById('code-message');
+    if (!val) return;
+
+    try {
+        const rep = await fetch('/verifier/5', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ flag: val })
+        });
+        const data = await rep.json();
+        if (data.succes) {
+            msg.style.color = '#00ff88';
+            msg.textContent = 'Accès autorisé.';
+            setTimeout(() => lancerTransition(), 1200);
+        } else {
+            document.getElementById('code-input').value = '';
+            msg.textContent = '';
+            state.bloque = true;
+            const p = document.getElementById('panneau-code');
+            p.style.animation = 'shake-wrong 0.4s';
+            setTimeout(() => { p.style.animation = ''; }, 400);
+            declencherJumpscare("Code invalide. Le système s'est réinitialisé.");
+        }
+    } catch {
+        msg.style.color = '#cc5555';
+        msg.textContent = 'Erreur réseau.';
+    }
+}
 
 let pendingApres = null;
 function showPopup(title, content, apres) {
@@ -340,7 +214,6 @@ function showPopup(title, content, apres) {
     document.getElementById('popup').classList.add('active');
     pendingApres = apres || null;
 }
-
 document.getElementById('popup-close').addEventListener('click', () => {
     document.getElementById('popup').classList.remove('active');
     if (pendingApres) { pendingApres(); pendingApres = null; }
@@ -365,11 +238,13 @@ function declencherJumpscare(message) {
 
 function lancerTransition() {
     amb.pause();
-    const overlay = document.getElementById('transition-overlay');
-    const video = document.getElementById('transition-video');
-    overlay.classList.add('active');
-    video.play();
-    video.addEventListener('ended', () => { window.location.href = '/level3'; });
+    const fade = document.createElement('div');
+    fade.style.cssText = 'position:fixed;inset:0;background:#000;opacity:0;z-index:9999;transition:opacity 1.2s ease;pointer-events:none;';
+    document.body.appendChild(fade);
+    requestAnimationFrame(() => {
+        fade.style.opacity = '1';
+        setTimeout(() => { window.location.href = '/level3'; }, 1400);
+    });
 }
 
 (function() {
