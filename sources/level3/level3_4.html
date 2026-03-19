@@ -27,11 +27,13 @@
     <p id="message"></p>
 
     <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+        sfxLettre.volume = 0.3;
+
         // ── Intro typewriter ────────────────────────────────────────────
         const lignes = [
             "Tu l'entends.",
-            "Il se rapproche.",
-            "...",
+            "Il se rapproche...",
             "20 secondes.",
             "Élimine les cibles.",
             "Ne rate pas.",
@@ -47,21 +49,26 @@
                 setTimeout(demarrerJeu, 800);
                 return;
             }
-
             const ligne = lignes[ligneIndex];
-
             if (charIndex < ligne.length) {
                 texteComplet += ligne[charIndex];
                 el.textContent = texteComplet;
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.2;
+                    clone.play().catch(() => {});
+                }
                 charIndex++;
-                const delay = ligne[charIndex - 1] === '.' ? 280 : 32;
+                const char = ligne[charIndex - 1];
+                const lastThree = ligne.slice(charIndex - 3, charIndex);
+                const delay =
+                    lastThree === '...' ? 1000 :
+                    (char === '.' || char === '?') ? 1000 : 50;
                 setTimeout(typeChar, delay);
             } else {
-                texteComplet += '\n';
-                el.textContent = texteComplet;
-                ligneIndex++;
-                charIndex = 0;
-                setTimeout(typeChar, 420);
+                texteComplet += '\n'; el.textContent = texteComplet;
+                ligneIndex++; charIndex = 0;
+                setTimeout(typeChar, 500);
             }
         }
 

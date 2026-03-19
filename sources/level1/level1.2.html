@@ -101,6 +101,26 @@
         }
         #btn-rst:hover { color: #00b4d8; border-color: #00b4d8; }
 
+
+        #timer-bar {
+            display: flex; align-items: center; gap: 10px;
+            margin-bottom: 0.5rem;
+        }
+        #timer-track {
+            flex: 1; height: 4px; background: #0a1a20;
+            border-radius: 2px; overflow: hidden;
+        }
+        #timer-fill {
+            height: 100%; width: 100%;
+            background: #8a1010;
+            transition: width 0.1s linear, background 0.3s;
+            border-radius: 2px;
+        }
+        #timer-label {
+            font-family: 'Courier New', monospace;
+            font-size: 0.72rem; color: #8a9a9e;
+            min-width: 3.5rem; text-align: right;
+        }
         #flag-input {
             background-color: #0f1a20; color: #a0a0a0;
             border: 3px solid #2a3a40; padding: 0.8rem 1.5rem;
@@ -142,9 +162,9 @@
                         <div id="exit-zone"></div>
                         <div id="exit-arrow">→</div>
                     </div>
-                    <div id="moves-bar">
-                        mouvements : <span id="moves-num">0</span> / 15
-                        <span id="moves-warn"></span>
+                    <div id="timer-bar">
+                        <div id="timer-track"><div id="timer-fill"></div></div>
+                        <span id="timer-label">6.0 s</span>
                     </div>
                     <div id="rh-status">dégagez le passage pour la voiture marquée</div>
                     <div id="rh-code"></div>
@@ -156,7 +176,7 @@
     </div>
 
 <script>
-const S=55, G=6, MAX=15;
+const S=55, G=6;
 
 const INIT=[
     {id:'Ve', color:'#2a3a1a', stripe:'#3a5025', or:'h', sz:2, row:0, col:0},
@@ -169,7 +189,7 @@ const INIT=[
     {id:'Vf', color:'#1a2a10', stripe:'#263a18', or:'h', sz:3, row:5, col:1},
 ];
 
-let cars=INIT.map(c=>({...c})), moves=0, won=false, lost=false;
+let cars=INIT.map(c=>({...c})), won=false, lost=false;
 
 const board=document.getElementById('board');
 for(let r=0;r<G;r++) for(let c=0;c<G;c++){
@@ -237,7 +257,7 @@ function tryMove(car,nc,nr){
             if(lead>=0&&lead<G&&o.has(car.row+','+lead))break;
             best=cur;cur+=step;
         }
-        if(best!==car.col){moves++;car.col=best;moved=true;}
+        if(best!==car.col){startTimer();car.col=best;moved=true;}
     } else {
         nr=Math.max(0,Math.min(G-car.sz,nr));
         if(nr===car.row)return;
@@ -248,7 +268,7 @@ function tryMove(car,nc,nr){
             if(lead>=0&&lead<G&&o.has(lead+','+car.col))break;
             best=cur;cur+=step;
         }
-        if(best!==car.row){moves++;car.row=best;moved=true;}
+        if(best!==car.row){startTimer();car.row=best;moved=true;}
     }
     if(moved)update();
 }
@@ -274,11 +294,6 @@ function render(){
 
 function update(){
     render();
-    const left=MAX-moves;
-    document.getElementById('moves-num').textContent=moves;
-    const w=document.getElementById('moves-warn');
-    w.textContent=left<=5?` — ${left} restant${left>1?'s':''}` :'';
-    w.style.color=left<=3?'#cc3030':'#886020';
 
     const red=cars.find(c=>c.target);
     const st=document.getElementById('rh-status');
@@ -288,15 +303,13 @@ function update(){
 
     if(!won&&red.col+red.sz===G){
         won=true;
+        clearInterval(timerInterval); timerStarted=false;
         st.style.color='#38b048';st.textContent='sortie. le code apparaît.';
         cd.textContent='5130003';
         fi.value='5130003';btn.disabled=false;
         return;
     }
-    if(moves>=MAX&&!won){
-        lost=true;
-        st.style.color='#8a1010';st.textContent='plus de mouvements. recommencez.';
-    } else if(!won){
+    if(!won){
         st.style.color='#8a9a9e';
         st.textContent='dégagez le passage pour la voiture marquée';
         cd.textContent='';fi.value='';btn.disabled=true;
@@ -324,18 +337,7 @@ function addDrag(el,car){
     },{passive:false});
 }
 
-document.getElementById('btn-rst').addEventListener('click',()=>{
-    cars=INIT.map(c=>({...c}));moves=0;won=false;lost=false;
-    document.getElementById('moves-num').textContent='0';
-    document.getElementById('moves-warn').textContent='';
-    document.getElementById('rh-status').style.color='#8a9a9e';
-    document.getElementById('rh-status').textContent='dégagez le passage pour la voiture marquée';
-    document.getElementById('rh-code').textContent='';
-    document.getElementById('flag-input').value='';
-    document.getElementById('valider').disabled=true;
-    document.getElementById('message').textContent='';
-    render();
-});
+document.getElementById('btn-rst').addEventListener('click', resetGame);
 
 document.getElementById('valider').addEventListener('click',async()=>{
     const val=document.getElementById('flag-input').value.trim();
@@ -351,7 +353,66 @@ document.getElementById('valider').addEventListener('click',async()=>{
     }
 });
 
+
+// ── Timer ─────────────────────────────────────────
+const TIMER_MAX = 4;
+let timerStarted = false, timerInterval = null, timerLeft = TIMER_MAX;
+
+function startTimer() {
+    if (timerStarted) return;
+    timerStarted = true;
+    timerLeft = TIMER_MAX;
+    updateTimerUI();
+    timerInterval = setInterval(() => {
+        timerLeft = Math.max(0, timerLeft - 0.1);
+        updateTimerUI();
+        if (timerLeft <= 0) {
+            clearInterval(timerInterval);
+            setTimeout(() => resetGame(), 400);
+        }
+    }, 100);
+}
+
+function resetGame() {
+    clearInterval(timerInterval);
+    timerStarted = false; timerLeft = TIMER_MAX;
+    cars = INIT.map(c => ({...c}));
+    won = false; lost = false;
+    updateTimerUI();
+    document.getElementById('rh-status').style.color = '#8a9a9e';
+    document.getElementById('rh-status').textContent = 'dégagez le passage pour la voiture marquée';
+    document.getElementById('rh-code').textContent = '';
+    document.getElementById('flag-input').value = '';
+    document.getElementById('valider').disabled = true;
+    document.getElementById('message').textContent = '';
+    render();
+}
+
+function updateTimerUI() {
+    const pct = timerLeft / TIMER_MAX * 100;
+    document.getElementById('timer-fill').style.width = pct + '%';
+    document.getElementById('timer-fill').style.background =
+        timerLeft > 3 ? '#8a1010' : timerLeft > 1.5 ? '#886020' : '#cc3030';
+    document.getElementById('timer-label').textContent = timerLeft.toFixed(1) + ' s';
+    document.getElementById('timer-label').style.color =
+        timerLeft > 3 ? '#8a9a9e' : timerLeft > 1.5 ? '#c0a020' : '#cc3030';
+}
+updateTimerUI();
+
 render();
+</script>
+<audio id="amb" loop src="/sons/AmbianceLevel1.mp3"></audio>
+<script>
+    const amb = document.getElementById('amb');
+    amb.volume = 0;
+    amb.play().catch(()=>{});
+    document.addEventListener('click', () => amb.play().catch(()=>{}), { once: true });
+    let vol = 0;
+    const fadeIn = setInterval(() => {
+        vol = Math.min(0.1, vol + 0.001);
+        amb.volume = vol;
+        if (vol >= 0.1) clearInterval(fadeIn);
+    }, 25);
 </script>
 </body>
 </html>
