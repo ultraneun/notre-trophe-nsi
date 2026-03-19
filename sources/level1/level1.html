@@ -57,11 +57,11 @@
             <p class="popup-label">ACCÈS NIVEAU SUIVANT</p>
             <p class="popup-sub">Entrez les coordonnées</p>
             <div class="coord-ligne">
-                <div class="coord-display" id="lat-display">__°__'__._"N</div>
+                <div class="coord-display" id="lat-display" onclick="document.getElementById('lat-raw').focus()">__°__'__._"N</div>
                 <input type="tel" id="lat-raw" class="coord-hidden-input" maxlength="7" placeholder="">
             </div>
             <div class="coord-ligne" style="margin-top:10px;">
-                <div class="coord-display" id="lon-display">_°__'__._"W</div>
+                <div class="coord-display" id="lon-display" onclick="document.getElementById('lon-raw').focus()">_°__'__._"W</div>
                 <input type="tel" id="lon-raw" class="coord-hidden-input" maxlength="6" placeholder="">
             </div>
             <div style="display:flex;gap:10px;justify-content:center;margin-top:1.4rem;">
