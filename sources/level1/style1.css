@@ -51,7 +51,7 @@ body.zoom-out { transform: scale(3); }
     line-height: 2; white-space: pre-wrap; min-height: 180px;
 }
 .terminal-skip {
-    font-size: 0.55rem; color: #1a3040;
+    font-size: 0.55rem; color: #00b4d850;
     letter-spacing: 0.15rem; margin-top: 0.6rem;
     text-transform: uppercase; opacity: 0;
     transition: opacity 1s ease; cursor: default;

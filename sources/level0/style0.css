@@ -93,6 +93,16 @@ body {
     pointer-events: all;
 }
  
+.terminal-skip {
+    font-size: 0.55rem;
+    color: #c8a84a4b;
+    letter-spacing: 0.15rem;
+    margin-top: 0.6rem;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 1s ease;
+    cursor: default;
+}
 /* =============================================
    BOUTON
    ============================================= */

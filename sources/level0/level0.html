@@ -14,6 +14,7 @@
             <div class="terminal-body">
                 <span id="terminal-text"></span><span class="cursor">█</span>
             </div>
+            <div class="terminal-skip" id="terminal-skip">[ espace ]</div>
             <div class="terminal-footer" id="terminal-footer">
                 <button class="bouton" id="btn-yeux">Comment êtes-vous arrivez ici ?</button>
             </div>
@@ -56,7 +57,10 @@
         let ligneIndex = 0, charIndex = 0, texteComplet = '';
 
         function typeChar() {
+            if (typewriterFini) return;
             if (ligneIndex >= lignes.length) {
+                typewriterFini = true;
+                skip.style.opacity = '0';
                 setTimeout(() => footer.classList.add('visible'), 600);
                 return;
             }
@@ -75,15 +79,40 @@
                 const delay =
                     lastThree === '...' ? 1000 :
                     (char === '.' || char === '?') ? 500 : 50;
-                setTimeout(typeChar, delay);
+                timeoutId = setTimeout(typeChar, delay);
             } else {
                 texteComplet += '\n'; el.textContent = texteComplet;
                 ligneIndex++; charIndex = 0;
-                setTimeout(typeChar, 500);
+                timeoutId = setTimeout(typeChar, 500);
             }
         }
 
-        setTimeout(typeChar, 800);
+        const skip = document.getElementById('terminal-skip');
+        let typewriterFini = false;
+        let timeoutId = null;
+
+        function finirTypewriter() {
+            if (typewriterFini) return;
+            typewriterFini = true;
+            if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+            el.textContent = lignes.join('\n');
+            skip.style.opacity = '0';
+            setTimeout(() => footer.classList.add('visible'), 600);
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !typewriterFini) {
+                e.preventDefault();
+                finirTypewriter();
+            }
+        });
+
+        setTimeout(() => {
+            skip.style.opacity = '1';
+            typeChar();
+        }, 800);
+
+
 
         // Bouton → lance la vidéo
         document.getElementById('btn-yeux').addEventListener('click', function () {

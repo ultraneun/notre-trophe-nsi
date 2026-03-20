@@ -182,7 +182,7 @@ async function validerCode() {
     if (!val) return;
 
     try {
-        const rep = await fetch('/verifier/5', {
+        const rep = await fetch('/verifier/6', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ flag: val })

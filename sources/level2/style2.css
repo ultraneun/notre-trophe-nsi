@@ -126,6 +126,18 @@ body.intro::before {
     pointer-events: all;
 }
 
+.terminal-skip {
+    font-size: 0.55rem;
+    color: #0a3a50;
+    letter-spacing: 0.15rem;
+    margin-top: 0.6rem;
+    padding: 0 2rem 0.5rem;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 1s ease;
+    cursor: default;
+}
+
 .bouton {
     background: transparent;
     color: #00d4f0;

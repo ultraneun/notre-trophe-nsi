@@ -13,8 +13,8 @@
 
         <div class="message">
             <span id="terminal-text"></span><span class="cursor">█</span>
+            <div class="terminal-skip" id="terminal-skip">[ espace ]</div>
         </div>
-
         <div id="code-footer">
             <input type="text" id="code-input" placeholder="_ _ _ _" maxlength="4">
             <button class="bouton" onclick="verifierCode()">ENTRER</button>
@@ -40,12 +40,24 @@
 
         const el = document.getElementById('terminal-text');
         const footer = document.getElementById('code-footer');
-        let ligneIndex = 0;
-        let charIndex = 0;
-        let texteComplet = '';
+        const skip = document.getElementById('terminal-skip');
+        let ligneIndex = 0, charIndex = 0, texteComplet = '';
+        let typewriterFini = false, timeoutId = null;
+
+        function finirTypewriter() {
+            if (typewriterFini) return;
+            typewriterFini = true;
+            if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+            el.textContent = lignes.join('\n');
+            skip.style.opacity = '0';
+            setTimeout(() => footer.classList.add('visible'), 600);
+        }
 
         function typeChar() {
+            if (typewriterFini) return;
             if (ligneIndex >= lignes.length) {
+                typewriterFini = true;
+                skip.style.opacity = '0';
                 setTimeout(() => footer.classList.add('visible'), 600);
                 return;
             }
@@ -61,18 +73,26 @@
                 charIndex++;
                 const char = ligne[charIndex - 1];
                 const lastThree = ligne.slice(charIndex - 3, charIndex);
-                const delay =
-                    lastThree === '...' ? 1000 :
-                    (char === '.' || char === '?') ? 1000 : 80;
-                setTimeout(typeChar, delay);
+                const delay = lastThree === '...' ? 1000 : (char === '.' || char === '?') ? 500 : 50;
+                timeoutId = setTimeout(typeChar, delay);
             } else {
                 texteComplet += '\n'; el.textContent = texteComplet;
                 ligneIndex++; charIndex = 0;
-                setTimeout(typeChar, 500);
+                timeoutId = setTimeout(typeChar, 500);
             }
         }
-
-        setTimeout(typeChar, 800);
+        
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !typewriterFini) {
+                e.preventDefault();
+                finirTypewriter();
+            }
+        });
+        
+        setTimeout(() => {
+            skip.style.opacity = '1';
+            typeChar();
+        }, 800);
 
         async function verifierCode() {
             const code = document.getElementById('code-input').value.trim();
