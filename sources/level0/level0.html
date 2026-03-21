@@ -7,7 +7,8 @@
     <link rel="stylesheet" href="/level0/style0.css">
 </head>
 <body>
- 
+
+    <!-- ===== TERMINAL ===== -->
     <div class="container" id="accueil">
         <div class="terminal">
             <div class="terminal-header">NIVEAU_00 // BACKROOMS</div>
@@ -20,8 +21,8 @@
             </div>
         </div>
     </div>
- 
-    <!-- Overlay vidéo -->
+
+    <!-- ===== OVERLAY VIDEO ===== -->
     <div id="video-overlay">
         <div id="video-inner">
             <div class="tv">
@@ -38,7 +39,8 @@
             </div>
         </div>
     </div>
- 
+
+    <!-- ===== SON LETTRE ===== -->
     <script>
         const sfxLettre = new Audio('/sons/son_lettre.mp3');
         sfxLettre.volume = 0.3;
@@ -55,6 +57,9 @@
         const el = document.getElementById('terminal-text');
         const footer = document.getElementById('terminal-footer');
         let ligneIndex = 0, charIndex = 0, texteComplet = '';
+        let typewriterFini = false;
+        let timeoutId = null;
+        const skip = document.getElementById('terminal-skip');
 
         function typeChar() {
             if (typewriterFini) return;
@@ -87,19 +92,20 @@
             }
         }
 
-        const skip = document.getElementById('terminal-skip');
-        let typewriterFini = false;
-        let timeoutId = null;
-
         function finirTypewriter() {
             if (typewriterFini) return;
             typewriterFini = true;
-            if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+
+            if (timeoutId) { 
+                clearTimeout(timeoutId); 
+                timeoutId = null; 
+            }
+
             el.textContent = lignes.join('\n');
+
             skip.style.opacity = '0';
             setTimeout(() => footer.classList.add('visible'), 600);
         }
-
         document.addEventListener('keydown', e => {
             if (e.code === 'Space' && !typewriterFini) {
                 e.preventDefault();
@@ -111,70 +117,162 @@
             skip.style.opacity = '1';
             typeChar();
         }, 800);
+    </script>
 
+    <!-- ===== AUDIO AMBIANCE ===== -->
+    <script>
+        const musiqueA = new Audio('/sons/Lumieres.mp3');
+        const musiqueB = new Audio('/sons/Lumieres.mp3');
 
+        const volumeMax = 0.2;
+        const crossfadeDuration = 1; // secondes
+        let actif = musiqueA;
+        let suivant = musiqueB;
+        let enTransition = false;
 
-        // Bouton → lance la vidéo
-        document.getElementById('btn-yeux').addEventListener('click', function () {
-            document.getElementById('accueil').style.display = 'none';
-            const overlay = document.getElementById('video-overlay');
-            const video   = document.getElementById('intro-video');
-            const slider  = document.getElementById('vol-slider');
-            const label   = document.getElementById('vol-label');
-            const icon    = document.getElementById('vol-icon');
+        // setup
+        musiqueA.volume = 0;
+        musiqueB.volume = 0;
+        musiqueA.currentTime = 2;
 
-            overlay.classList.add('active');
-            video.play();
-            video.volume = 0.2;
+        // === START AUDIO (fade in) ===
+        function startAudio() {
+            musiqueA.muted = true;
+            musiqueA.play().then(() => {
+                setTimeout(() => {
+                    musiqueA.muted = false;
+                    let vol = 0;
+                    const fadeIn = setInterval(() => {
+                        vol = Math.min(volumeMax, vol + 0.01);
+                        actif.volume = vol;
+                        if (vol >= volumeMax) clearInterval(fadeIn);
+                    }, 80);
+                }, 200);
+            }).catch(()=>{});
+        }
 
-            video.addEventListener('ended', () => {
-                const fade = document.createElement('div');
-                fade.style.cssText = `
-                    position: fixed; inset: 0; z-index: 99999;
-                    background: #0f0e08;
-                    opacity: 0;
-                    transition: opacity 1.8s ease;
-                    pointer-events: none;
-                `;
-                document.body.appendChild(fade);
-                setTimeout(() => { fade.style.opacity = '1'; }, 50);
-                setTimeout(() => { window.location.href = '/level0/level0.1.html'; }, 2000);
-            });
+        document.addEventListener('mousemove', startAudio, { once: true });
+        document.addEventListener('keydown', startAudio, { once: true });
 
-            // Slider volume
-            slider.addEventListener('input', () => {
-                video.volume = slider.value;
-                label.textContent = Math.round(slider.value * 100) + '%';
-                icon.textContent = slider.value == 0 ? '✕' : '▶';
-            });
-
-            // Clic icône = mute/unmute
-            icon.addEventListener('click', () => {
-                if (video.volume > 0) {
-                    slider._prev = slider.value;
-                    video.volume = 0; slider.value = 0;
-                    label.textContent = '0%'; icon.textContent = '✕';
-                } else {
-                    const v = slider._prev || 1;
-                    video.volume = v; slider.value = v;
-                    label.textContent = Math.round(v * 100) + '%'; icon.textContent = '▶';
+        // === LOOP AUDIO INFINI AVEC CROSSFADE ===
+        function lancerBoucle() {
+            const loop = () => {
+                if (enTransition) return;
+                if (!actif.duration) {
+                    requestAnimationFrame(loop);
+                    return;
                 }
-            });
+                const reste = actif.duration - actif.currentTime;
+                if (reste <= crossfadeDuration) {
+                    enTransition = true;
+                    suivant.currentTime = 2;
+                    suivant.volume = 0;
+                    suivant.play().catch(()=>{});
+                    let start = null;
+                    function fade(timestamp) {
+                        if (!start) start = timestamp;
+                        const t = (timestamp - start) / 1000;
+                        const ratio = Math.min(1, t / crossfadeDuration);
+                        actif.volume = volumeMax * (1 - ratio);
+                        suivant.volume = volumeMax * ratio;
+                        if (ratio < 1) {
+                            requestAnimationFrame(fade);
+                        } else {
+                            actif.pause();
+                            actif.currentTime = 2;
+                            [actif, suivant] = [suivant, actif];
+                            enTransition = false;
+                            requestAnimationFrame(loop);
+                        }
+                    }
+                    requestAnimationFrame(fade);
+                } else {
+                    requestAnimationFrame(loop);
+                }
+            };
+            requestAnimationFrame(loop);
+        }
 
-            // Bouton skip
-            document.getElementById('btn-skip-video').addEventListener('click', () => {
-                video.pause();
-                const fade = document.createElement('div');
-                fade.style.cssText = `
-                    position: fixed; inset: 0; z-index: 99999;
-                    background: #0f0e08; opacity: 0;
-                    transition: opacity 1.8s ease; pointer-events: none;
-                `;
-                document.body.appendChild(fade);
-                setTimeout(() => { fade.style.opacity = '1'; }, 50);
-                setTimeout(() => { window.location.href = '/level0/level0.1.html'; }, 2000);
+        musiqueA.addEventListener('loadedmetadata', lancerBoucle);
+
+        // === STOP AUDIO FLUIDE (fade out) ===
+        function stopAudio(callback) {
+            let vol = actif.volume;
+            const fadeOut = setInterval(() => {
+                vol -= 0.01;
+                if (vol <= 0) {
+                    vol = 0;
+                    actif.volume = 0;
+                    actif.pause();
+                    clearInterval(fadeOut);
+                    if (callback) callback();
+                } else {
+                    actif.volume = vol;
+                }
+            }, 50);
+        }
+
+        // === BOUTON LANCE VIDEO AVEC FADE OUT AUDIO ===
+        document.getElementById('btn-yeux').addEventListener('click', function () {
+            stopAudio(() => {
+                document.getElementById('accueil').style.display = 'none';
+                const overlay = document.getElementById('video-overlay');
+                const video   = document.getElementById('intro-video');
+                const slider  = document.getElementById('vol-slider');
+                const label   = document.getElementById('vol-label');
+                const icon    = document.getElementById('vol-icon');
+
+                overlay.classList.add('active');
+                video.play();
+                video.volume = 0.2;
+
+                video.addEventListener('ended', () => {
+                    const fade = document.createElement('div');
+                    fade.style.cssText = `
+                        position: fixed; inset: 0; z-index: 99999;
+                        background: #0f0e08;
+                        opacity: 0;
+                        transition: opacity 1.8s ease;
+                        pointer-events: none;
+                    `;
+                    document.body.appendChild(fade);
+                    setTimeout(() => { fade.style.opacity = '1'; }, 50);
+                    setTimeout(() => { window.location.href = '/level0/level0.1.html'; }, 2000);
+                });
+
+                slider.addEventListener('input', () => {
+                    video.volume = slider.value;
+                    label.textContent = Math.round(slider.value * 100) + '%';
+                    icon.textContent = slider.value == 0 ? '✕' : '▶';
+                });
+
+                icon.addEventListener('click', () => {
+                    if (video.volume > 0) {
+                        slider._prev = slider.value;
+                        video.volume = 0; slider.value = 0;
+                        label.textContent = '0%'; icon.textContent = '✕';
+                    } else {
+                        const v = slider._prev || 1;
+                        video.volume = v; slider.value = v;
+                        label.textContent = Math.round(v * 100) + '%'; icon.textContent = '▶';
+                    }
+                });
+
+                document.getElementById('btn-skip-video').addEventListener('click', () => {
+                    video.pause();
+                    const fade = document.createElement('div');
+                    fade.style.cssText = `
+                        position: fixed; inset: 0; z-index: 99999;
+                        background: #0f0e08; opacity: 0;
+                        transition: opacity 1.8s ease; pointer-events: none;
+                    `;
+                    document.body.appendChild(fade);
+                    setTimeout(() => { fade.style.opacity = '1'; }, 50);
+                    setTimeout(() => { window.location.href = '/level0/level0.1.html'; }, 2000);
+                });
             });
         });
     </script>
+
 </body>
 </html>

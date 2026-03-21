@@ -30,6 +30,8 @@
     <script>
         const sfxLettre = new Audio('/sons/son_lettre.mp3');
         sfxLettre.volume = 0.3;
+        const sfxTir = new Audio('/sons/tire.mp3');
+        sfxTir.volume = 0.1;
 
         // ── Intro typewriter ────────────────────────────────────────────
         const lignes = [
@@ -52,7 +54,21 @@
             if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
             el.textContent = lignes.join('\n');
             skip.style.opacity = '0';
-            setTimeout(demarrerJeu, 800);
+            setTimeout(afficherBouton, 800);
+        }
+
+        function afficherBouton() {
+            const btn = document.createElement('button');
+            btn.className = 'bouton';
+            btn.textContent = 'Commencer';
+            btn.style.marginTop = '1rem';
+            btn.addEventListener('click', () => {
+                btn.remove();
+                document.body.classList.add('jeu-actif');
+                document.getElementById('intro').style.display = 'none';
+                demarrerJeu();
+            });
+            document.getElementById('intro').querySelector('.message').after(btn);
         }
 
         function typeChar() {
@@ -60,7 +76,7 @@
             if (ligneIndex >= lignes.length) {
                 typewriterFini = true;
                 skip.style.opacity = '0';
-                setTimeout(demarrerJeu, 800);
+                setTimeout(afficherBouton, 800);
                 return;
             }
             const ligne = lignes[ligneIndex];
@@ -125,38 +141,84 @@
 
             const cible = document.createElement('img');
             cible.src = '/images/level3/cible.png';
-            cible.classList.add('cible');
+            const tailleAleatoire = 15 + Math.random() * 20; 
+            cible.style.height = tailleAleatoire + 'vh';
+            cible.style.left = (20 + Math.random() * 60) + '%';
+            cible.style.top = (20 + Math.random() * 60) + '%';
 
-            const x = Math.random() * (window.innerWidth - 80);
-            const y = Math.random() * (window.innerHeight - 80);
-            cible.style.left = x + 'px';
-            cible.style.top = y + 'px';
-
-            cible.addEventListener('click', () => {
-                if (jeuTermine) return;
-                score++;
-                document.getElementById('score').textContent = score;
-                cible.remove();
-                cibleActive = null;
-
-                if (score >= 15) {
-                    jeuTermine = true;
-                    clearInterval(timerInterval);
-                    gagner();
-                } else {
-                    setTimeout(nouvelleCible, 200);
+            let vitesse = 300 + Math.random() * 500; 
+            
+            let mouvementInterval = setInterval(() => {
+                if (!cible.parentNode || jeuTermine) {
+                    clearInterval(mouvementInterval);
+                    return;
                 }
-            });
+                let currentLeft = parseFloat(cible.style.left);
+                let currentTop = parseFloat(cible.style.top);
+
+                let amplitude = tailleAleatoire < 20 ? 12 : 8;
+
+                let newLeft = Math.max(10, Math.min(90, currentLeft + (Math.random() * 16 - 8)));
+                let newTop = Math.max(10, Math.min(90, currentTop + (Math.random() * 16 - 8)));
+                
+                cible.style.left = newLeft + '%';
+                cible.style.top = newTop + '%';
+            }, vitesse);
 
             document.getElementById('zone-jeu').appendChild(cible);
             cibleActive = cible;
 
             setTimeout(() => {
-                if (cible.parentNode && !jeuTermine) {
-                    cible.remove();
-                    setTimeout(nouvelleCible, 200);
-                }
-            }, 1500);
+                cible.style.left = Math.max(10, Math.min(90, parseFloat(cible.style.left) + (Math.random() * 16 - 8))) + '%';
+                cible.style.top = Math.max(10, Math.min(90, parseFloat(cible.style.top) + (Math.random() * 16 - 8))) + '%';
+            }, 50);
+
+        function faireEffetTir() {
+            const flash = document.createElement('div');
+            flash.classList.add('flash-tir');
+            document.body.appendChild(flash);
+
+            const jeu = document.getElementById('jeu');
+            jeu.classList.remove('recul-ecran');
+            void jeu.offsetWidth; 
+            jeu.classList.add('recul-ecran');
+
+            setTimeout(() => flash.remove(), 150);
+        }
+
+        cible.addEventListener('click', () => {
+            if (jeuTermine) return;
+
+            const sonFlingue = sfxTir.cloneNode();
+            sonFlingue.play();
+            
+            const flash = document.createElement('div');
+            flash.classList.add('flash-tir');
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 100);
+
+            document.body.classList.remove('recul-fond');
+            void document.body.offsetWidth; 
+            document.body.classList.add('recul-fond');
+
+            score++;
+            document.getElementById('score').textContent = score;
+
+            clearInterval(mouvementInterval);
+            cible.remove();
+            cibleActive = null;
+
+            if (score >= 15) {
+                jeuTermine = true;
+                clearInterval(timerInterval);
+                gagner();
+            } else {
+                setTimeout(nouvelleCible, 100);
+            }
+        });
+
+            document.getElementById('zone-jeu').appendChild(cible);
+            cibleActive = cible;
         }
 
         function gagner() {
@@ -173,7 +235,7 @@
             document.getElementById('message').textContent = "❌ Trop lent. Il t'a eu.";
             document.getElementById('message').style.color = "#ff4444";
             setTimeout(() => {
-                window.location.href = '/level3';
+                window.location.href = '/level3/level3_2.html';
             }, 2000);
         }
     </script>

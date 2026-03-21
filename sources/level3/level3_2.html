@@ -5,17 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Level 3 - Mémoire</title>
     <link rel="stylesheet" href="/level3/style3.css">
+    <style>
+        #message-jeu {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1rem;
+            letter-spacing: 0.15rem;
+            font-family: 'Courier New', monospace;
+            background: rgba(20, 5, 5, 0.92);
+            border: 1px solid #4a1a1a;
+            padding: 0.6rem 1.4rem;
+            min-height: 2.2rem;
+            text-align: center;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #message-jeu.visible { opacity: 1; }
+
+        #intro-jeu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        #intro-jeu.cache { display: none; }
+        #jeu-principal { display: none; }
+        #jeu-principal.visible { display: contents; }
+    </style>
 </head>
 <body class="level3_2">
 
     <div class="container">
         <h1 class="bug">NE PAS OUBLIER</h1>
-        <div class="infos">
-            <span>⏱️ <span id="timer">20</span>s</span>
-            <span>✅ <span id="paires">0</span>/6</span>
+
+        <!-- Intro avant le jeu -->
+        <div id="intro-jeu">
+            <div class="message" style="max-width:400px; margin-bottom:0;">
+                <p>6 paires à trouver.</p>
+                <p>20 secondes.</p>
+                <p>Ne pas oublier.</p>
+            </div>
+            <button class="bouton" onclick="demarrer()">Commencer</button>
         </div>
-        <div class="grille" id="grille"></div>
-        <p id="message"></p>
+
+        <!-- Jeu -->
+        <div id="jeu-principal">
+            <div class="infos">
+                <span>⏱️ <span id="timer">20</span>s</span>
+                <span>✅ <span id="paires">0</span>/6</span>
+            </div>
+            <div class="grille" id="grille"></div>
+        </div>
+
+        <div id="message-jeu"></div>
     </div>
 
     <script>
@@ -27,99 +72,107 @@
             '/images/level3/walfas.jpg',
             '/images/level3/monster.jpg',
         ];
-        let cartes = [...emojis, ...emojis];
-        let temps = 20;
-        let pairesFound = 0;
-        let carteRetournee = null;
-        let lock = false;
 
-        cartes.sort(() => Math.random() - 0.5);
+        let interval = null;
 
-        const grille = document.getElementById('grille');
-        cartes.forEach((emoji, index) => {
-            const carte = document.createElement('div');
-            carte.classList.add('carte');
-            carte.dataset.emoji = emoji;
-            carte.dataset.index = index;
-            carte.innerHTML = '❓';              // ← changé
-            carte.addEventListener('click', () => retourner(carte));
-            grille.appendChild(carte);
-        });
+        function afficherMessage(texte, couleur) {
+            const m = document.getElementById('message-jeu');
+            m.textContent = texte;
+            m.style.color = couleur;
+            m.classList.add('visible');
+        }
 
-        const interval = setInterval(() => {
-            temps--;
-            document.getElementById('timer').textContent = temps;
-            if (temps <= 0) {
-                clearInterval(interval);
-                echouer();
-            }
-        }, 1000);
+        function cacherMessage() {
+            document.getElementById('message-jeu').classList.remove('visible');
+        }
 
-        function retourner(carte) {
-            if (lock || carte.classList.contains('retournee') || carte.classList.contains('trouvee')) return;
+        function demarrer() {
+            document.getElementById('intro-jeu').classList.add('cache');
+            document.getElementById('jeu-principal').classList.add('visible');
 
-            carte.innerHTML = `<img src="${carte.dataset.emoji}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;">`; // ← changé
-            carte.classList.add('retournee');
+            let cartes = [...emojis, ...emojis];
+            cartes.sort(() => Math.random() - 0.5);
 
-            if (!carteRetournee) {
-                carteRetournee = carte;
-            } else {
-                lock = true;
-                if (carteRetournee.dataset.emoji === carte.dataset.emoji) {
-                    carte.classList.add('trouvee');
-                    carteRetournee.classList.add('trouvee');
-                    pairesFound++;
-                    document.getElementById('paires').textContent = pairesFound;
-                    carteRetournee = null;
-                    lock = false;
+            let temps = 20;
+            let pairesFound = 0;
+            let carteRetournee = null;
+            let lock = false;
 
-                    if (pairesFound === 6) {
-                        clearInterval(interval);
-                        gagner();
-                    }
+            const grille = document.getElementById('grille');
+            grille.innerHTML = '';
+
+            cartes.forEach((emoji) => {
+                const carte = document.createElement('div');
+                carte.classList.add('carte');
+                carte.dataset.emoji = emoji;
+                carte.innerHTML = '❓';
+                carte.addEventListener('click', () => retourner(carte));
+                grille.appendChild(carte);
+            });
+
+            interval = setInterval(() => {
+                temps--;
+                document.getElementById('timer').textContent = temps;
+                if (temps <= 0) {
+                    clearInterval(interval);
+                    echouer();
+                }
+            }, 1000);
+
+            function retourner(carte) {
+                if (lock || carte.classList.contains('retournee') || carte.classList.contains('trouvee')) return;
+                carte.innerHTML = `<img src="${carte.dataset.emoji}" style="width:60px;height:60px;object-fit:cover;border-radius:4px;">`;
+                carte.classList.add('retournee');
+                if (!carteRetournee) {
+                    carteRetournee = carte;
                 } else {
-                    setTimeout(() => {
-                        carte.innerHTML = '❓';              // ← changé
-                        carteRetournee.innerHTML = '❓';     // ← changé
-                        carte.classList.remove('retournee');
-                        carteRetournee.classList.remove('retournee');
+                    lock = true;
+                    if (carteRetournee.dataset.emoji === carte.dataset.emoji) {
+                        carte.classList.add('trouvee');
+                        carteRetournee.classList.add('trouvee');
+                        pairesFound++;
+                        document.getElementById('paires').textContent = pairesFound;
                         carteRetournee = null;
                         lock = false;
-                    }, 800);
+                        if (pairesFound === 6) { clearInterval(interval); gagner(); }
+                    } else {
+                        setTimeout(() => {
+                            carte.innerHTML = '❓';
+                            carteRetournee.innerHTML = '❓';
+                            carte.classList.remove('retournee');
+                            carteRetournee.classList.remove('retournee');
+                            carteRetournee = null;
+                            lock = false;
+                        }, 800);
+                    }
                 }
             }
         }
 
         function gagner() {
-            
-            document.getElementById('message').style.color = "#00ff88";
-            setTimeout(() => {
-                window.location.href = '/level3/level3_3.html';
-            }, 3000);
+            afficherMessage('✅ Bien joué.', '#00ff88');
+            setTimeout(() => { window.location.href = '/level3/level3_3.html'; }, 2500);
         }
 
         function echouer() {
-            document.getElementById('message').textContent = "❌ Trop lent. Le noir vous avale.";
-            document.getElementById('message').style.color = "#ff4444";
-            setTimeout(() => {
-                window.location.href = '/level3';
-            }, 2000);
+            afficherMessage('❌ Trop lent. Tu es mort.', '#ff4444');
+            setTimeout(() => { window.location.href = '/level3/level3_2.html'; }, 2000);
         }
     </script>
+
     <audio id="musique" loop>
-        <source src="/sons/Skip_to_my_Lou.mp3"" type="audio/mpeg">
+        <source src="/sons/Skip_to_my_Lou.mp3" type="audio/mpeg">
     </audio>
-
     <script>
-    const musique = document.getElementById('musique');
-
-    musique.volume = 0;
-    musique.play().catch(()=>{});
-
-    let vol = 0;
-    const fadeIn = setInterval(() => {
-        vol = Math.min(0.3, vol + 0.01);
-        musique.volume = vol;
-        if (vol >= 0.3) clearInterval(fadeIn);
-    }, 50);
+        const musique = document.getElementById('musique');
+        musique.volume = 0;
+        musique.play().catch(()=>{});
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+            vol = Math.min(0.3, vol + 0.01);
+            musique.volume = vol;
+            if (vol >= 0.3) clearInterval(fadeIn);
+        }, 50);
     </script>
+</body>
+</html>

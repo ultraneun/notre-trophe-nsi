@@ -205,10 +205,15 @@ body.level3_1 {
     opacity: 1;
 }
 body.level3_4 {
+    transition: transform 0.1s;
     background-image: url('/images/level3/jouons.jpg');
     background-size: cover;
     background-position: center;    
-    cursor: crosshair;
+    cursor: default;
+}
+
+body.level3_4.jeu-actif {
+    cursor: url('/images/level3/curseur.png'), auto !important;
 }
 
 #hud {
@@ -228,6 +233,16 @@ body.level3_4 {
     position: fixed;
     inset: 0;
 }
+#zone-jeu img {
+    position: absolute;
+    width: auto; 
+    animation: respirer 1s ease-in-out infinite;
+    cursor: url('/images/level3/viseur.png'), auto !important;
+    z-index: 100;
+    background-color: transparent;
+    object-fit: contain;
+    transition: left 0.5s linear, top 0.5s linear;
+}
 
 .cible {
     position: absolute;
@@ -237,11 +252,32 @@ body.level3_4 {
     animation: pulse 0.5s infinite alternate;
 }
 
-@keyframes pulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.15); }
+.flash-tir {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.192);
+    z-index: 9999;
+    pointer-events: none;
+    animation: flash-anim 0.1s ease-out forwards;
 }
 
+@keyframes flash-anim {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.recul-fond {
+    animation: recul-fond-anim 0.1s ease-out;
+}
+
+@keyframes recul-fond-anim {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.01); }
+    100% { transform: scale(1); }
+}
 #message {
     position: fixed;
     bottom: 30%;
@@ -284,8 +320,9 @@ body.level3_5 {
     letter-spacing: 0.5rem;
 }
 .bouton {
-    background: transparent;
-    color: #e8dc9e;
+    background: rgba(20, 5, 5, 0.9) !important;
+    border-color: #4a1a1a !important;
+    color: #d4a0a0 !important;
     border: 1px solid #3a3a2a;
     padding: 0.8rem 2rem;
     font-family: 'Courier New', monospace;
@@ -297,9 +334,9 @@ body.level3_5 {
 }
 
 .bouton:hover {
-    border-color: #c8a84a;
-    color: #c8a84a;
-    box-shadow: 0 0 20px rgba(200, 168, 74, 0.1);
+    border-color: #ff4444 !important;
+    color: #ff4444 !important;
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.15) !important;
 }
 
 

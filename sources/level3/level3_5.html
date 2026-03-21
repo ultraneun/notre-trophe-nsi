@@ -18,10 +18,13 @@
         <div id="code-footer">
             <input type="text" id="code-input" placeholder="_ _ _ _" maxlength="4">
             <button class="bouton" onclick="verifierCode()">ENTRER</button>
-            <button class="bouton" onclick="window.location.href='/level3'">
+            <button class="bouton" onclick="window.location.href='/level3/level3_2.html'">
                 RECOMMENCER DEPUIS LE DÉBUT
             </button>
             <p id="message-code"></p>
+        </div>
+        <div id="btn-porte-wrap" style="opacity:0; transition: opacity 0.8s ease; pointer-events:none;">
+            <button class="bouton" id="btn-porte">Ouvrir la porte →</button>
         </div>
 
     <script>
@@ -38,10 +41,23 @@
             "Tu t'en souviens ?",
         ];
 
-        const el = document.getElementById('terminal-text');
+        const lignesFin = [
+            "...",
+            "La porte s'ouvre...",
+            "De l'autre côté.",
+            "Un couloir.",
+            "Encore...",
+            "Tu croyais rentrer chez toi ?..",
+            "Les Backrooms ne te libèrent jamais.",
+            "Continue.",
+        ];
+
+        const el     = document.getElementById('terminal-text');
         const footer = document.getElementById('code-footer');
-        const skip = document.getElementById('terminal-skip');
-        let ligneIndex = 0, charIndex = 0, texteComplet = '';
+        const skip   = document.getElementById('terminal-skip');
+
+        // ── Phase 1 : texte intro ─────────────────────────────────
+        let ligneIndex = 0, charIndex = 0;
         let typewriterFini = false, timeoutId = null;
 
         function finirTypewriter() {
@@ -63,8 +79,7 @@
             }
             const ligne = lignes[ligneIndex];
             if (charIndex < ligne.length) {
-                texteComplet += ligne[charIndex];
-                el.textContent = texteComplet;
+                el.textContent += ligne[charIndex];
                 if (ligne[charIndex] !== ' ') {
                     const clone = sfxLettre.cloneNode();
                     clone.volume = 0.2;
@@ -76,24 +91,98 @@
                 const delay = lastThree === '...' ? 1000 : (char === '.' || char === '?') ? 500 : 50;
                 timeoutId = setTimeout(typeChar, delay);
             } else {
-                texteComplet += '\n'; el.textContent = texteComplet;
+                el.textContent += '\n';
                 ligneIndex++; charIndex = 0;
                 timeoutId = setTimeout(typeChar, 500);
             }
         }
-        
-        document.addEventListener('keydown', e => {
+
+        // Skip phase 1 uniquement
+        function onKeydown(e) {
             if (e.code === 'Space' && !typewriterFini) {
                 e.preventDefault();
                 finirTypewriter();
             }
-        });
-        
+        }
+        document.addEventListener('keydown', onKeydown);
+
         setTimeout(() => {
             skip.style.opacity = '1';
             typeChar();
         }, 800);
 
+        // ── Phase 2 : texte après bon flag ───────────────────────
+        let ligneIndex2 = 0, charIndex2 = 0;
+        let typewriter2Fini = false, timeoutId2 = null;
+        let redirectUrl = '';
+
+        function finirTypewriter2() {
+            if (typewriter2Fini) return;
+            typewriter2Fini = true;
+            if (timeoutId2) { clearTimeout(timeoutId2); timeoutId2 = null; }
+            // Affiche proprement tout le texte fin
+            const base = lignes.join('\n') + '\n\n';
+            el.textContent = base + lignesFin.join('\n');
+            skip.style.opacity = '0';
+            const wrap = document.getElementById('btn-porte-wrap');
+            wrap.style.opacity = '1';
+            wrap.style.pointerEvents = 'all';
+            document.getElementById('btn-porte').addEventListener('click', () => {
+                window.location.href = redirectUrl;
+            });
+        }
+
+        function typeFinale() {
+            if (typewriter2Fini) return;
+            if (ligneIndex2 >= lignesFin.length) {
+                typewriter2Fini = true;
+                skip.style.opacity = '0';
+                setTimeout(() => { window.location.href = redirectUrl; }, 1500);
+                return;
+            }
+            const ligne = lignesFin[ligneIndex2];
+            if (charIndex2 < ligne.length) {
+                el.textContent += ligne[charIndex2];
+                if (ligne[charIndex2] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.2;
+                    clone.play().catch(() => {});
+                }
+                charIndex2++;
+                const char = ligne[charIndex2 - 1];
+                const lastThree = ligne.slice(charIndex2 - 3, charIndex2);
+                const delay = lastThree === '...' ? 1000 : (char === '.' || char === '?') ? 1000 : 90;
+                timeoutId2 = setTimeout(typeFinale, delay);
+            } else {
+                el.textContent += '\n';
+                ligneIndex2++; charIndex2 = 0;
+                timeoutId2 = setTimeout(typeFinale, 500);
+            }
+        }
+
+        function demarrerPhase2(url) {
+            redirectUrl = url;
+
+            // Désactive le skip phase 1, active skip phase 2
+            document.removeEventListener('keydown', onKeydown);
+            document.addEventListener('keydown', e => {
+                if (e.code === 'Space' && !typewriter2Fini) {
+                    e.preventDefault();
+                    finirTypewriter2();
+                }
+            });
+
+            // Repart depuis le texte complet propre
+            el.textContent = lignes.join('\n') + '\n\n';
+            ligneIndex2 = 0; charIndex2 = 0;
+
+            // Réaffiche le skip
+            skip.style.opacity = '1';
+
+            typeFinale();
+        }
+
+        // ── Vérification flag ─────────────────────────────────────
         async function verifierCode() {
             const code = document.getElementById('code-input').value.trim();
             const reponse = await fetch('/verifier/5', {
@@ -104,81 +193,30 @@
             const data = await reponse.json();
 
             if (data.succes) {
-                // Cacher le formulaire
                 footer.style.opacity = '0';
                 footer.style.pointerEvents = 'none';
-
-                // Nouveau texte qui s'écrit
-                const lignesFin = [
-                    "...",
-                    "La porte s'ouvre...",
-                    "De l'autre côté.",
-                    "Un couloir.",
-                    "Encore...",
-                    "Tu croyais rentrer chez toi ?..",
-                    "Les Backrooms ne te libèrent jamais.",
-                    "Continue.",
-                ];
-
-                texteComplet += '\n\n';
-                ligneIndex = 0;
-                charIndex = 0;
-
-                function typeFinale() {
-                    if (ligneIndex >= lignesFin.length) {
-                        setTimeout(() => {
-                            window.location.href = data.redirect;
-                        }, 1500);
-                        return;
-                    }
-                    const ligne = lignesFin[ligneIndex];
-                    if (charIndex < ligne.length) {
-                        texteComplet += ligne[charIndex];
-                        el.textContent = texteComplet;
-                        if (ligne[charIndex] !== ' ') {
-                            const clone = sfxLettre.cloneNode();
-                            clone.volume = 0.2;
-                            clone.play().catch(() => {});
-                        }
-                        charIndex++;
-                        const char = ligne[charIndex - 1];
-                        const lastThree = ligne.slice(charIndex - 3, charIndex);
-                        const delay =
-                            lastThree === '...' ? 1000 :
-                            (char === '.' || char === '?') ? 1000 : 90;
-                        setTimeout(typeFinale, delay);
-                    } else {
-                        texteComplet += '\n'; el.textContent = texteComplet;
-                        ligneIndex++; charIndex = 0;
-                        setTimeout(typeFinale, 500);
-                    }
-                }
-
-                typeFinale();
-
+                demarrerPhase2(data.redirect);
             } else {
                 document.getElementById('message-code').textContent = "❌ Mauvais code. Tu te souviens vraiment ?";
                 document.getElementById('message-code').style.color = "#ff4444";
             }
         }
     </script>
+
     <audio id="musique" loop>
-        <source src="/sons/Daisy.mp3"" type="audio/mpeg">
+        <source src="/sons/Daisy.mp3" type="audio/mpeg">
     </audio>
-
     <script>
-    const musique = document.getElementById('musique');
-
-    musique.currentTime = 36.9;
-    musique.volume = 0;
-    musique.play().catch(()=>{});
-
-    let vol = 0;
-    const fadeIn = setInterval(() => {
-        vol = Math.min(0.1, vol + 0.01);
-        musique.volume = vol;
-        if (vol >= 0.1) clearInterval(fadeIn);
-    }, 50);
+        const musique = document.getElementById('musique');
+        musique.currentTime = 36.9;
+        musique.volume = 0;
+        musique.play().catch(()=>{});
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+            vol = Math.min(0.1, vol + 0.01);
+            musique.volume = vol;
+            if (vol >= 0.1) clearInterval(fadeIn);
+        }, 50);
     </script>
 
 </body>
