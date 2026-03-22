@@ -1,0 +1,105 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', monospace;
+    color: #c8d4b4;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+body.level5 {
+    background-image: url('level5/fond_1');
+    background-size: cover;
+    background-position: center;
+}
+
+/* ── Commun ── */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    padding: 20px;
+    gap: 1.5rem;
+    padding-top: 120px;
+}
+
+.bug {
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.3rem;
+    margin-bottom: 1.5rem;
+    color: #c8d4b4;
+    text-shadow: 3px 3px 0px rgba(0, 60, 0, 0.5);
+}
+
+.message {
+    background-color: rgba(5, 12, 5, 0.88);
+    color: #c8d4b4;
+    padding: 2rem 2.5rem;
+    border: 2px solid #2a4a1a;
+    max-width: 620px;
+    width: 90%;
+    text-align: left;
+    box-shadow: 0 0 40px rgba(0, 80, 0, 0.2);
+    margin-bottom: 1.5rem;
+    position: relative;
+    min-width: 200px;
+    line-height: 1.8;
+    font-size: 0.92rem;
+    white-space: pre-wrap;
+}
+
+/* Curseur clignotant */
+.cursor {
+    animation: blink 0.8s infinite;
+    color: #8ab47a;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Skip hint */
+.terminal-skip {
+    position: absolute;
+    bottom: 6px;
+    left: 12px;
+    font-size: 0.58rem;
+    color: rgba(180, 210, 140, 0.25);
+    letter-spacing: 0.1rem;
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+    pointer-events: none;
+}
+
+/* Bouton continuer */
+.bouton {
+    background: rgba(5, 12, 5, 0.88);
+    border: 1px solid #2a4a1a;
+    color: #8ab47a;
+    padding: 0.8rem 2rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.78rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+    transition: all 0.4s ease;
+}
+
+.bouton:hover {
+    border-color: #8ab47a;
+    color: #c8d4b4;
+    box-shadow: 0 0 20px rgba(138, 180, 122, 0.15);
+}

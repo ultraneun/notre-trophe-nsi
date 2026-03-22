@@ -9,7 +9,6 @@ init_db()
 import os
 app.secret_key = os.urandom(24)
 
-# Ordre obligatoire des niveaux (anticheat)
 ORDRE_NIVEAUX = {
     '/level1':   1,
     '/level1.1': 1,
@@ -26,6 +25,9 @@ ORDRE_NIVEAUX = {
     '/level4.2': 5,
     '/level4.3': 5,
     '/level5':   44,
+    '/level5.1': 44,
+    '/level5.2': 51,
+    '/level5.3': 52,
 }
 
 def niveau_accessible(pseudo, route):
@@ -39,26 +41,22 @@ def niveau_accessible(pseudo, route):
     return True
 
 FLAGS = {
-    # Level 0
-    1:  {"flag": "391",     "points": 100, "redirect": "/level1"},
-    # Level 1
-    2:  {"flag": "06:10",   "points": 50,  "redirect": "/level2"},
-    3:  {"flag": "5130003", "points": 25,  "redirect": "/level2"},
-    4:  {"flag": "007365",  "points": 25,  "redirect": "/level2"},
-    # Level 2 sous-jeux
-    22: {"flag": "2847",    "points": 75,  "redirect": "/level2.1"},
-    23: {"flag": "3619",    "points": 75,  "redirect": "/level2.1"},
-    5:  {"flag": "6515",    "points": 150, "redirect": "/level4"},
-    6:  {"flag": "28473619",    "points": 150, "redirect": "/level4"},
-    # Level 4 sous-énigmes
-    41: {"flag": "4301",    "points": 100, "redirect": "/level4"},
-    42: {"flag": "19",      "points": 100, "redirect": "/level4"},
-    43: {"flag": "1974",    "points": 100, "redirect": "/level4"},
-    # Level 4 code final
-    44: {"flag": "430119",  "points": 300, "redirect": "/level5"},
+    1:  {"flag": "391",      "points": 100, "redirect": "/level1"},
+    2:  {"flag": "06:10",    "points": 50,  "redirect": "/level2"},
+    3:  {"flag": "5130003",  "points": 25,  "redirect": "/level2"},
+    4:  {"flag": "007365",   "points": 25,  "redirect": "/level2"},
+    22: {"flag": "2847",     "points": 75,  "redirect": "/level2.1"},
+    23: {"flag": "3619",     "points": 75,  "redirect": "/level2.1"},
+    5:  {"flag": "6515",     "points": 150, "redirect": "/level4"},
+    6:  {"flag": "28473619", "points": 150, "redirect": "/level4"},
+    41: {"flag": "4301",     "points": 100, "redirect": "/level4"},
+    42: {"flag": "19",       "points": 100, "redirect": "/level4"},
+    43: {"flag": "1974",     "points": 100, "redirect": "/level4"},
+    44: {"flag": "430119",   "points": 300, "redirect": "/level5"},
+    51: {"flag": "64",       "points": 200, "redirect": "/level5"},
+    52: {"flag": "CHATEAU", "points": 300, "redirect": "/level5"},
 }
 
-# === PAGE PSEUDO ===
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -75,7 +73,6 @@ def logout():
     session.clear()
     return redirect('/login')
 
-# === MIDDLEWARE — vérifie pseudo + anticheat ===
 @app.before_request
 def verifier_acces():
     routes_libres = ['/login', '/logout', '/static', '/images', '/sons', '/level0']
@@ -117,12 +114,18 @@ def verifier(niveau):
     else:
         return jsonify({"succes": False, "message": "❌ Mauvais flag."})
 
+@app.route('/progression')
+def progression():
+    pseudo = session.get('pseudo')
+    if not pseudo:
+        return jsonify({"valides": []})
+    return jsonify({"valides": get_niveaux_valides(pseudo)})
+
 @app.route('/leaderboard')
 def leaderboard():
     scores = get_leaderboard()
     return render_template_string(LEADERBOARD_HTML, scores=scores)
 
-# === TEMPLATES INLINE ===
 LOGIN_HTML = """
 <!DOCTYPE html>
 <html lang="fr">
@@ -209,7 +212,6 @@ LEADERBOARD_HTML = """
 </html>
 """
 
-# === ROUTES ===
 @app.route('/level0')
 def level0():
     return send_from_directory('level0', 'level0.html')
@@ -270,6 +272,22 @@ def level4_2():
 def level4_3():
     return send_from_directory('level4', 'level4_3.html')
 
+@app.route('/level5')
+def level5():
+    return send_from_directory('level5', 'level5.html')
+
+@app.route('/level5.1')
+def level5_1():
+    return send_from_directory('level5', 'level5_1.html')
+
+@app.route('/level5.2')
+def level5_2():
+    return send_from_directory('level5', 'level5_2.html')
+
+@app.route('/level5.3')
+def level5_3():
+    return send_from_directory('level5', 'level5_3.html')
+
 @app.route('/level0/<path:fichier>')
 def level0_static(fichier):
     return send_from_directory('level0', fichier)
@@ -289,6 +307,10 @@ def level3_static(fichier):
 @app.route('/level4/<path:fichier>')
 def level4_static(fichier):
     return send_from_directory('level4', fichier)
+
+@app.route('/level5/<path:fichier>')
+def level5_static(fichier):
+    return send_from_directory('level5', fichier)
 
 @app.route('/images/<path:fichier>')
 def images(fichier):

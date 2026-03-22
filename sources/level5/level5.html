@@ -1,16 +1,336 @@
 <!DOCTYPE html>
-
 <html lang="fr">
-
 <head>
-
     <meta charset="UTF-8">
-    <title>Mon Site</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 5 - Motion</title>
+    <link rel="stylesheet" href="/level5/style5.css">
+    <style>
+        body {
+            background-image: url('/images/level5/le_chateau.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+        }
 
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #texte-wrap {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            background: rgba(5, 12, 5, 0.88);
+            border: 2px solid #2a4a1a;
+            padding: 2rem 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            color: #c8d4b4;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            box-shadow: 0 0 40px rgba(0, 80, 0, 0.2);
+            transition: opacity 1s ease;
+        }
+
+        #texte-wrap.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .cursor {
+            animation: blink 0.8s infinite;
+            color: #8ab47a;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .terminal-skip {
+            font-size: 0.58rem;
+            color: rgba(180, 210, 140, 0.25);
+            letter-spacing: 0.1rem;
+            text-transform: uppercase;
+            margin-top: 0.8rem;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #btn-reafficher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            font-family: 'Courier New', monospace;
+            font-size: 0.68rem;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            transition: all 0.4s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #btn-reafficher.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #btn-reafficher:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+        }
+
+        .zone {
+            position: fixed;
+            cursor: pointer;
+            z-index: 5;
+            background: rgba(255, 255, 255, 0);
+            transition: background 0.4s ease;
+        }
+
+        .zone:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Grande maison en haut à droite */
+        #zone-maison1 {
+            top: 25%;
+            left: 76%;
+            width: 14%;
+            height: 22%;
+        }
+
+        /* Maison avec panneau en bas à gauche */
+        #zone-maison2 {
+            top: 52%;
+            left: 18%;
+            width: 10%;
+            height: 18%;
+        }
+
+        /* Château flottant au centre */
+        #zone-chateau {
+            top: 18%;
+            left: 30%;
+            width: 16%;
+            height: 14%;
+        }
+
+        /* Popup message château verrouillé */
+        #popup-verrou {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.75);
+            align-items: center;
+            justify-content: center;
+        }
+
+        #popup-verrou.active {
+            display: flex;
+        }
+
+        #popup-verrou-contenu {
+            background: rgba(5, 12, 5, 0.97);
+            border: 2px solid #2a4a1a;
+            padding: 2rem 2.5rem;
+            max-width: 360px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #c8d4b4;
+            line-height: 1.8;
+        }
+
+        #popup-verrou-contenu p {
+            font-size: 0.88rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bouton-fermer {
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            padding: 0.6rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            transition: all 0.4s;
+        }
+
+        .bouton-fermer:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+        }
+    </style>
 </head>
-
 <body>
-    
-</body>
 
+    <div id="overlay"></div>
+
+    <div id="texte-wrap">
+        <span id="terminal-text"></span><span class="cursor" id="curseur">█</span>
+        <div class="terminal-skip" id="terminal-skip">[ espace ]</div>
+    </div>
+
+    <button id="btn-reafficher" onclick="reafficherTexte()">⊟ Relire</button>
+
+    <div class="zone" id="zone-maison1" onclick="window.location.href='/level5.1'"></div>
+    <div class="zone" id="zone-maison2" onclick="window.location.href='/level5.2'"></div>
+    <div class="zone" id="zone-chateau" onclick="verifierChateau()"></div>
+
+    <!-- Popup château verrouillé -->
+    <div id="popup-verrou">
+        <div id="popup-verrou-contenu">
+            <p>Tu ne peux pas encore atteindre le château.<br>Il te reste des choses à explorer.</p>
+            <button class="bouton-fermer" onclick="document.getElementById('popup-verrou').classList.remove('active')">Continuer</button>
+        </div>
+    </div>
+
+    <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+
+        const lignes = [
+            "De l'air frais.",
+            "Du ciel.",
+            "Tu es sorti.",
+            "...",
+            "Attends.",
+            "Ces maisons... elles sont toutes identiques.",
+            "Et cette route — tu l'as déjà vue.",
+            "Trouve la sortie.",
+        ];
+
+        const el   = document.getElementById('terminal-text');
+        const skip = document.getElementById('terminal-skip');
+        const wrap = document.getElementById('texte-wrap');
+        const btn  = document.getElementById('btn-reafficher');
+
+        let ligneIndex = 0, charIndex = 0;
+        let typewriterFini = false, timeoutId = null;
+
+        function finirTypewriter() {
+            if (typewriterFini) return;
+            typewriterFini = true;
+            if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+            el.textContent = lignes.join('\n');
+            skip.style.opacity = '0';
+            document.getElementById('curseur').style.display = 'none';
+            setTimeout(() => {
+                wrap.classList.add('hidden');
+                btn.classList.add('visible');
+            }, 1500);
+        }
+
+        function typeChar() {
+            if (typewriterFini) return;
+            if (ligneIndex >= lignes.length) {
+                typewriterFini = true;
+                skip.style.opacity = '0';
+                document.getElementById('curseur').style.display = 'none';
+                setTimeout(() => {
+                    wrap.classList.add('hidden');
+                    btn.classList.add('visible');
+                }, 4000);
+                return;
+            }
+
+            const ligne = lignes[ligneIndex];
+            if (charIndex < ligne.length) {
+                el.textContent += ligne[charIndex];
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.15;
+                    clone.play().catch(() => {});
+                }
+                charIndex++;
+                const char = ligne[charIndex - 1];
+                const lastThree = ligne.slice(charIndex - 3, charIndex);
+                const delay = lastThree === '...' ? 900
+                            : (char === '.' || char === ',') ? 400
+                            : 50;
+                timeoutId = setTimeout(typeChar, delay);
+            } else {
+                el.textContent += '\n';
+                ligneIndex++; charIndex = 0;
+                timeoutId = setTimeout(typeChar, 400);
+            }
+        }
+
+        function planifierDisparition() {
+            setTimeout(() => {
+                wrap.classList.add('hidden');
+                btn.classList.add('visible');
+            }, 4000);
+        }
+
+        function reafficherTexte() {
+            wrap.classList.remove('hidden');
+            btn.classList.remove('visible');
+            setTimeout(() => {
+                wrap.classList.add('hidden');
+                btn.classList.add('visible');
+            }, 6000);
+        }
+
+        async function verifierChateau() {
+            const rep = await fetch('/progression');
+            const data = await rep.json();
+            if (data.valides.includes(51) && data.valides.includes(52)) {
+                window.location.href = '/level5.3';
+            } else {
+                document.getElementById('popup-verrou').classList.add('active');
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !typewriterFini) {
+                e.preventDefault();
+                finirTypewriter();
+            }
+        });
+
+        setTimeout(() => {
+            skip.style.opacity = '1';
+            typeChar();
+        }, 800);
+    </script>
+
+    <audio id="amb" loop>
+        <source src="/sons/AmbianceLevel5.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const amb = document.getElementById('amb');
+        amb.volume = 0;
+        amb.play().catch(() => {});
+        document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+            vol = Math.min(0.08, vol + 0.005);
+            amb.volume = vol;
+            if (vol >= 0.08) clearInterval(fadeIn);
+        }, 50);
+    </script>
+
+</body>
 </html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 5.2 - L'Enregistrement</title>
+    <link rel="stylesheet" href="/level5/style5.css">
+    <style>
+        body {
+            background-image: url('/images/level5/fond_2.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #texte-wrap {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            background: rgba(5, 12, 5, 0.88);
+            border: 2px solid #2a4a1a;
+            padding: 2rem 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            color: #c8d4b4;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            box-shadow: 0 0 40px rgba(0, 80, 0, 0.2);
+            transition: opacity 1s ease;
+        }
+
+        #texte-wrap.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .cursor {
+            animation: blink 0.8s infinite;
+            color: #8ab47a;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .terminal-skip {
+            font-size: 0.58rem;
+            color: rgba(180, 210, 140, 0.25);
+            letter-spacing: 0.1rem;
+            text-transform: uppercase;
+            margin-top: 0.8rem;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #btn-retour {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            font-family: 'Courier New', monospace;
+            font-size: 0.68rem;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            transition: all 0.4s;
+            text-decoration: none;
+        }
+
+        #btn-retour:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+        }
+
+        /* Interface magnétophone */
+        #interface {
+            position: fixed;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
+        }
+
+        #interface.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #texte-son {
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: rgba(200, 212, 180, 0.6);
+            text-align: center;
+            line-height: 1.8;
+            max-width: 400px;
+            opacity: 0;
+            transition: opacity 1s ease;
+            font-style: italic;
+        }
+
+        .boutons-son {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .bouton-son {
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            padding: 0.8rem 1.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            transition: all 0.4s ease;
+            text-decoration: none;
+        }
+
+        .bouton-son:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+            box-shadow: 0 0 20px rgba(138, 180, 122, 0.15);
+        }
+
+        .input-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .code-input {
+            background-color: #050c05;
+            color: #c8d4b4;
+            border: 2px solid #2a4a1a;
+            padding: 0.8rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 240px;
+            outline: none;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .code-input:focus {
+            border-color: #8ab47a;
+        }
+
+        #message-code {
+            font-size: 0.82rem;
+            min-height: 1.2rem;
+            letter-spacing: 0.1rem;
+            font-family: 'Courier New', monospace;
+            color: #c8d4b4;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay"></div>
+    <a id="btn-retour" href="/level5.1">⊟ Retour</a>
+
+    <!-- Texte typewriter intro -->
+    <div id="texte-wrap">
+        <span id="terminal-text"></span><span class="cursor" id="curseur">█</span>
+        <div class="terminal-skip" id="terminal-skip">[ espace ]</div>
+    </div>
+
+    <!-- Interface magnétophone -->
+    <div id="interface">
+        <div id="texte-son">
+            "Les Backrooms ne parlent pas.<br>
+            Elles murmurent autrement.<br>
+            Regarde ce que tu ne peux pas entendre."
+        </div>
+        <div class="boutons-son">
+            <button class="bouton-son" onclick="lancerSon()">▶ Écouter</button>
+            <a class="bouton-son" href="/sons/level5/image_secret.wav" download>⬇ Télécharger</a>
+        </div>
+        <div class="input-wrap">
+            <input type="text" class="code-input" id="code-input" placeholder="_ _ _ _ _ _ _" maxlength="7">
+            <button class="bouton-son" onclick="verifierCode()">ENTRER</button>
+            <p id="message-code"></p>
+        </div>
+    </div>
+
+    <audio id="son-secret" src="/sons/level5/image_secret.wav"></audio>
+
+    <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+
+        const lignes = [
+            "Tu trouves un vieux magnétophone.",
+            "Un monstre a laissé un enregistrement.",
+            "Écoute attentivement.",
+        ];
+
+        const el   = document.getElementById('terminal-text');
+        const skip = document.getElementById('terminal-skip');
+        const wrap = document.getElementById('texte-wrap');
+        const iface = document.getElementById('interface');
+
+        let ligneIndex = 0, charIndex = 0;
+        let typewriterFini = false, timeoutId = null;
+
+        function finirTypewriter() {
+            if (typewriterFini) return;
+            typewriterFini = true;
+            if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+            el.textContent = lignes.join('\n');
+            skip.style.opacity = '0';
+            document.getElementById('curseur').style.display = 'none';
+            setTimeout(() => {
+                wrap.classList.add('hidden');
+                iface.classList.add('visible');
+            }, 1500);
+        }
+
+        function typeChar() {
+            if (typewriterFini) return;
+            if (ligneIndex >= lignes.length) {
+                typewriterFini = true;
+                skip.style.opacity = '0';
+                document.getElementById('curseur').style.display = 'none';
+                setTimeout(() => {
+                    wrap.classList.add('hidden');
+                    iface.classList.add('visible');
+                }, 3000);
+                return;
+            }
+
+            const ligne = lignes[ligneIndex];
+            if (charIndex < ligne.length) {
+                el.textContent += ligne[charIndex];
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.15;
+                    clone.play().catch(() => {});
+                }
+                charIndex++;
+                const char = ligne[charIndex - 1];
+                const delay = (char === '.' || char === ',') ? 400 : 50;
+                timeoutId = setTimeout(typeChar, delay);
+            } else {
+                el.textContent += '\n';
+                ligneIndex++; charIndex = 0;
+                timeoutId = setTimeout(typeChar, 400);
+            }
+        }
+
+        function lancerSon() {
+            const son = document.getElementById('son-secret');
+            son.currentTime = 0;
+            son.play().catch(() => {});
+            // Affiche le texte mystérieux après quelques secondes
+            setTimeout(() => {
+                document.getElementById('texte-son').style.opacity = '1';
+            }, 2000);
+        }
+
+        async function verifierCode() {
+            const code = document.getElementById('code-input').value.trim().toUpperCase();
+            const reponse = await fetch('/verifier/52', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({flag: code})
+            });
+            const data = await reponse.json();
+
+            if (data.succes) {
+                document.getElementById('message-code').style.color = '#8ab47a';
+                document.getElementById('message-code').textContent = '✓ La route s\'ouvre devant toi.';
+                setTimeout(() => window.location.href = data.redirect, 2500);
+            } else {
+                document.getElementById('message-code').style.color = '#ff6b6b';
+                document.getElementById('message-code').textContent = '✗ Ce n\'est pas ça.';
+                document.getElementById('code-input').value = '';
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !typewriterFini) {
+                e.preventDefault();
+                finirTypewriter();
+            }
+            if (e.key === 'Enter') verifierCode();
+        });
+
+        setTimeout(() => {
+            skip.style.opacity = '1';
+            typeChar();
+        }, 800);
+    </script>
+
+    <audio id="amb" loop>
+        <source src="/sons/AmbianceLevel5.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const amb = document.getElementById('amb');
+        amb.volume = 0;
+        amb.play().catch(() => {});
+        document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+            vol = Math.min(0.08, vol + 0.005);
+            amb.volume = vol;
+            if (vol >= 0.08) clearInterval(fadeIn);
+        }, 50);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Level 5.1 - La Maison</title>
+    <link rel="stylesheet" href="/level5/style5.css">
+    <style>
+        body {
+            background-image: url('/images/level5/maison.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            overflow: hidden;
+            margin: 0;
+        }
+
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.25);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #texte-wrap {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            background: rgba(5, 12, 5, 0.88);
+            border: 2px solid #2a4a1a;
+            padding: 2rem 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92rem;
+            color: #c8d4b4;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            box-shadow: 0 0 40px rgba(0, 80, 0, 0.2);
+            transition: opacity 1s ease;
+        }
+
+        #texte-wrap.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .cursor {
+            animation: blink 0.8s infinite;
+            color: #8ab47a;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .terminal-skip {
+            font-size: 0.58rem;
+            color: rgba(180, 210, 140, 0.25);
+            letter-spacing: 0.1rem;
+            text-transform: uppercase;
+            margin-top: 0.8rem;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+        }
+
+        #btn-reafficher {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            font-family: 'Courier New', monospace;
+            font-size: 0.68rem;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            transition: all 0.4s;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #btn-reafficher.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #btn-reafficher:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+        }
+
+        #btn-retour {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 50;
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            font-family: 'Courier New', monospace;
+            font-size: 0.68rem;
+            padding: 0.6rem 1.2rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.15rem;
+            transition: all 0.4s;
+            text-decoration: none;
+        }
+
+        #btn-retour:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+        }
+
+        /* Tableau sur le mur - zone cliquable */
+        .zone {
+            position: fixed;
+            cursor: pointer;
+            z-index: 5;
+            background: rgba(255, 255, 255, 0);
+            transition: background 0.4s ease;
+        }
+
+        .zone:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        #zone-tableau {
+            top: 18%;
+            left: 3%;
+            width: 18%;
+            height: 22%;
+        }
+
+        /* Popup tableau */
+        #popup-tableau {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(0, 0, 0, 0.92);
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        #popup-tableau.active {
+            display: flex;
+        }
+
+        #popup-tableau img {
+            max-width: 80vw;
+            max-height: 60vh;
+            border: 6px solid #3a2a1a;
+            box-shadow: 0 0 60px rgba(0,0,0,0.9);
+        }
+
+        #input-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .code-input {
+            background-color: #050c05;
+            color: #c8d4b4;
+            border: 2px solid #2a4a1a;
+            padding: 0.8rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.8rem;
+            text-align: center;
+            width: 160px;
+            outline: none;
+            letter-spacing: 0.4rem;
+        }
+
+        .code-input:focus {
+            border-color: #8ab47a;
+        }
+
+        .bouton-popup {
+            background: rgba(5, 12, 5, 0.88);
+            border: 1px solid #2a4a1a;
+            color: #8ab47a;
+            padding: 0.8rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            transition: all 0.4s ease;
+        }
+
+        .bouton-popup:hover {
+            border-color: #8ab47a;
+            color: #c8d4b4;
+        }
+
+        #fermer-popup {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #8ab47a;
+            font-size: 1.5rem;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+
+        #message-code {
+            font-size: 0.85rem;
+            min-height: 1.2rem;
+            letter-spacing: 0.1rem;
+            font-family: 'Courier New', monospace;
+            color: #c8d4b4;
+        }
+
+        .hint-zone {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Courier New', monospace;
+            font-size: 0.6rem;
+            color: rgba(180, 210, 140, 0.3);
+            letter-spacing: 0.15rem;
+            text-transform: uppercase;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="overlay"></div>
+
+    <!-- Texte typewriter -->
+    <div id="texte-wrap">
+        <span id="terminal-text"></span><span class="cursor" id="curseur">█</span>
+        <div class="terminal-skip" id="terminal-skip">[ espace ]</div>
+    </div>
+
+    <!-- Boutons -->
+    <button id="btn-reafficher" onclick="reafficherTexte()">⊟ Relire</button>
+    <a id="btn-retour" href="/level5">⊟ Retour</a>
+
+    <!-- Hint bas de page -->
+    <div class="hint-zone" id="hint-zone">[ quelque chose est accroché au mur ]</div>
+
+    <!-- Zone cliquable tableau -->
+    <div class="zone" id="zone-tableau" onclick="ouvrirTableau()"></div>
+
+    <!-- Popup tableau + input -->
+    <div id="popup-tableau">
+        <button id="fermer-popup" onclick="fermerTableau()">✕</button>
+        <img src="/images/level5/code.jpg" alt="Un vieux tableau">
+        <p id="texte-popup" style="
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: #c8d4b4;
+            text-align: center;
+            line-height: 1.8;
+            opacity: 0;
+            transition: opacity 1s ease;
+        ">Un tableau. Quatre images. Un nombre<br>Quel est leur point commun ?</p>
+        <div id="input-footer">
+            <input type="number" class="code-input" id="code-input" placeholder="_ _" maxlength="2">
+            <button class="bouton-popup" onclick="verifierCode()">ENTRER</button>
+            <p id="message-code"></p>
+        </div>
+    </div>
+
+    <script>
+        const sfxLettre = new Audio('/sons/son_lettre.mp3');
+
+        const lignes = [
+            "Tu entres dans la maison.",
+            "Elle ressemble aux autres.",
+            "Même papier peint.",
+            "Même odeur.",
+            "Mais il y a quelque chose sur le mur.",
+        ];
+
+        const el   = document.getElementById('terminal-text');
+        const skip = document.getElementById('terminal-skip');
+        const wrap = document.getElementById('texte-wrap');
+        const btn  = document.getElementById('btn-reafficher');
+        const hint = document.getElementById('hint-zone');
+
+        let ligneIndex = 0, charIndex = 0;
+        let typewriterFini = false, timeoutId = null;
+
+        function finirTypewriter() {
+            if (typewriterFini) return;
+            typewriterFini = true;
+            if (timeoutId) { clearTimeout(timeoutId); timeoutId = null; }
+            el.textContent = lignes.join('\n');
+            skip.style.opacity = '0';
+            document.getElementById('curseur').style.display = 'none';
+            setTimeout(() => {
+                wrap.classList.add('hidden');
+                btn.classList.add('visible');
+                hint.style.opacity = '1';
+            }, 1500);
+        }
+
+        function typeChar() {
+            if (typewriterFini) return;
+            if (ligneIndex >= lignes.length) {
+                typewriterFini = true;
+                skip.style.opacity = '0';
+                document.getElementById('curseur').style.display = 'none';
+                setTimeout(() => {
+                    wrap.classList.add('hidden');
+                    btn.classList.add('visible');
+                    hint.style.opacity = '1';
+                }, 4000);
+                return;
+            }
+
+            const ligne = lignes[ligneIndex];
+            if (charIndex < ligne.length) {
+                el.textContent += ligne[charIndex];
+                if (ligne[charIndex] !== ' ') {
+                    const clone = sfxLettre.cloneNode();
+                    clone.volume = 0.15;
+                    clone.play().catch(() => {});
+                }
+                charIndex++;
+                const char = ligne[charIndex - 1];
+                const delay = (char === '.' || char === ',') ? 400 : 50;
+                timeoutId = setTimeout(typeChar, delay);
+            } else {
+                el.textContent += '\n';
+                ligneIndex++; charIndex = 0;
+                timeoutId = setTimeout(typeChar, 400);
+            }
+        }
+
+        function reafficherTexte() {
+            wrap.classList.remove('hidden');
+            btn.classList.remove('visible');
+            setTimeout(() => {
+                wrap.classList.add('hidden');
+                btn.classList.add('visible');
+            }, 6000);
+        }
+
+        function ouvrirTableau() {
+            document.getElementById('popup-tableau').classList.add('active');
+            setTimeout(() => {
+                document.getElementById('texte-popup').style.opacity = '1';
+            }, 600);
+            setTimeout(() => document.getElementById('code-input').focus(), 300);
+        }
+
+        function fermerTableau() {
+            document.getElementById('popup-tableau').classList.remove('active');
+            document.getElementById('message-code').textContent = '';
+            document.getElementById('code-input').value = '';
+        }
+
+        async function verifierCode() {
+            const code = document.getElementById('code-input').value.trim();
+            const reponse = await fetch('/verifier/51', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({flag: code})
+            });
+            const data = await reponse.json();
+
+            if (data.succes) {
+                document.getElementById('message-code').style.color = '#8ab47a';
+                document.getElementById('message-code').textContent = 'Continue d\'explorer.';
+                setTimeout(() => window.location.href = '/level5', 2500);
+
+            } else {
+                document.getElementById('message-code').style.color = '#ff6b6b';
+                document.getElementById('message-code').textContent = '✗ Ce n\'est pas ça.';
+                document.getElementById('code-input').value = '';
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !typewriterFini) {
+                e.preventDefault();
+                finirTypewriter();
+            }
+            if (e.key === 'Enter') verifierCode();
+        });
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') fermerTableau();
+        });
+
+        setTimeout(() => {
+            skip.style.opacity = '1';
+            typeChar();
+        }, 800);
+    </script>
+
+    <audio id="amb" loop>
+        <source src="/sons/AmbianceLevel5.mp3" type="audio/mpeg">
+    </audio>
+    <script>
+        const amb = document.getElementById('amb');
+        amb.volume = 0;
+        amb.play().catch(() => {});
+        document.addEventListener('click', () => amb.play().catch(() => {}), { once: true });
+        let vol = 0;
+        const fadeIn = setInterval(() => {
+            vol = Math.min(0.08, vol + 0.005);
+            amb.volume = vol;
+            if (vol >= 0.08) clearInterval(fadeIn);
+        }, 50);
+    </script>
+
+</body>
+</html>
