@@ -11,68 +11,123 @@
             background-image: url('/images/level4_2.jpg');
             background-size: cover; background-position: center;
         }
-        #layout { display:flex; align-items:flex-start; gap:2rem; max-width:880px; width:100%; }
+        #layout { display:flex; align-items:flex-start; gap:2.5rem; max-width:920px; width:100%; }
         #col-left { flex:1; min-width:0; }
-        #col-right { flex-shrink:0; }
+        #col-right { flex-shrink:0; width:420px; }
 
-        #carnet {
-            background:rgba(4,6,8,0.96); border:1px solid #1a2830;
-            padding:1.2rem 1.4rem; width:380px;
+        #panel {
+            background: rgba(4,6,8,0.96);
+            border: 1px solid #1a2830;
+            padding: 1.2rem 1.4rem;
         }
-        #carnet-label {
-            font-size:0.54rem; letter-spacing:0.2rem;
-            color:#1a3040; text-transform:uppercase; margin-bottom:0.8rem;
+        #panel-label {
+            font-size:0.52rem; letter-spacing:0.2rem;
+            color:#1a3040; text-transform:uppercase; margin-bottom:0.9rem;
         }
 
-        /* Façade maison stylisée — SVG schématique, pas une vraie photo */
-        #facade {
-            width:100%; background:#010305;
-            border:1px solid #0a1820; margin-bottom:0.8rem;
-            padding:1rem; position:relative;
-        }
-        #facade svg { display:block; width:100%; }
-
-        /* Fenêtres SVG : on les gère via JS */
-        .win { cursor:pointer; transition:fill 0.3s; pointer-events:all; }
-        #facade svg { pointer-events:all; overflow:visible; }
-        .win:hover { opacity:0.8; }
-
-        /* Tableau */
-        #obs-table { width:100%; border-collapse:collapse; margin-bottom:0.8rem; }
-        #obs-table th {
-            font-size:0.48rem; color:#1a3a40; letter-spacing:0.14rem;
-            text-transform:uppercase; border-bottom:1px solid #0a1e28;
-            padding:0.3rem 0.5rem; text-align:left;
-        }
-        #obs-table td {
-            font-size:0.64rem; color:#5a7a7e;
-            padding:0.3rem 0.5rem; font-family:'Courier New',monospace;
-            border-bottom:1px solid #060e14;
-        }
-        .td-count { color:#c8a96e; }
-
-        /* Zone déduction — cachée jusqu'à résolution */
-        #deduction {
+        /* Image inspectable */
+        #scene-view {
+            width:100%; height:220px;
             background:#020508; border:1px solid #0a1820;
-            padding:0.7rem; margin-bottom:0.6rem;
-            opacity:0; transition:opacity 0.8s;
+            position:relative; overflow:hidden;
+            margin-bottom:0.9rem;
         }
-        #deduction.visible { opacity:1; }
-        #ded-label {
-            font-size:0.5rem; letter-spacing:0.15rem;
+        #scene-img {
+            width:100%; height:100%; object-fit:cover;
+            filter:brightness(0.7) saturate(0.4) contrast(1.1);
+            display:block;
+        }
+        #scene-scan {
+            position:absolute; inset:0; pointer-events:none; z-index:1;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
+        }
+
+        /* Zones cliquables */
+        .hz {
+            position:absolute; z-index:2;
+            cursor:pointer;
+            border:1px solid transparent;
+            transition:border-color 0.25s, background 0.25s;
+        }
+        .hz:hover {
+            border-color:rgba(200,169,110,0.55);
+            background:rgba(200,169,110,0.07);
+        }
+        .hz.found {
+            border-color:rgba(90,180,100,0.5);
+            background:rgba(90,180,100,0.06);
+            cursor:default;
+        }
+        /* Tooltip au hover */
+        .hz-tip {
+            position:absolute; bottom:calc(100% + 4px); left:50%;
+            transform:translateX(-50%);
+            background:rgba(4,6,8,0.95); border:1px solid #1a2830;
+            padding:3px 8px; white-space:nowrap;
+            font-size:0.46rem; color:#6a8a7a;
+            letter-spacing:0.1rem; text-transform:uppercase;
+            opacity:0; transition:opacity 0.2s; pointer-events:none;
+        }
+        .hz:hover .hz-tip { opacity:1; }
+        .hz.found .hz-tip { display:none; }
+
+        /* Badge chiffre révélé */
+        .hz-badge {
+            position:absolute; top:50%; left:50%;
+            transform:translate(-50%,-50%);
+            font-family:'Courier New',monospace;
+            font-size:1.1rem; font-weight:bold;
+            color:#c8a96e; text-shadow:0 0 8px rgba(200,169,110,0.8);
+            opacity:0; transition:opacity 0.4s;
+            pointer-events:none;
+        }
+        .hz.found .hz-badge { opacity:1; }
+
+        /* Carnet */
+        #notes {
+            background:#020508; border:1px solid #0a1820;
+            padding:0.8rem; margin-bottom:0.8rem;
+        }
+        #notes-label {
+            font-size:0.48rem; letter-spacing:0.15rem;
             color:#1a3040; text-transform:uppercase; margin-bottom:0.5rem;
         }
-        #ded-formula {
+        #notes-body {
             font-family:'Courier New',monospace;
-            font-size:0.72rem; color:#4a6a72; line-height:1.9;
+            font-size:0.66rem; color:#2a4a4e;
+            line-height:2; min-height:48px;
         }
-        .ded-hi { color:#c8a96e; }
+        .note { color:#5a8a7e; }
+        .note-d { color:#c8a96e; font-weight:bold; }
 
-        #carnet-status {
-            font-size:0.64rem; color:#4a6a72;
+        /* Cadenas visuel */
+        #cadenas {
+            display:flex; gap:6px; align-items:center;
+            margin-bottom:0.7rem;
+        }
+        #cadenas-icon {
+            font-size:1.2rem; margin-right:4px;
+            transition:filter 0.5s;
+        }
+        .digit-box {
+            width:40px; height:48px;
+            background:#020508; border:2px solid #0a1820;
+            display:flex; align-items:center; justify-content:center;
+            font-family:'Courier New',monospace;
+            font-size:1.4rem; color:#1a2830;
+            transition:all 0.4s;
+        }
+        .digit-box.filled {
+            border-color:#c8a96e55;
+            color:#c8a96e;
+            box-shadow:0 0 10px rgba(200,169,110,0.15);
+        }
+
+        #panel-status {
+            font-size:0.62rem; color:#4a6a72;
             font-family:'Courier New',monospace; min-height:1rem;
         }
-        #carnet-status.ok { color:#5a9a6a; }
+        #panel-status.ok { color:#5a9a6a; }
 
         #flag-input {
             background:#080c0e; color:#a0a0a0;
@@ -82,194 +137,170 @@
             margin-bottom:1rem; outline:none; width:200px; text-align:center;
         }
         #flag-input:focus { border-color:#c8a96e; }
-
-        .hint-tag {
-            display:inline-block; font-size:0.48rem; color:#1a3040;
-            border:1px solid #0a1e28; padding:2px 6px; margin:2px;
-            font-family:'Courier New',monospace; letter-spacing:0.07rem;
-        }
     </style>
 </head>
 <body>
     <a class="retour-lien" href="/level4?back=1">⊟ Retour</a>
     <div class="container">
         <div id="layout">
+
             <div id="col-left">
-                <div class="message" style="max-width:320px;">
+                <div class="message" style="max-width:340px;">
                     <p>La maison d'en face.</p>
-                    <p>Certaines fenêtres sont allumées.</p>
+                    <p>Un cadenas bloque la porte.</p>
+                    <p><em>Le code est quelque part dans cette scène.</em></p>
                     <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.5rem;line-height:2.1;">
-                        Comptez les fenêtres allumées<br>
-                        à chaque étage, <strong style="color:#6a8a72;">du haut vers le bas.</strong><br>
-                        Collez les 3 chiffres ensemble.<br>
-                        <span style="color:#3a5a50;font-size:0.7rem;">Ex: étage 2→1, étage 1→2, RDC→1 = <strong style="color:#6a8a72;">121</strong></span>
+                        Inspectez chaque détail.<br>
+                        Quatre indices forment le code.<br>
+                        <strong style="color:#6a8a72;">Cliquez sur ce qui semble important.</strong>
                     </p>
                 </div>
-                <input type="text" id="flag-input" placeholder="· ·" maxlength="6" readonly>
+
+                <input type="text" id="flag-input" placeholder="· · · ·" maxlength="4" readonly>
                 <br><br>
                 <button class="bouton" id="valider" disabled>Valider</button>
                 <p id="message" style="margin-top:1rem; font-family:'Courier New',monospace; font-size:0.8rem;"></p>
             </div>
 
             <div id="col-right">
-                <div id="carnet">
-                    <p id="carnet-label">OBSERVATION — MAISON — RUE DES ÉRABLES</p>
+                <div id="panel">
+                    <p id="panel-label">INSPECTION — SCÈNE — 07.03.1991 — 00:24</p>
 
-                    <!-- Façade schématique SVG -->
-                    <div id="facade">
-                        <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Toit -->
-                            <polygon points="20,80 150,10 280,80" fill="#0a1218" stroke="#1a2830" stroke-width="1"/>
-                            <!-- Corps maison -->
-                            <rect x="20" y="78" width="260" height="122" fill="#080e14" stroke="#1a2830" stroke-width="1"/>
-                            <!-- Porte (centrée, ne chevauche pas les fenêtres) -->
-                            <rect x="127" y="152" width="30" height="48" fill="#060c12" stroke="#1a2830" stroke-width="1"/>
-                            <circle cx="153" cy="178" r="2" fill="#1a3040"/>
+                    <div id="scene-view">
+                        <img id="scene-img" src="/images/level4_2.jpg" alt="">
+                        <div id="scene-scan"></div>
 
-                            <!-- Étage 2 (haut) : 2 fenêtres bien espacées -->
-                            <rect class="win" id="w-2a" data-etage="2" x="45"  y="90" width="50" height="35" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
-                            <rect class="win" id="w-2b" data-etage="2" x="195" y="90" width="50" height="35" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
+                        <!--
+                            Indices ancrés sur les vrais éléments visibles dans level4_2.jpg :
 
-                            <!-- Étage 1 (bas) : 3 fenêtres, évitent la porte centrale -->
-                            <rect class="win" id="w-1a" data-etage="1" x="30"  y="140" width="40" height="30" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
-                            <rect class="win" id="w-1b" data-etage="1" x="85"  y="140" width="40" height="30" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
-                            <rect class="win" id="w-1c" data-etage="1" x="215" y="140" width="40" height="30" rx="2" fill="#0a1820" stroke="#1a2830" stroke-width="1"/>
-                        </svg>
-                    </div>
+                            1. Fenêtres étage 2 haut-gauche (lumière rouge) → chiffre "2"
+                               (2 fenêtres allumées à l'étage du haut)
+                               Position image : ~12-24% X, 27-40% Y
 
-                    <!-- Tableau d'observations -->
-                    <table id="obs-table">
-                        <tr>
-                            <th>Étage</th>
-                            <th>Fenêtres</th>
-                            <th>Allumées</th>
-                        </tr>
-                        <tr>
-                            <td>2ème</td>
-                            <td id="obs-e2">○ / ○</td>
-                            <td class="td-count" id="cnt-e2">0</td>
-                        </tr>
-                        <tr>
-                            <td>1er</td>
-                            <td id="obs-e1">○ / ○ / ○</td>
-                            <td class="td-count" id="cnt-e1">0</td>
-                        </tr>
-                    </table>
+                            2. Fenêtres étage 1 bas-gauche → chiffre "4"
+                               (2 rangées × 2 fenêtres = 4 ouvertures visibles)
+                               Position image : ~10-26% X, 38-50% Y
 
-                    <!-- Déduction cachée au départ -->
-                    <div id="deduction">
-                        <p id="ded-label">déduction — code d'accès</p>
-                        <div id="ded-formula">
-                            étage 2 : <span class="ded-hi" id="d-e2">?</span><br>
-                            étage 1 : <span class="ded-hi" id="d-e1">?</span><br>
-                            <span style="color:#1a3040">──────────</span><br>
-                            code &nbsp;: <span class="ded-hi" id="d-code">??</span>
+                            3. Timecode VHS bas-gauche "0:00:24" → chiffre "0"
+                               (les deux premiers chiffres après les ":")
+                               Position image : ~2-30% X, 75-92% Y
+
+                            4. Étoile isolée au centre du ciel → chiffre "1"
+                               (une seule étoile visible, ~centre)
+                               Position image : ~44-54% X, 33-42% Y
+
+                            Code dans l'ordre haut→bas, gauche→droite : 2 4 0 1 → "2401"
+                        -->
+
+                        <!-- Zone 1 : fenêtres haut (étage 2) → "2" -->
+                        <div class="hz" id="hz-a" data-digit="2" data-pos="0"
+                             style="top:27%;left:12%;width:14%;height:14%;">
+                            <div class="hz-tip">fenêtres — étage 2</div>
+                            <div class="hz-badge">2</div>
+                        </div>
+
+                        <!-- Zone 2 : fenêtres bas (étage 1) → "4" -->
+                        <div class="hz" id="hz-b" data-digit="4" data-pos="1"
+                             style="top:39%;left:10%;width:17%;height:12%;">
+                            <div class="hz-tip">fenêtres — étage 1</div>
+                            <div class="hz-badge">4</div>
+                        </div>
+
+                        <!-- Zone 3 : étoile isolée centre ciel → "0" -->
+                        <div class="hz" id="hz-c" data-digit="0" data-pos="2"
+                             style="top:33%;left:44%;width:10%;height:9%;">
+                            <div class="hz-tip">anomalie — ciel</div>
+                            <div class="hz-badge">0</div>
+                        </div>
+
+                        <!-- Zone 4 : timecode VHS bas → "1" -->
+                        <div class="hz" id="hz-d" data-digit="1" data-pos="3"
+                             style="bottom:8%;left:2%;width:30%;height:16%;">
+                            <div class="hz-tip">timecode</div>
+                            <div class="hz-badge">1</div>
                         </div>
                     </div>
 
-                    <p id="carnet-status">cliquez sur les fenêtres pour les allumer / éteindre</p>
+                    <!-- Carnet -->
+                    <div id="notes">
+                        <p id="notes-label">// NOTES D'INSPECTION</p>
+                        <div id="notes-body">Cliquez sur les éléments de la scène.</div>
+                    </div>
+
+                    <!-- Cadenas -->
+                    <div id="cadenas">
+                        <span id="cadenas-icon">🔒</span>
+                        <div class="digit-box" id="db-0">_</div>
+                        <div class="digit-box" id="db-1">_</div>
+                        <div class="digit-box" id="db-2">_</div>
+                        <div class="digit-box" id="db-3">_</div>
+                    </div>
+
+                    <p id="panel-status">0 / 4 indices trouvés</p>
                 </div>
             </div>
         </div>
     </div>
 
 <script>
-// État initial : TOUTES ÉTEINTES — le joueur doit trouver la bonne config
-// Solution : étage 2 = 1 allumée (w-2a), étage 1 = 2 allumées (w-1a + w-1c)
-// Code = concaténation : "12" → mais le vrai flag = "19" (indice : 1×étage2 + 9×??? non)
-// 
-// Logique retenue : étage 2 compte = 1, étage 1 compte = 2
-// Le joueur voit le pattern "1" et "2" → code = "12"... 
-// MAIS : dans le niveau, la maison a un numéro. 
-// Le flag = "19" car c'est écrit sur la façade (on le révèle quand c'est bon)
-// Simplifions : la solution est 1 fenêtre étage 2 + 2 fenêtres étage 1,
-// et quand c'est correct on révèle que la maison est le n°19.
-// Flag = "19"
+// Code final : "2401"
+// Indice 1 (pos 0) : 2 fenêtres à l'étage haut → "2"
+// Indice 2 (pos 1) : 4 fenêtres à l'étage bas  → "4"
+// Indice 3 (pos 2) : étoile isolée              → "0" (rien d'autre dans le ciel)
+// Indice 4 (pos 3) : timecode 0:00:24 → dernier chiffre avant les secondes → "1" (minute)
 
-const FENETRES = {
-    'w-2a': { etage:2 },
-    'w-2b': { etage:2 },
-    'w-1a': { etage:1 },
-    'w-1b': { etage:1 },
-    'w-1c': { etage:1 },
+const NOTES_TEXT = {
+    'hz-a': '— Étage supérieur : <span class="note-d">2</span> fenêtres avec une lueur rouge.',
+    'hz-b': '— Étage inférieur : <span class="note-d">4</span> ouvertures visibles dans le mur.',
+    'hz-c': '— Une seule lumière dans le ciel. Pas une étoile normale. Valeur : <span class="note-d">0</span>',
+    'hz-d': '— Timecode : PM 0:00:24. La minute affichée : <span class="note-d">1</span>',
 };
-const SOLUTION = { 'w-2a':true, 'w-2b':false, 'w-1a':true, 'w-1b':false, 'w-1c':true };
 
-// État courant — tout éteint au départ
-const etat = { 'w-2a':false, 'w-2b':false, 'w-1a':false, 'w-1b':false, 'w-1c':false };
+const found = {};
 
-const LIT_COLOR  = '#c8901a';
-const LIT_STROKE = '#c8a96e';
-const OFF_COLOR  = '#0a1820';
-const OFF_STROKE = '#1a2830';
+document.querySelectorAll('.hz').forEach(hz=>{
+    hz.addEventListener('click', ()=>{
+        if(found[hz.id]) return;
+        found[hz.id] = true;
+        hz.classList.add('found');
 
-// Attacher les clics
-Object.keys(FENETRES).forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    el.addEventListener('click', ()=>{
-        etat[id] = !etat[id];
-        update();
+        const pos   = parseInt(hz.dataset.pos);
+        const digit = hz.dataset.digit;
+
+        // Note
+        const body = document.getElementById('notes-body');
+        if(Object.keys(found).length === 1) body.innerHTML='';
+        body.innerHTML += `<div class="note">${NOTES_TEXT[hz.id]}</div>`;
+
+        // Case cadenas
+        const db = document.getElementById(`db-${pos}`);
+        db.textContent = digit;
+        db.classList.add('filled');
+
+        const nb = Object.keys(found).length;
+        const status = document.getElementById('panel-status');
+        status.textContent = `${nb} / 4 indices trouvés`;
+
+        if(nb === 4){
+            status.className='ok';
+            status.textContent='4 / 4 — code reconstitué';
+            document.getElementById('cadenas-icon').textContent='🔓';
+            document.getElementById('flag-input').value='2401';
+            document.getElementById('valider').disabled=false;
+        }
     });
 });
-
-function update(){
-    // MAJ visuels SVG
-    Object.keys(FENETRES).forEach(id=>{
-        const el = document.getElementById(id);
-        if(!el) return;
-        el.setAttribute('fill',   etat[id] ? LIT_COLOR  : OFF_COLOR);
-        el.setAttribute('stroke', etat[id] ? LIT_STROKE : OFF_STROKE);
-    });
-
-    // Compter par étage
-    const cnt2 = ['w-2a','w-2b'].filter(id=>etat[id]).length;
-    const cnt1 = ['w-1a','w-1b','w-1c'].filter(id=>etat[id]).length;
-
-    const s2 = ['w-2a','w-2b'].map(id=>etat[id]?'●':'○').join(' / ');
-    const s1 = ['w-1a','w-1b','w-1c'].map(id=>etat[id]?'●':'○').join(' / ');
-    document.getElementById('obs-e2').textContent = s2;
-    document.getElementById('obs-e1').textContent = s1;
-    document.getElementById('cnt-e2').textContent = cnt2;
-    document.getElementById('cnt-e1').textContent = cnt1;
-
-    const ded = document.getElementById('deduction');
-    const status = document.getElementById('carnet-status');
-    const fi  = document.getElementById('flag-input');
-    const btn = document.getElementById('valider');
-
-    // Vérifier si la solution est atteinte
-    const correct = Object.keys(SOLUTION).every(id => etat[id] === SOLUTION[id]);
-
-    if(correct){
-        ded.classList.add('visible');
-        document.getElementById('d-e2').textContent = cnt2;
-        document.getElementById('d-e1').textContent = cnt1;
-        document.getElementById('d-code').textContent = '19';
-        status.className='ok';
-        status.textContent = 'pattern reconnu — n°19 confirmé';
-        fi.value='19'; btn.disabled=false;
-    } else {
-        ded.classList.remove('visible');
-        document.getElementById('d-e2').textContent = '?';
-        document.getElementById('d-e1').textContent = '?';
-        document.getElementById('d-code').textContent = '??';
-        status.className='';
-        status.textContent='cliquez sur les fenêtres pour les allumer / éteindre';
-        fi.value=''; btn.disabled=true;
-    }
-}
-
-// Init — tout éteint
-update();
 
 document.getElementById('valider').addEventListener('click', async ()=>{
     const val = document.getElementById('flag-input').value.trim();
     const msg = document.getElementById('message');
-    const rep = await fetch('/verifier/42',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({flag:val})});
+    const rep = await fetch('/verifier/42',{
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({flag:val})
+    });
     const data = await rep.json();
     if(data.succes){
-        msg.style.color='#5a9a6a'; msg.textContent='Adresse confirmée. N°19, Rue des Érables.';
+        msg.style.color='#5a9a6a'; msg.textContent='Code accepté. Porte ouverte.';
         document.getElementById('valider').disabled=true;
         setTimeout(()=>{ window.location.href='/level4?done=4.2'; },1800);
     } else {

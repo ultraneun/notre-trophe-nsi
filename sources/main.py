@@ -41,20 +41,27 @@ def niveau_accessible(pseudo, route):
     return True
 
 FLAGS = {
+    # Level 0
     1:  {"flag": "391",      "points": 100, "redirect": "/level1"},
+    # Level 1
     2:  {"flag": "06:10",    "points": 50,  "redirect": "/level2"},
     3:  {"flag": "5130003",  "points": 25,  "redirect": "/level2"},
     4:  {"flag": "007365",   "points": 25,  "redirect": "/level2"},
+    # Level 2
     22: {"flag": "2847",     "points": 75,  "redirect": "/level2.1"},
     23: {"flag": "3619",     "points": 75,  "redirect": "/level2.1"},
+    # Level 3
     5:  {"flag": "6515",     "points": 150, "redirect": "/level4"},
     6:  {"flag": "28473619", "points": 150, "redirect": "/level4"},
+    # Level 4 sous-énigmes
     41: {"flag": "4301",     "points": 100, "redirect": "/level4"},
-    42: {"flag": "19",       "points": 100, "redirect": "/level4"},
+    42: {"flag": "2401",     "points": 100, "redirect": "/level4"},
     43: {"flag": "1974",     "points": 100, "redirect": "/level4"},
+    # Level 4 code final
     44: {"flag": "430119",   "points": 300, "redirect": "/level5"},
+    # Level 5
     51: {"flag": "64",       "points": 200, "redirect": "/level5"},
-    52: {"flag": "CHATEAU", "points": 300, "redirect": "/level5"},
+    52: {"flag": "CHATEAU",  "points": 300, "redirect": "/level5"},
 }
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -212,6 +219,7 @@ LEADERBOARD_HTML = """
 </html>
 """
 
+# === ROUTES ===
 @app.route('/level0')
 def level0():
     return send_from_directory('level0', 'level0.html')
