@@ -11,95 +11,90 @@
             background-image: url('/images/level4_2.jpg');
             background-size: cover; background-position: center;
         }
-        #layout { display:flex; align-items:flex-start; gap:2.5rem; max-width:960px; width:100%; }
+        #layout { display:flex; align-items:flex-start; gap:2.5rem; max-width:900px; width:100%; }
         #col-left { flex:1; min-width:0; }
-        #col-right { flex-shrink:0; width:440px; }
+        #col-right { flex-shrink:0; width:400px; }
 
         #panel {
             background: rgba(4,6,8,0.96);
             border: 1px solid #1a2830;
-            padding: 1.2rem 1.4rem;
+            padding: 1.3rem 1.5rem;
         }
         #panel-label {
             font-size:0.52rem; letter-spacing:0.2rem;
-            color:#1a3040; text-transform:uppercase; margin-bottom:0.9rem;
+            color:#1a3040; text-transform:uppercase; margin-bottom:1rem;
         }
 
-        /* Image grande, zoomable au hover */
-        #scene-wrap {
-            width:100%; position:relative;
-            margin-bottom:0.9rem;
+        /* Note trouvée */
+        #note {
+            background:#010305;
+            border:1px solid #0a1820;
+            padding:1rem 1.2rem;
+            margin-bottom:1rem;
+            font-family:'Courier New',monospace;
         }
-        #scene-view {
-            width:100%; height:230px;
-            background:#020508; border:1px solid #0a1820;
-            position:relative; overflow:hidden;
-            cursor:zoom-in;
+        #note-header {
+            font-size:0.46rem; color:#1a3040;
+            letter-spacing:0.15rem; text-transform:uppercase;
+            margin-bottom:0.8rem; border-bottom:1px solid #060e14;
+            padding-bottom:0.5rem;
         }
-        #scene-view.zoomed { cursor:zoom-out; }
-        #scene-img {
-            width:100%; height:100%; object-fit:cover;
-            filter:brightness(0.72) saturate(0.4) contrast(1.1);
-            display:block;
-            transition:transform 0.3s, filter 0.3s;
-            transform-origin:var(--ox,50%) var(--oy,50%);
+        #note-body {
+            font-size:0.72rem; color:#5a7a72;
+            line-height:2.2;
         }
-        #scene-view.zoomed #scene-img {
-            transform:scale(2.4);
-            filter:brightness(0.85) saturate(0.5) contrast(1.1);
-        }
-        #scene-scan {
-            position:absolute; inset:0; pointer-events:none; z-index:1;
-            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);
-        }
-        #zoom-hint {
-            position:absolute; bottom:6px; right:8px; z-index:2;
-            font-size:0.44rem; color:#1a3040; letter-spacing:0.1rem;
-            pointer-events:none;
-        }
+        #note-body span.k { color:#c8a96e; font-weight:bold; }
+        #note-body span.d { color:#3a5a5e; }
 
-        /* Indices cryptiques */
-        #indices-panel {
-            background:#020508; border:1px solid #0a1820;
-            padding:0.9rem; margin-bottom:0.8rem;
+        /* Grille de décodage */
+        #decoder {
+            background:#010305; border:1px solid #0a1820;
+            padding:0.9rem; margin-bottom:0.9rem;
         }
-        #indices-label {
+        #decoder-label {
             font-size:0.48rem; letter-spacing:0.15rem;
             color:#1a3040; text-transform:uppercase; margin-bottom:0.7rem;
         }
-        .indice {
-            display:flex; align-items:flex-start; gap:0.7rem;
-            padding:0.5rem 0; border-bottom:1px solid #060e14;
+        #alphabet {
+            display:grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap:4px;
+            margin-bottom:0.6rem;
+        }
+        .alpha-cell {
+            background:#020508;
+            border:1px solid #060e14;
+            padding:4px 2px;
+            text-align:center;
             font-family:'Courier New',monospace;
         }
-        .indice:last-child { border-bottom:none; }
-        .indice-num {
-            font-size:0.5rem; color:#1a3040;
-            flex-shrink:0; margin-top:2px;
+        .alpha-letter {
+            font-size:0.52rem; color:#1a3040;
+            display:block; line-height:1.4;
         }
-        .indice-txt {
-            font-size:0.64rem; color:#3a5a5e;
-            line-height:1.7; flex:1;
-        }
-        .indice-txt em { color:#5a7a6e; font-style:normal; }
-        .indice-pos {
-            font-size:0.44rem; color:#1a2830;
-            flex-shrink:0; margin-top:4px;
-            letter-spacing:0.06rem;
+        .alpha-num {
+            font-size:0.6rem; color:#4a6a5e;
+            display:block; line-height:1.4;
         }
 
-        /* Saisie du code */
-        #saisie {
-            background:#020508; border:1px solid #0a1820;
-            padding:0.8rem; margin-bottom:0.7rem;
+        /* Message à décoder */
+        #encoded {
+            background:#020508; border:1px solid #060e14;
+            padding:0.6rem 0.8rem;
+            font-family:'Courier New',monospace;
+            font-size:0.78rem; color:#c8a96e;
+            letter-spacing:0.2rem; line-height:2;
+            margin-bottom:0.5rem;
         }
-        #saisie-label {
-            font-size:0.48rem; letter-spacing:0.15rem;
-            color:#1a3040; text-transform:uppercase; margin-bottom:0.6rem;
+        #encoded-hint {
+            font-size:0.5rem; color:#1a3040;
+            letter-spacing:0.1rem;
         }
-        #saisie-row { display:flex; gap:6px; align-items:center; }
+
+        /* Saisie */
+        #saisie-row { display:flex; gap:6px; align-items:center; margin-top:0.8rem; }
         .digit-input {
-            width:44px; height:52px;
+            width:46px; height:54px;
             background:#010305; border:2px solid #0a1820;
             font-family:'Courier New',monospace;
             font-size:1.5rem; color:#c8a96e;
@@ -111,12 +106,6 @@
         .digit-input::-webkit-inner-spin-button { -webkit-appearance:none; }
         .digit-input:focus { border-color:#c8a96e55; }
         .digit-sep { color:#1a3040; font-size:0.5rem; }
-
-        #panel-status {
-            font-size:0.62rem; color:#4a6a72;
-            font-family:'Courier New',monospace; min-height:1rem;
-            margin-bottom:0.4rem;
-        }
 
         #flag-input {
             background:#080c0e; color:#a0a0a0;
@@ -135,16 +124,15 @@
 
             <div id="col-left">
                 <div class="message" style="max-width:340px;">
-                    <p>La maison d'en face.</p>
-                    <p>Un cadenas bloque l'accès.</p>
-                    <p><em>Quatre chiffres. Ils sont là, quelque part.</em></p>
-                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.5rem;line-height:2.1;">
-                        Lisez les indices.<br>
-                        Observez la scène attentivement.<br>
-                        <strong style="color:#6a8a72;">Zoomez sur l'image pour voir les détails.</strong>
+                    <p>Une note a été glissée sous la porte.</p>
+                    <p>Le message est codé.</p>
+                    <p><em>Chaque lettre correspond à un chiffre.</em></p>
+                    <p style="font-size:0.76rem;color:#4a5a44;margin-top:0.5rem;line-height:2;">
+                        Utilisez la table de correspondance.<br>
+                        Décodez les 4 lettres.<br>
+                        <strong style="color:#6a8a72;">Le résultat est le code du cadenas.</strong>
                     </p>
                 </div>
-
                 <input type="text" id="flag-input" placeholder="· · · ·" maxlength="4" readonly>
                 <br><br>
                 <button class="bouton" id="valider" disabled>Valider</button>
@@ -153,73 +141,37 @@
 
             <div id="col-right">
                 <div id="panel">
-                    <p id="panel-label">DOSSIER — MAISON INCONNUE — 07.03.1991</p>
+                    <p id="panel-label">NOTE TROUVÉE — MAISON — 07.03.1991</p>
 
-                    <!-- Image zoomable -->
-                    <div id="scene-wrap">
-                        <div id="scene-view">
-                            <img id="scene-img" src="/images/level4_2.jpg" alt="">
-                            <div id="scene-scan"></div>
-                            <div id="zoom-hint">CLIC POUR ZOOMER</div>
+                    <!-- La note -->
+                    <div id="note">
+                        <div id="note-header">// MESSAGE — CHIFFREMENT SIMPLE</div>
+                        <div id="note-body">
+                            <span class="d">La séquence est :</span><br>
+                            <span class="k">&nbsp;&nbsp;W &nbsp;· &nbsp;C &nbsp;· &nbsp;A &nbsp;· &nbsp;H</span><br><br>
+                            <span class="d">Chaque lettre = position dans l'alphabet.</span><br>
+                            <span class="d">A=1, B=2, C=3 ... Z=26</span><br><br>
+                            <span class="d">Prenez le chiffre des unités seulement.</span>
                         </div>
                     </div>
 
-                    <!-- Indices cryptiques -->
-                    <div id="indices-panel">
-                        <p id="indices-label">// INDICES — RAPPORT DE SURVEILLANCE</p>
+                    <!-- Table alphabet -->
+                    <div id="decoder">
+                        <p id="decoder-label">// TABLE A→Z = 1→26 (chiffre des unités)</p>
+                        <div id="alphabet"></div>
+                        <div id="encoded">W &nbsp;· &nbsp;C &nbsp;· &nbsp;A &nbsp;· &nbsp;H</div>
+                        <div id="encoded-hint">→ décodez chaque lettre, prenez le chiffre des unités</div>
 
-                        <div class="indice">
-                            <span class="indice-num">[1]</span>
-                            <span class="indice-txt">
-                                <em>« Les ouvertures du niveau supérieur laissent filtrer une lumière anormale. »</em><br>
-                                Comptez-les.
-                            </span>
-                            <span class="indice-pos">haut-gauche</span>
-                        </div>
-
-                        <div class="indice">
-                            <span class="indice-num">[2]</span>
-                            <span class="indice-txt">
-                                <em>« L'horloge ne ment jamais. Regardez les secondes. »</em><br>
-                                Prenez le premier chiffre des secondes affichées.
-                            </span>
-                            <span class="indice-pos">bas-gauche</span>
-                        </div>
-
-                        <div class="indice">
-                            <span class="indice-num">[3]</span>
-                            <span class="indice-txt">
-                                <em>« Une anomalie dans le ciel. Pas une étoile. »</em><br>
-                                Cherchez le point isolé au centre. Comptez les points lumineux anormaux.
-                            </span>
-                            <span class="indice-pos">centre</span>
-                        </div>
-
-                        <div class="indice">
-                            <span class="indice-num">[4]</span>
-                            <span class="indice-txt">
-                                <em>« Le bâtiment de droite cache quelque chose. Comptez ses stries horizontales visibles. »</em><br>
-                                Bardage — lames apparentes dans le cadre.
-                            </span>
-                            <span class="indice-pos">droite</span>
-                        </div>
-                    </div>
-
-                    <!-- Saisie chiffre par chiffre -->
-                    <div id="saisie">
-                        <p id="saisie-label">// SAISIE DU CODE</p>
                         <div id="saisie-row">
-                            <input class="digit-input" id="d0" type="number" min="0" max="9" maxlength="1" placeholder="·">
-                            <span class="digit-sep">—</span>
-                            <input class="digit-input" id="d1" type="number" min="0" max="9" maxlength="1" placeholder="·">
-                            <span class="digit-sep">—</span>
-                            <input class="digit-input" id="d2" type="number" min="0" max="9" maxlength="1" placeholder="·">
-                            <span class="digit-sep">—</span>
-                            <input class="digit-input" id="d3" type="number" min="0" max="9" maxlength="1" placeholder="·">
+                            <input class="digit-input" id="d0" type="number" min="0" max="9" placeholder="·">
+                            <span class="digit-sep">·</span>
+                            <input class="digit-input" id="d1" type="number" min="0" max="9" placeholder="·">
+                            <span class="digit-sep">·</span>
+                            <input class="digit-input" id="d2" type="number" min="0" max="9" placeholder="·">
+                            <span class="digit-sep">·</span>
+                            <input class="digit-input" id="d3" type="number" min="0" max="9" placeholder="·">
                         </div>
                     </div>
-
-                    <p id="panel-status"></p>
                 </div>
             </div>
         </div>
@@ -227,34 +179,40 @@
 
 <script>
 /*
-    Solutions :
-    [1] Fenêtres étage supérieur (haut-gauche) : 2 fenêtres visibles → "2"
-    [2] Timecode "0:00:24" → secondes = 24, premier chiffre = "2"
-    [3] Point lumineux isolé au centre du ciel → 1 anomalie → "1"  (hors étoiles normales)
-    [4] Bardage droite — on compte ~7 lames horizontales visibles → "7"
+    W = 23 → unités = 3
+    C =  3 → unités = 3  (non, trop facile, on varie)
 
-    Code : 2 2 1 7 → "2217"
+    Recalcul :
+    W = 23 → unités = 3
+    C =  3 → unités = 3
+    A =  1 → unités = 1
+    H =  8 → unités = 8
+
+    Code = 3318 — hmm C et W donnent tous les deux 3, c'est logique mais potentiellement confusant.
+    On garde : W(23→3), C(3→3), A(1→1), H(8→8) = "3318"
+
+    Mais on change pour rendre plus intéressant et moins évident :
+    W = 23 → 3
+    C =  3 → 3  
+    A =  1 → 1
+    H =  8 → 8
+    Code : 3318
 */
 
-// Zoom sur l'image
-const sceneView = document.getElementById('scene-view');
-const sceneImg  = document.getElementById('scene-img');
-sceneView.addEventListener('click', function(e){
-    const rect = this.getBoundingClientRect();
-    const ox = ((e.clientX - rect.left) / rect.width * 100).toFixed(1) + '%';
-    const oy = ((e.clientY - rect.top)  / rect.height * 100).toFixed(1) + '%';
-    sceneImg.style.setProperty('--ox', ox);
-    sceneImg.style.setProperty('--oy', oy);
-    this.classList.toggle('zoomed');
-    document.getElementById('zoom-hint').textContent =
-        this.classList.contains('zoomed') ? 'CLIC POUR DÉZOOMER' : 'CLIC POUR ZOOMER';
-});
+// Build alphabet table
+const alphaEl = document.getElementById('alphabet');
+for(let i=1; i<=26; i++){
+    const letter = String.fromCharCode(64+i);
+    const cell = document.createElement('div');
+    cell.className = 'alpha-cell';
+    cell.innerHTML = `<span class="alpha-letter">${letter}</span><span class="alpha-num">${i}</span>`;
+    alphaEl.appendChild(cell);
+}
 
-// Saisie chiffre par chiffre avec auto-focus
+// Saisie
 const inputs = Array.from(document.querySelectorAll('.digit-input'));
 inputs.forEach((inp, i)=>{
     inp.addEventListener('input', function(){
-        // Garder un seul chiffre
         this.value = this.value.replace(/[^0-9]/g,'').slice(-1);
         if(this.value && i < inputs.length-1) inputs[i+1].focus();
         checkCode();
@@ -270,18 +228,14 @@ inputs.forEach((inp, i)=>{
 
 function checkCode(){
     const vals = inputs.map(i=>i.value);
-    const code = vals.join('');
-    const status = document.getElementById('panel-status');
-    const fi  = document.getElementById('flag-input');
-    const btn = document.getElementById('valider');
-
-    if(code.length < 4 || vals.some(v=>v==='')){
-        status.textContent='';
-        fi.value=''; btn.disabled=true; return;
+    if(vals.some(v=>v==='')){
+        document.getElementById('flag-input').value='';
+        document.getElementById('valider').disabled=true;
+        return;
     }
-    fi.value = code;
-    btn.disabled = false;
-    status.textContent='code saisi — validez';
+    const code = vals.join('');
+    document.getElementById('flag-input').value = code;
+    document.getElementById('valider').disabled = false;
 }
 
 document.getElementById('valider').addEventListener('click', async ()=>{
@@ -293,11 +247,11 @@ document.getElementById('valider').addEventListener('click', async ()=>{
     });
     const data = await rep.json();
     if(data.succes){
-        msg.style.color='#5a9a6a'; msg.textContent='Code accepté. Accès accordé.';
+        msg.style.color='#5a9a6a'; msg.textContent='Code accepté.';
         document.getElementById('valider').disabled=true;
         setTimeout(()=>{ window.location.href='/level4?done=4.2'; },1800);
     } else {
-        msg.style.color='#cc5555'; msg.textContent='Code incorrect.';
+        msg.style.color='#cc5555'; msg.textContent='Incorrect.';
         inputs.forEach(i=>{ i.value=''; });
         inputs[0].focus();
         document.getElementById('flag-input').value='';
@@ -305,7 +259,6 @@ document.getElementById('valider').addEventListener('click', async ()=>{
     }
 });
 
-// Focus auto
 inputs[0].focus();
 </script>
 </body>
