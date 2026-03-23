@@ -52,11 +52,10 @@ FLAGS = {
     23: {"flag": "3619",     "points": 75,  "redirect": "/level2.1"},
     # Level 3
     5:  {"flag": "6515",     "points": 150, "redirect": "/level4"},
-    6:  {"flag": "  ", "points": 150, "redirect": "/level4"},
     6:  {"flag": "28473619", "points": 150, "redirect": "/level4"},
     # Level 4 sous-énigmes
     41: {"flag": "4301",     "points": 100, "redirect": "/level4"},
-    42: {"flag": "3318",     "points": 100, "redirect": "/level4"},
+    42: {"flag": "2217",     "points": 100, "redirect": "/level4"},
     43: {"flag": "1974",     "points": 100, "redirect": "/level4"},
     # Level 4 code final
     44: {"flag": "430119",   "points": 300, "redirect": "/level5"},
