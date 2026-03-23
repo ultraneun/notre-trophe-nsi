@@ -48,7 +48,7 @@ FLAGS = {
     22: {"flag": "2847",     "points": 75,  "redirect": "/level2.1"},
     23: {"flag": "3619",     "points": 75,  "redirect": "/level2.1"},
     5:  {"flag": "6515",     "points": 150, "redirect": "/level4"},
-    6:  {"flag": "28473619", "points": 150, "redirect": "/level4"},
+    6:  {"flag": "  ", "points": 150, "redirect": "/level4"},
     41: {"flag": "4301",     "points": 100, "redirect": "/level4"},
     42: {"flag": "19",       "points": 100, "redirect": "/level4"},
     43: {"flag": "1974",     "points": 100, "redirect": "/level4"},
