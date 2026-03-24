@@ -28,6 +28,7 @@ ORDRE_NIVEAUX = {
     '/level5.1': 44,
     '/level5.2': 51,
     '/level5.3': 52,
+    '/level5.4': 52,
 }
 
 def niveau_accessible(pseudo, route):
@@ -295,6 +296,10 @@ def level5_2():
 @app.route('/level5.3')
 def level5_3():
     return send_from_directory('level5', 'level5_3.html')
+
+@app.route('/level5.4')
+def level5_4():
+    return send_from_directory('level5', 'level5_4.html')
 
 @app.route('/level0/<path:fichier>')
 def level0_static(fichier):
