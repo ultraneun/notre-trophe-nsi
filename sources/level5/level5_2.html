@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level 5 - Motion</title>
+    <title>Level 5.2 - L'Enregistrement</title>
     <link rel="stylesheet" href="/level5/style5.css">
     <style>
         body {
-            background-image: url('/images/level5/le_chateau.webp');
+            background-image: url('/images/level5/fond_2.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             height: 100vh;
             overflow: hidden;
             margin: 0;
-            transition: transform 3s ease-in;
         }
 
         #overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.25);
+            background: rgba(0, 0, 0, 0.35);
             z-index: 0;
             pointer-events: none;
         }
@@ -70,10 +69,10 @@
             transition: opacity 1.5s ease;
         }
 
-        #btn-reafficher {
+        #btn-retour {
             position: fixed;
             top: 20px;
-            right: 20px;
+            left: 20px;
             z-index: 50;
             background: rgba(5, 12, 5, 0.88);
             border: 1px solid #2a4a1a;
@@ -85,171 +84,150 @@
             text-transform: uppercase;
             letter-spacing: 0.15rem;
             transition: all 0.4s;
-            opacity: 0;
-            pointer-events: none;
+            text-decoration: none;
         }
 
-        #btn-reafficher.visible {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        #btn-reafficher:hover {
+        #btn-retour:hover {
             border-color: #8ab47a;
             color: #c8d4b4;
         }
 
-        .zone {
+        /* Interface magnétophone */
+        #interface {
             position: fixed;
-            cursor: pointer;
-            z-index: 5;
-            background: rgba(255, 255, 255, 0);
-            transition: background 0.4s ease;
-        }
-
-        .zone:hover {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        #zone-maison1 {
-            top: 25%;
-            left: 76%;
-            width: 14%;
-            height: 22%;
-        }
-
-        #zone-maison2 {
-            top: 52%;
-            left: 18%;
-            width: 10%;
-            height: 18%;
-        }
-
-        #zone-chateau {
-            top: 18%;
-            left: 30%;
-            width: 16%;
-            height: 14%;
-        }
-
-        #popup-verrou {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 200;
-            background: rgba(0, 0, 0, 0.75);
-            align-items: center;
-            justify-content: center;
-        }
-
-        #popup-verrou.active {
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
         }
 
-        #popup-verrou-contenu {
-            background: rgba(5, 12, 5, 0.97);
-            border: 2px solid #2a4a1a;
-            padding: 2rem 2.5rem;
-            max-width: 360px;
-            text-align: center;
+        #interface.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #texte-son {
             font-family: 'Courier New', monospace;
-            color: #c8d4b4;
+            font-size: 0.82rem;
+            color: rgba(200, 212, 180, 0.6);
+            text-align: center;
             line-height: 1.8;
+            max-width: 400px;
+            opacity: 0;
+            transition: opacity 1s ease;
+            font-style: italic;
         }
 
-        #popup-verrou-contenu p {
-            font-size: 0.88rem;
-            margin-bottom: 1.5rem;
+        .boutons-son {
+            display: flex;
+            gap: 1rem;
         }
 
-        .bouton-fermer {
+        .bouton-son {
             background: rgba(5, 12, 5, 0.88);
             border: 1px solid #2a4a1a;
             color: #8ab47a;
-            padding: 0.6rem 1.5rem;
+            padding: 0.8rem 1.5rem;
             font-family: 'Courier New', monospace;
             font-size: 0.75rem;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.2rem;
-            transition: all 0.4s;
+            transition: all 0.4s ease;
+            text-decoration: none;
         }
 
-        .bouton-fermer:hover {
+        .bouton-son:hover {
             border-color: #8ab47a;
             color: #c8d4b4;
+            box-shadow: 0 0 20px rgba(138, 180, 122, 0.15);
         }
 
-        /* Vidéo finale */
-        #video-finale {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: #000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #video-finale.active {
+        .input-wrap {
             display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.8rem;
         }
 
-        #vid {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .code-input {
+            background-color: #050c05;
+            color: #c8d4b4;
+            border: 2px solid #2a4a1a;
+            padding: 0.8rem 2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: center;
+            width: 240px;
+            outline: none;
+            letter-spacing: 0.3rem;
+            text-transform: uppercase;
+        }
+
+        .code-input:focus {
+            border-color: #8ab47a;
+        }
+
+        #message-code {
+            font-size: 0.82rem;
+            min-height: 1.2rem;
+            letter-spacing: 0.1rem;
+            font-family: 'Courier New', monospace;
+            color: #c8d4b4;
         }
     </style>
 </head>
 <body>
 
     <div id="overlay"></div>
+    <a id="btn-retour" href="/level5.1">⊟ Retour</a>
 
+    <!-- Texte typewriter intro -->
     <div id="texte-wrap">
         <span id="terminal-text"></span><span class="cursor" id="curseur">█</span>
         <div class="terminal-skip" id="terminal-skip">[ espace ]</div>
     </div>
 
-    <button id="btn-reafficher" onclick="reafficherTexte()">⊟ Relire</button>
-
-    <div class="zone" id="zone-maison1" onclick="window.location.href='/level5.1'"></div>
-    <div class="zone" id="zone-maison2" onclick="window.location.href='/level5.2'"></div>
-    <div class="zone" id="zone-chateau" onclick="verifierChateau()"></div>
-
-    <!-- Popup château verrouillé -->
-    <div id="popup-verrou">
-        <div id="popup-verrou-contenu">
-            <p>Tu ne peux pas encore atteindre le château.<br>Il te reste des choses à explorer.</p>
-            <button class="bouton-fermer" onclick="document.getElementById('popup-verrou').classList.remove('active')">Continuer</button>
+    <!-- Interface magnétophone -->
+    <div id="interface">
+        <div id="texte-son">
+            "Les Backrooms ne parlent pas.<br>
+            Elles murmurent autrement.<br>
+            Regarde ce que tu ne peux pas entendre."
+        </div>
+        <div class="boutons-son">
+            <button class="bouton-son" onclick="lancerSon()">▶ Écouter</button>
+            <a class="bouton-son" href="/sons/level5/image_secret.wav" download>⬇ Télécharger</a>
+        </div>
+        <div class="input-wrap">
+            <input type="text" class="code-input" id="code-input" placeholder="_ _ _ _ _ _ _" maxlength="7">
+            <button class="bouton-son" onclick="verifierCode()">ENTRER</button>
+            <p id="message-code"></p>
         </div>
     </div>
 
-    <!-- Vidéo finale -->
-    <div id="video-finale">
-        <video id="vid" src="/images/level5/finale.MP4"
-            onended="window.location.href='/level0'">
-        </video>
-    </div>
+    <audio id="son-secret" src="/sons/level5/image_secret.wav"></audio>
 
     <script>
         const sfxLettre = new Audio('/sons/son_lettre.mp3');
 
         const lignes = [
-            "De l'air frais.",
-            "Du ciel.",
-            "Tu es sorti.",
-            "...",
-            "Attends.",
-            "Ces maisons... elles sont toutes identiques.",
-            "Et cette route — tu l'as déjà vue.",
-            "Trouve la sortie.",
+            "Tu trouves un vieux magnétophone.",
+            "Un monstre a laissé un enregistrement.",
+            "Écoute attentivement.",
         ];
 
         const el   = document.getElementById('terminal-text');
         const skip = document.getElementById('terminal-skip');
         const wrap = document.getElementById('texte-wrap');
-        const btn  = document.getElementById('btn-reafficher');
+        const iface = document.getElementById('interface');
 
         let ligneIndex = 0, charIndex = 0;
         let typewriterFini = false, timeoutId = null;
@@ -263,7 +241,7 @@
             document.getElementById('curseur').style.display = 'none';
             setTimeout(() => {
                 wrap.classList.add('hidden');
-                btn.classList.add('visible');
+                iface.classList.add('visible');
             }, 1500);
         }
 
@@ -275,8 +253,8 @@
                 document.getElementById('curseur').style.display = 'none';
                 setTimeout(() => {
                     wrap.classList.add('hidden');
-                    btn.classList.add('visible');
-                }, 4000);
+                    iface.classList.add('visible');
+                }, 3000);
                 return;
             }
 
@@ -290,10 +268,7 @@
                 }
                 charIndex++;
                 const char = ligne[charIndex - 1];
-                const lastThree = ligne.slice(charIndex - 3, charIndex);
-                const delay = lastThree === '...' ? 900
-                            : (char === '.' || char === ',') ? 400
-                            : 50;
+                const delay = (char === '.' || char === ',') ? 400 : 50;
                 timeoutId = setTimeout(typeChar, delay);
             } else {
                 el.textContent += '\n';
@@ -302,38 +277,33 @@
             }
         }
 
-        function reafficherTexte() {
-            wrap.classList.remove('hidden');
-            btn.classList.remove('visible');
+        function lancerSon() {
+            const son = document.getElementById('son-secret');
+            son.currentTime = 0;
+            son.play().catch(() => {});
+            // Affiche le texte mystérieux après quelques secondes
             setTimeout(() => {
-                wrap.classList.add('hidden');
-                btn.classList.add('visible');
-            }, 6000);
+                document.getElementById('texte-son').style.opacity = '1';
+            }, 2000);
         }
 
-        async function verifierChateau() {
-            const rep = await fetch('/progression');
-            const data = await rep.json();
-            if (data.valides.includes(51) && data.valides.includes(52)) {
-                // Cache tout
-                wrap.classList.add('hidden');
-                btn.classList.remove('visible');
-                document.querySelectorAll('.zone').forEach(z => z.style.pointerEvents = 'none');
+        async function verifierCode() {
+            const code = document.getElementById('code-input').value.trim().toUpperCase();
+            const reponse = await fetch('/verifier/52', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({flag: code})
+            });
+            const data = await reponse.json();
 
-                // Zoom vers le château
-                document.body.style.transformOrigin = '38% 25%';
-                document.body.style.transform = 'scale(6)';
-
-                // Après le zoom lance la vidéo
-                setTimeout(() => {
-                    document.body.style.transition = 'none';
-                    document.body.style.transform = '';
-                    const vf = document.getElementById('video-finale');
-                    vf.classList.add('active');
-                    document.getElementById('vid').play();
-                }, 3500);
+            if (data.succes) {
+                document.getElementById('message-code').style.color = '#8ab47a';
+                document.getElementById('message-code').textContent = '✓ La route s\'ouvre devant toi.';
+                setTimeout(() => window.location.href = data.redirect, 2500);
             } else {
-                document.getElementById('popup-verrou').classList.add('active');
+                document.getElementById('message-code').style.color = '#ff6b6b';
+                document.getElementById('message-code').textContent = '✗ Ce n\'est pas ça.';
+                document.getElementById('code-input').value = '';
             }
         }
 
@@ -342,6 +312,7 @@
                 e.preventDefault();
                 finirTypewriter();
             }
+            if (e.key === 'Enter') verifierCode();
         });
 
         setTimeout(() => {
