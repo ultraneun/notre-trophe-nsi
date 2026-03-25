@@ -4,6 +4,9 @@
 
 Naissance de l'idée :
 
+L'idée de notre projet est née d'une discussion sur les mystères d'internet. On avait regardé une vidéo sur Cicada 3301, et on a trouvé super intéressant le concept d'énigmes cachées dans des fichiers ou des images. Comme on aime beaucoup l'univers des Backrooms, on s'est dit que c'était le mélange parfait. Les Backrooms offrent énormément de possibilités créatives car chaque niveau peut avoir son propre style et ses propres règles. On a donc voulu créer un jeu où le joueur doit vraiment chercher des indices partout, comme dans Cicada, mais dans l'ambiance étrange et stressante des niveaux des Backrooms. Notre but est de proposer des énigmes variées, allant de la simple logique à l'utilisation d'outils plus techniques comme le décodage de sons ou de coordonnées.
+
+
 Voilà le résumé complet, niveaux 0 à 5 :
 
 ---
