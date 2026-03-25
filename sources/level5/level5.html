@@ -46,7 +46,7 @@
 
         #texte-wrap.hidden {
             opacity: 0;
-            pointer-events: none;
+            pointer-events: none !important;
         }
 
         .cursor {
@@ -104,6 +104,7 @@
             z-index: 5;
             background: rgba(255, 255, 255, 0);
             transition: background 0.4s ease;
+            pointer-events: auto;
         }
 
         .zone:hover {
