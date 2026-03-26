@@ -43,12 +43,6 @@ cd notre-trophe-nsi
 2. **Installez les dépendances Python nécessaires :**
 
 ```bash
-pip install flask
-```
-
-> Ou si un fichier `requirements.txt` est présent :
-
-```bash
 pip install -r requirements.txt
 ```
 
