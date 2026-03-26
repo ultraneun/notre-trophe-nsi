@@ -103,7 +103,7 @@
     <div id="popup-final">
         <div id="popup-final-contenu">
             <p class="popup-label">ACCÈS NIVEAU SUIVANT</p>
-            <p class="popup-sub">Code — 6 chiffres</p>
+            <p class="popup-sub">Code — 6 chiffres<br><span style="font-size:0.6rem;color:#2a3a28;letter-spacing:0.06rem;">Combinez les trois codes trouvés.</span></p>
             <div id="code-wrap" onclick="document.getElementById('code-raw').focus()">
                 <div id="code-display">_ _ _ _ _ _</div>
                 <input type="tel" id="code-raw" maxlength="6" style="position:absolute;opacity:0;width:1px;height:1px;">
@@ -113,6 +113,13 @@
                 <button class="bouton" id="btn-valider-final">Valider</button>
             </div>
             <p id="final-msg"></p>
+            <p id="final-hint" style="display:none; margin-top:1.2rem; font-size:0.56rem; color:#2a3a28; font-family:'Courier New',monospace; letter-spacing:0.08rem; line-height:1.9; border-top:1px solid #0a1820; padding-top:0.9rem;">
+                // INDICE<br>
+                Chaque énigme a livré un code à 4 chiffres.<br>
+                Les deux premiers chiffres de chacun suffisent.<br>
+                <span style="color:#1a3040;">4301 · 3318 · 1974</span>
+            </p>
+            <button id="btn-hint" style="margin-top:0.8rem; background:none; border:none; color:#1a3040; font-family:'Courier New',monospace; font-size:0.5rem; letter-spacing:0.12rem; cursor:pointer; text-transform:uppercase;" onclick="document.getElementById('final-hint').style.display='block'; this.style.display='none';">▾ indice</button>
         </div>
     </div>
 
@@ -269,7 +276,7 @@ document.getElementById('btn-valider-final').addEventListener('click', validerFi
 function validerFinal(){
     const val=document.getElementById('code-raw').value;
     const msg=document.getElementById('final-msg');
-    if(val==='430119'){
+    if(val==='433319'){
         msg.style.color='#7acc88'; msg.textContent='Accès accordé.';
         setTimeout(()=>{
             document.getElementById('popup-final').classList.remove('active');
