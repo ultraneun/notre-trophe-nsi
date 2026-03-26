@@ -274,27 +274,36 @@ document.addEventListener('keydown',e=>{
 document.getElementById('btn-valider-final').addEventListener('click', validerFinal);
 
 function validerFinal(){
-    const val=document.getElementById('code-raw').value;
-    const msg=document.getElementById('final-msg');
-    if(val==='433319'){
-        msg.style.color='#7acc88'; msg.textContent='Accès accordé.';
-        setTimeout(()=>{
-            document.getElementById('popup-final').classList.remove('active');
-            scene.classList.add('glitch-out');
-            overlay.classList.add('active');
-            setTimeout(()=>{ window.location.href='/level5'; },800);
-        },900);
-    } else {
-        msg.style.color='#cc5555'; msg.textContent='Code refusé.';
-        document.getElementById('code-display').classList.add('shake');
-        setTimeout(()=>{
-            document.getElementById('code-raw').value='';
-            document.getElementById('code-display').textContent=fmtCode('');
-            document.getElementById('code-display').classList.remove('shake');
-            msg.textContent='';
-            document.getElementById('code-raw').focus();
-        },700);
-    }
+    const val = document.getElementById('code-raw').value;
+    const msg = document.getElementById('final-msg');
+
+    fetch('/verifier/44', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({flag: val})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if(data.succes){
+            msg.style.color='#7acc88'; msg.textContent='Accès accordé.';
+            setTimeout(()=>{
+                document.getElementById('popup-final').classList.remove('active');
+                scene.classList.add('glitch-out');
+                overlay.classList.add('active');
+                setTimeout(()=>{ window.location.href='/level5'; }, 800);
+            }, 900);
+        } else {
+            msg.style.color='#cc5555'; msg.textContent='Code refusé.';
+            document.getElementById('code-display').classList.add('shake');
+            setTimeout(()=>{
+                document.getElementById('code-raw').value='';
+                document.getElementById('code-display').textContent=fmtCode('');
+                document.getElementById('code-display').classList.remove('shake');
+                msg.textContent='';
+                document.getElementById('code-raw').focus();
+            }, 700);
+        }
+    });
 }
 
 // Retour ?done= ou direct depuis sous-niveau

@@ -18,8 +18,8 @@ ORDRE_NIVEAUX = {
     '/level2.1': 4,
     '/level2.2': 4,
     '/level2.3': 4,
-    '/level3':   5,
-    '/level3.5': 5,
+    '/level3':   22,   
+    '/level3.5': 22,
     '/level4':   5,
     '/level4.1': 5,
     '/level4.2': 5,
@@ -30,14 +30,30 @@ ORDRE_NIVEAUX = {
     '/level5.3': 52,
     '/level5.4': 52,
 }
+FLAGS_ALTERNATIFS = {
+    22: [22, 23, 24],
+}
+
+PROGRESSION_NIVEAUX = [
+    '/level0', '/level1', '/level2', '/level3',
+    '/level4', '/level5',
+]
+
+def get_dernier_niveau(pseudo):
+    meilleur = '/level0'
+    for route in PROGRESSION_NIVEAUX:
+        if niveau_accessible(pseudo, route):
+            meilleur = route
+    return meilleur
 
 def niveau_accessible(pseudo, route):
     if pseudo.lower() == "admin":
         return True
+    valides = get_niveaux_valides(pseudo)
     for chemin, flag_requis in ORDRE_NIVEAUX.items():
-        if route.startswith(chemin):
-            valides = get_niveaux_valides(pseudo)
-            if flag_requis not in valides:
+        if route == chemin or route.startswith(chemin + '/'):  # ← match exact seulement
+            flags_ok = FLAGS_ALTERNATIFS.get(flag_requis, [flag_requis])
+            if not any(f in valides for f in flags_ok):
                 return False
     return True
 
@@ -49,12 +65,12 @@ FLAGS = {
     3:  {"flag": "5130003",  "points": 25,  "redirect": "/level2"},
     4:  {"flag": "007365",   "points": 25,  "redirect": "/level2"},
     # Level 2
-    22: {"flag": "2847",     "points": 75,  "redirect": "/level2.1"},
-    23: {"flag": "3619",     "points": 75,  "redirect": "/level2.1"},
+    22: {"flag": "2847",     "points": 75,  "redirect": "/level3"},
+    23: {"flag": "3619",     "points": 75,  "redirect": "/level3"},
+    24: {"flag": "28473619", "points": 150, "redirect": "/level3"},
     # Level 3
     5:  {"flag": "6515",     "points": 150, "redirect": "/level4"},
-    6:  {"flag": "  ", "points": 150, "redirect": "/level4"},
-    6:  {"flag": "28473619", "points": 150, "redirect": "/level4"},
+
     # Level 4 sous-énigmes
     41: {"flag": "4301",     "points": 100, "redirect": "/level4"},
     42: {"flag": "3318",     "points": 100, "redirect": "/level4"},
@@ -74,7 +90,7 @@ def login():
             return render_template_string(LOGIN_HTML, erreur="Pseudo invalide.")
         ajouter_joueur(pseudo)
         session['pseudo'] = pseudo
-        return redirect('/')
+        return redirect(get_dernier_niveau(pseudo))  # ← changement ici
     return render_template_string(LOGIN_HTML, erreur=None)
 
 @app.route('/logout')
