@@ -43,6 +43,12 @@ cd notre-trophe-nsi
 2. **Installez les dépendances Python nécessaires :**
 
 ```bash
+pip install flask
+```
+
+> Ou si un fichier `requirements.txt` est présent :
+
+```bash
 pip install -r requirements.txt
 ```
 
@@ -82,16 +88,28 @@ Ce projet met en œuvre plusieurs concepts avancés du programme de **NSI** :
 ## 🗂️ Structure du projet
 
 ```
-frontrooms/
-├── sources/
-│   └── main.py          # Point d'entrée du projet
-├── static/
-│   ├── css/             # Feuilles de style
-│   ├── js/              # Scripts JavaScript
-│   └── assets/          # Médias (images, sons, fichiers cachés...)
-├── templates/           # Pages HTML des niveaux
-├── requirements.txt     # Dépendances Python
-└── README.md
+notre-trophe-nsi/
+├── docs/                        # Documentation du projet
+├── sources/                     # Code source principal
+│   ├── __pycache__/
+│   ├── images/                  # Images du jeu
+│   ├── level0/                  # Niveau 0
+│   ├── level1/                  # Niveau 1
+│   ├── level2/                  # Niveau 2
+│   ├── level3/                  # Niveau 3
+│   ├── level4/                  # Niveau 4
+│   ├── level5/                  # Niveau 5
+│   ├── sons/                    # Fichiers audio
+│   ├── backrooms.db             # Base de données SQLite
+│   ├── database.py              # Gestion de la base de données
+│   ├── main.py                  # Point d'entrée du projet (Flask)
+│   ├── requirements.txt         # Dépendances Python (sources)
+│   └── sources.txt
+├── suivi/                       # Suivi du projet
+├── licence.txt                  # Licence GPLv3
+├── presentation.md              # Présentation du projet
+├── README.md
+└── requirements.txt             # Dépendances Python (racine)
 ```
 
 ---
