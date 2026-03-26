@@ -12,30 +12,14 @@ Présentation de l'équipe:
 Eleves du lycée Clemenceau de la Terminale NSI.
 
 
-Chef de projet .............. Anas
-Responsable des bugs ........ Lenaël
-Concepteur des énigmes ...... Alexandre
-Expert en ambiances glauques . Robin
+Nous avons réparti le travail en niveaux. Nous avons fait un ou deux niveaux par membre de l’équipe, et les membres n’ayant fait qu’un niveau ont dû réaliser l’anti-cheat et la gestion de la base de données.
 
-Responsable des images flippantes . Robin
-Architecte backend .......... Lenaël
-Expert en théories backrooms . Alexandre
-Responsable de la bonne gestion du projet : Robin
+Membre: 
+Anas
+Alexandre
+Robin
+Lénael
 
-Direction visuelle .......... Robin
-Responsable "et si on faisait..." . Alexandre
-Responsable des corrections de bugs . Lenaël
-Vision artistique ........... Robin
-
-Créateur de l'atmosphère .... Alexandre
-Testeur principal ........... Anas
-Responsable de la base de données . Anas
-Directeur créatif ........... Robin
-
-Concepteur des niveaux ...... Alexandre
-Designer principal .......... Robin
-Responsable des fausses bonnes idées . Alexandre
-Ingénieur des idées ......... Anas
 
 Temps passé sur le projet : 50h
 Voilà le résumé complet, niveaux 0 à 5 :
