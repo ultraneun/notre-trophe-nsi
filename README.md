@@ -1,4 +1,7 @@
 -🚪 [Frontrooms] :
+
+
+
 - 📝 Description :
 [Frontrooms] est un jeu d'énigmes et d'exploration psychologique inspiré de l'univers des Backrooms et des mystères Internet comme Cicada 3301. Le concept repose sur une immersion totale dans des espaces liminaux — des lieux familiers mais profondément dérangeants — où la progression dépend de la capacité du joueur à décoder son environnement.
 
