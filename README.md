@@ -1,37 +1,38 @@
-🚪[Frontrooms]
-📝 Description
-[Frontrooms] est un jeu d'énigmes et d'exploration psychologique inspiré de l'univers des Backrooms et des mystères Internet comme Cicada 3301. Le joueur est plongé dans des espaces liminaux — des lieux familiers mais profondément dérangeants — où la progression dépend de sa capacité à décoder son environnement.
+-🚪 [Frontrooms] :
 
-L'objectif est de s'échapper de 6 niveaux thématiques (0 à 5). Contrairement à un jeu d'action classique, la réflexion est l'arme principale : il faut analyser des fréquences sonores, manipuler des fichiers, utiliser des outils de géolocalisation réels et résoudre des puzzles logiques complexes pour passer au niveau suivant.
 
-👥 L'Équipe
-Anas El Adarissi (@ultraneun) : Chef de projet, responsable de la base de données et testeur principal.
 
-Lénaël Lapeine (@LenGame) : Architecte backend, responsable du débogage et de la stabilité technique.
+- 📝 Description :
+[Frontrooms] est un jeu d'énigmes et d'exploration psychologique inspiré de l'univers des Backrooms et des mystères Internet comme Cicada 3301. Le concept repose sur une immersion totale dans des espaces liminaux — des lieux familiers mais profondément dérangeants — où la progression dépend de la capacité du joueur à décoder son environnement.
 
-Alexandre Blacharz (@Alekzio) : Concepteur des énigmes, expert en théories des Backrooms et ingénieur des "fausses bonnes idées".
+L'objectif est de s'échapper de 6 niveaux thématiques (du niveau 0 au niveau 5). Contrairement à un jeu d'action classique, la réflexion est l'arme principale : il faut analyser des fréquences sonores, manipuler des fichiers, utiliser des outils de géolocalisation réels et résoudre des puzzles logiques complexes pour progresser.
 
-Robin Sanders (@rbnnn111) : Directeur créatif, vision artistique, créateur des niveaux et responsable de l'ambiance visuelle (images flippantes).
+- 👥 L'Équipe :
 
-🛠️ Aspects Techniques
-Ce projet mobilise des concepts avancés du programme de NSI :
+- Anas El Adarissi (@ultraneun) : Chef de projet, responsable de la base de données et testeur principal.
+- Lénaël Lapeine (@LenGame) : Architecte backend, responsable du débogage et de la stabilité technique.
+- Alexandre Blacharz (@Alekzio) : Concepteur des énigmes, expert en théories des Backrooms et ingénieur des "fausses bonnes idées".
+- Robin Sanders (@rbnnn111) : Directeur créatif, vision artistique, créateur des niveaux et responsable de l'ambiance visuelle.
 
-Développement Web / Interface : Gestion d'une interface interactive avec des "hotspots" cliquables et des effets de texte (typewriter).
+Note : Le projet a été développé en collaboration constante, mêlant narration cryptique et défis techniques.
 
-Traitement de données : Analyse de spectrogrammes audio pour la stéganographie et décodage de signaux (Code Morse).
+- 🛠️ Aspects Techniques:
+Ce projet met en œuvre plusieurs concepts avancés du programme de NSI :
 
-Logique Algorithmique : Implémentation de séquences logiques, de systèmes de drag-and-drop pour les puzzles et de gestionnaires de temps (timers pour les niveaux de fuite).
+Développement Web & Interface : Gestion d'une interface interactive avec des "hotspots" cliquables et des effets de texte dynamiques (typewriter).
 
-Interactivité Externe : Intégration de mécaniques utilisant des outils réels comme Google Maps/Street View pour résoudre des énigmes de coordonnées.
+Traitement de données : Analyse de spectrogrammes audio pour la stéganographie et algorithme de décodage de signaux (Code Morse).
 
-🚀 Installation et Utilisation 
+Logique Algorithmique : Implémentation de séquences logiques, systèmes de drag-and-drop pour les puzzles et gestionnaires de temps (timers) pour les phases de survie.
 
+Interactivité Externe : Intégration de mécaniques utilisant des outils réels (API ou web-scraping) comme Google Maps/Street View pour la résolution d'énigmes géographiques.
+
+- 🚀 Installation et Utilisation:
 A completer
 
 
-
-
-📜 Licence
-Le code source de ce projet est placé sous la Licence Publique Générale GNU v3.0 (GPLv3). Le texte de la documentation (.md, .txt) est placé sous licence Creative Commons CC BY-SA.
+- 📜 Licence:
+Le code source de ce projet est placé sous la Licence Publique Générale GNU v3.0 (GPLv3).
+Le texte de la documentation (.md, .txt) est placé sous licence Creative Commons CC BY-SA.
 
 Vous trouverez le texte complet de la licence GPLv3 dans le fichier Licence.txt.
